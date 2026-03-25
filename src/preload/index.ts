@@ -1,0 +1,58 @@
+import { contextBridge, ipcRenderer } from "electron";
+import { IPC } from "../shared/channels.js";
+
+function sub(channel: string, cb: (...args: unknown[]) => void) {
+  const handler = (_e: Electron.IpcRendererEvent, ...args: unknown[]) => cb(...args);
+  ipcRenderer.on(channel, handler);
+  return () => ipcRenderer.removeListener(channel, handler);
+}
+
+const api = {
+  // Config
+  getConfig: () => ipcRenderer.invoke(IPC.CONFIG_GET),
+  setConfig: (path: string, value: unknown) => ipcRenderer.invoke(IPC.CONFIG_SET, path, value),
+  resetConfig: () => ipcRenderer.invoke(IPC.CONFIG_RESET),
+  onConfigChanged: (cb: (data: unknown) => void) => sub(IPC.CONFIG_CHANGED, cb),
+
+  // Engine
+  startEngine: () => ipcRenderer.invoke(IPC.ENGINE_START),
+  stopEngine: () => ipcRenderer.invoke(IPC.ENGINE_STOP),
+  getEngineStatus: () => ipcRenderer.invoke(IPC.ENGINE_STATUS),
+  onEngineEvent: (cb: (data: unknown) => void) => sub(IPC.ENGINE_EVENT, cb),
+
+  // Logs
+  getLogs: (count: number) => ipcRenderer.invoke(IPC.LOGS_GET, count),
+  onLogEntry: (cb: (entry: unknown) => void) => sub(IPC.LOGS_ENTRY, cb),
+  clearLogs: () => ipcRenderer.invoke(IPC.LOGS_CLEAR),
+
+  // Match
+  listSessions: () => ipcRenderer.invoke(IPC.MATCH_LIST),
+  getSession: (sessionId: string) => ipcRenderer.invoke(IPC.MATCH_GET, sessionId),
+  getLastMatch: () => ipcRenderer.invoke(IPC.MATCH_LAST),
+
+  // Voice listing
+  listPiperVoices: () => ipcRenderer.invoke(IPC.VOICES_LIST_PIPER),
+  listElevenLabsVoices: (apiKey: string) => ipcRenderer.invoke(IPC.VOICES_LIST_ELEVENLABS, apiKey),
+  listSystemVoices: () => ipcRenderer.invoke(IPC.VOICES_LIST_SYSTEM),
+
+  // TTS / LLM
+  testTTS: (provider: string, text: string) => ipcRenderer.invoke(IPC.TTS_TEST, provider, text),
+  testLLM: (provider: string) => ipcRenderer.invoke(IPC.LLM_TEST, provider),
+
+  // Piper
+  checkPiper: () => ipcRenderer.invoke(IPC.PIPER_CHECK),
+  getPiperStatus: () => ipcRenderer.invoke(IPC.PIPER_STATUS),
+  getAvailablePiperVoices: () => ipcRenderer.invoke(IPC.PIPER_AVAILABLE_VOICES),
+  installPiper: (voiceId: string) => ipcRenderer.invoke(IPC.PIPER_INSTALL, voiceId),
+  onPiperProgress: (cb: (data: unknown) => void) => sub(IPC.PIPER_PROGRESS, cb),
+
+  // System
+  selectDirectory: () => ipcRenderer.invoke(IPC.DIALOG_SELECT_DIR),
+  getAppVersion: () => ipcRenderer.invoke(IPC.APP_VERSION),
+  isFirstRun: () => ipcRenderer.invoke(IPC.APP_IS_FIRST_RUN),
+  completeOnboarding: () => ipcRenderer.invoke(IPC.APP_COMPLETE_ONBOARDING),
+};
+
+export type MicaAPI = typeof api;
+
+contextBridge.exposeInMainWorld("micaAPI", api);

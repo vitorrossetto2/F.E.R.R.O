@@ -1,0 +1,169 @@
+// ── Engine ──────────────────────────────────────────────
+
+export type EngineStatus =
+  | "idle"
+  | "waiting_for_game"
+  | "coaching"
+  | "paused"
+  | "error";
+
+export interface EngineState {
+  status: EngineStatus;
+  gameDetected: boolean;
+  gameTime: number;
+  activeChampion: string;
+  lastMessage: string;
+  lastMessageSource: "llm" | "heuristic" | "fallback" | "";
+  lastLLMMs: number;
+  lastTTSMs: number;
+  ttsStatus: "idle" | "speaking" | "error";
+  llmStatus: "idle" | "calling" | "error" | "disabled";
+  piperStatus: "installed" | "missing" | "error";
+  errorMessage: string | null;
+}
+
+export type EngineEventType =
+  | "status_change"
+  | "game_detected"
+  | "game_ended"
+  | "coaching"
+  | "silence"
+  | "tts_start"
+  | "tts_done"
+  | "tts_error"
+  | "llm_call"
+  | "llm_response"
+  | "llm_error"
+  | "error";
+
+export interface EngineEvent {
+  type: EngineEventType;
+  [key: string]: unknown;
+}
+
+// ── Config ─────────────────────────────────────────────
+
+export type LLMProviderType = "none" | "zai" | "openai" | "gemini";
+export type TTSProviderType = "piper" | "elevenlabs" | "system";
+
+export interface LLMProviderConfig {
+  apiKey: string;
+  endpoint: string;
+  model: string;
+}
+
+export interface MessageCategoryConfig {
+  enabled: boolean;
+  cooldownSeconds: number;
+}
+
+export interface MicaConfig {
+  llm: {
+    activeProvider: LLMProviderType;
+    providers: {
+      zai: LLMProviderConfig;
+      openai: LLMProviderConfig;
+      gemini: LLMProviderConfig;
+    };
+  };
+  tts: {
+    activeProvider: TTSProviderType;
+    providers: {
+      piper: {
+        executablePath: string;
+        modelPath: string;
+        speaker: number;
+      };
+      elevenlabs: {
+        apiKey: string;
+        voiceId: string;
+      };
+      system: {
+        voice: string;
+      };
+    };
+  };
+  game: {
+    pollIntervalSeconds: number;
+    coachingIntervalSeconds: number;
+    mapReminderIntervalSeconds: number;
+    stalledGoldThreshold: number;
+  };
+  objectives: {
+    dragonFirstSpawn: number;
+    dragonRespawn: number;
+    grubsFirstSpawn: number;
+    grubsDespawn: number;
+    heraldFirstSpawn: number;
+    heraldDespawn: number;
+    baronFirstSpawn: number;
+    baronRespawn: number;
+    oneMinuteCall: number;
+    thirtySecondsCall: number;
+    tenSecondsCall: number;
+  };
+  messages: Record<string, MessageCategoryConfig>;
+  logging: {
+    logsDir: string;
+    logSnapshots: boolean;
+    logLlmPayloads: boolean;
+  };
+  app: {
+    onboardingCompleted: boolean;
+    piperInstalled: boolean;
+    windowBounds: { x: number; y: number; width: number; height: number } | null;
+  };
+}
+
+// ── Voice / Model selectors ────────────────────────────
+
+export interface VoiceOption {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+export interface ModelOption {
+  id: string;
+  name: string;
+}
+
+// ── Logs ───────────────────────────────────────────────
+
+export interface LogEntry {
+  ts: string;
+  sessionId: string;
+  type: string;
+  gameTime?: number;
+  [key: string]: unknown;
+}
+
+// ── Match Analysis ─────────────────────────────────────
+
+export interface SessionSummary {
+  sessionId: string;
+  filename: string;
+  startTime: string;
+  sizeBytes: number;
+}
+
+// ── Piper ──────────────────────────────────────────────
+
+export interface PiperVoiceOption {
+  id: string;
+  name: string;
+  file: string;
+  desc: string;
+  size: string;
+}
+
+export interface PiperStatus {
+  installed: boolean;
+  path?: string;
+}
+
+export interface PiperProgress {
+  stage: "downloading_binary" | "extracting" | "downloading_voice" | "verifying" | "done" | "error";
+  percent: number;
+  message: string;
+}

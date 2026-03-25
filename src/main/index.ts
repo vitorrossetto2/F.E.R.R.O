@@ -1,0 +1,118 @@
+import { app, BrowserWindow, Menu, shell } from "electron";
+import { join } from "path";
+import { initConfigStore, getAll } from "./services/config-service.js";
+import { registerIpcHandlers } from "./ipc/handlers.js";
+import { engine } from "./services/engine.js";
+import { checkPiper, getPiperDir, getVoicesDir } from "./services/piper-installer.js";
+
+let mainWindow: BrowserWindow | null = null;
+
+// ── Structured logging ────────────────────────────────
+const TAG = "[Main]";
+function log(...args: unknown[]) { console.log(TAG, ...args); }
+function warn(...args: unknown[]) { console.warn(TAG, ...args); }
+function err(...args: unknown[]) { console.error(TAG, ...args); }
+
+function createWindow(): void {
+  log("=== F.E.R.R.O Coach starting ===");
+  log("Electron", process.versions.electron, "| Node", process.versions.node, "| Platform", process.platform);
+
+  const config = initConfigStore();
+  const appConfig = getAll();
+
+  log("Config loaded:");
+  log("  LLM:", appConfig.llm.activeProvider, appConfig.llm.activeProvider !== "none" ? `(${appConfig.llm.providers[appConfig.llm.activeProvider].model})` : "");
+  log("  TTS:", appConfig.tts.activeProvider);
+  log("  Piper exe:", appConfig.tts.providers.piper.executablePath);
+  log("  Piper model:", appConfig.tts.providers.piper.modelPath);
+  log("  Logs dir:", appConfig.logging.logsDir);
+  log("  Piper dir:", getPiperDir());
+  log("  Voices dir:", getVoicesDir());
+
+  const piperStatus = checkPiper();
+  log("Piper installed:", piperStatus.installed, piperStatus.path ?? "");
+
+  const bounds = config.get("app.windowBounds" as never) as {
+    x: number; y: number; width: number; height: number;
+  } | null;
+
+  mainWindow = new BrowserWindow({
+    width: bounds?.width ?? 1100,
+    height: bounds?.height ?? 750,
+    x: bounds?.x ?? undefined,
+    y: bounds?.y ?? undefined,
+    minWidth: 900,
+    minHeight: 600,
+    show: false,
+    backgroundColor: "#08080c",
+    title: "F.E.R.R.O Coach",
+    webPreferences: {
+      preload: join(__dirname, "../preload/index.mjs"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: false,
+    },
+  });
+
+  Menu.setApplicationMenu(null);
+
+  mainWindow.on("ready-to-show", () => {
+    log("Window ready, showing");
+    mainWindow!.show();
+  });
+
+  const saveBounds = () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      const b = mainWindow.getBounds();
+      config.set("app.windowBounds" as never, { x: b.x, y: b.y, width: b.width, height: b.height } as never);
+    }
+  };
+  mainWindow.on("resized", saveBounds);
+  mainWindow.on("moved", saveBounds);
+
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: "deny" };
+  });
+
+  log("Registering IPC handlers...");
+  registerIpcHandlers(mainWindow);
+  engine.setWindow(mainWindow);
+
+  // Auto-start engine if TTS is ready
+  if (piperStatus.installed || appConfig.tts.activeProvider === "system") {
+    log("Auto-starting engine (TTS ready)");
+    engine.start();
+  } else {
+    warn("Engine NOT auto-started: Piper not installed and TTS not set to system");
+  }
+
+  if (process.env.ELECTRON_RENDERER_URL) {
+    log("Loading dev server:", process.env.ELECTRON_RENDERER_URL);
+    mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL);
+  } else {
+    const htmlPath = join(__dirname, "../renderer/index.html");
+    log("Loading production HTML:", htmlPath);
+    mainWindow.loadFile(htmlPath);
+  }
+}
+
+app.whenReady().then(createWindow);
+
+app.on("window-all-closed", () => {
+  log("All windows closed, quitting");
+  app.quit();
+});
+
+app.on("activate", () => {
+  if (BrowserWindow.getAllWindows().length === 0) createWindow();
+});
+
+// Global error handlers
+process.on("uncaughtException", (error) => {
+  err("UNCAUGHT EXCEPTION:", error.message, error.stack);
+});
+
+process.on("unhandledRejection", (reason) => {
+  err("UNHANDLED REJECTION:", reason);
+});
