@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { unlink } from "node:fs/promises";
+import https from "node:https";
 
 import say from "say";
 
@@ -141,6 +142,96 @@ function speakWithSay(text) {
   return { generateMs: 0, playMs: 0, provider: "say" };
 }
 
+function pcmToWavBuffer(pcmBuffer, sampleRate = 16000, channels = 1, bitsPerSample = 16) {
+  const byteRate = sampleRate * channels * (bitsPerSample / 8);
+  const blockAlign = channels * (bitsPerSample / 8);
+  const header = Buffer.alloc(44);
+
+  header.write("RIFF", 0);
+  header.writeUInt32LE(36 + pcmBuffer.length, 4);
+  header.write("WAVE", 8);
+  header.write("fmt ", 12);
+  header.writeUInt32LE(16, 16);
+  header.writeUInt16LE(1, 20);
+  header.writeUInt16LE(channels, 22);
+  header.writeUInt32LE(sampleRate, 24);
+  header.writeUInt32LE(byteRate, 28);
+  header.writeUInt16LE(blockAlign, 32);
+  header.writeUInt16LE(bitsPerSample, 34);
+  header.write("data", 36);
+  header.writeUInt32LE(pcmBuffer.length, 40);
+
+  return Buffer.concat([header, pcmBuffer]);
+}
+
+function elevenLabsSynthesizePcm(text) {
+  return new Promise((resolve, reject) => {
+    if (!settings.elevenlabsApiKey) {
+      reject(new Error("ELEVENLABS_API_KEY nao configurada."));
+      return;
+    }
+    if (!settings.elevenlabsVoiceId) {
+      reject(new Error("ELEVENLABS_VOICE_ID nao configurada."));
+      return;
+    }
+
+    const body = JSON.stringify({
+      text,
+      model_id: "eleven_multilingual_v2",
+    });
+
+    const requestUrl = new URL(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(settings.elevenlabsVoiceId)}`);
+    requestUrl.searchParams.set("output_format", "pcm_16000");
+
+    const req = https.request(
+      requestUrl,
+      {
+        method: "POST",
+        headers: {
+          "xi-api-key": settings.elevenlabsApiKey,
+          Accept: "application/octet-stream",
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(body),
+        },
+      },
+      (res) => {
+        const chunks = [];
+        res.on("data", (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+        res.on("end", () => {
+          const out = Buffer.concat(chunks);
+          if ((res.statusCode ?? 500) >= 400) {
+            const body = out.toString("utf8").trim();
+            const message = body
+              ? `ElevenLabs HTTP ${res.statusCode}: ${body}`
+              : `ElevenLabs HTTP ${res.statusCode}`;
+            reject(new Error(message));
+            return;
+          }
+          resolve(out);
+        });
+      }
+    );
+
+    req.on("error", reject);
+    req.setTimeout(20000, () => req.destroy(new Error("Timeout ao chamar ElevenLabs.")));
+    req.write(body);
+    req.end();
+  });
+}
+
+async function speakWithElevenLabs(text) {
+  const generateStart = performance.now();
+  const pcm = await elevenLabsSynthesizePcm(text);
+  const wavBuffer = pcmToWavBuffer(pcm, 16000);
+  const tempFile = path.join(tmpdir(), `mica-elevenlabs-${Date.now()}.wav`);
+
+  await import("node:fs/promises").then(({ writeFile }) => writeFile(tempFile, wavBuffer));
+  const generateMs = Math.round(performance.now() - generateStart);
+
+  playWavFileAsync(tempFile);
+  return { generateMs, playMs: 0, provider: "elevenlabs" };
+}
+
 export async function speak(text) {
   if (!settings.ttsEnabled) {
     console.log(`[TTS disabled] ${text}`);
@@ -156,6 +247,10 @@ export async function speak(text) {
 
   if (provider === "say") {
     return await speakWithSay(phonetic);
+  }
+
+  if (provider === "elevenlabs") {
+    return await speakWithElevenLabs(phonetic);
   }
 
   if (provider === "auto") {

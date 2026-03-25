@@ -4,7 +4,9 @@ import { IPC } from "../shared/channels.js";
 function sub(channel: string, cb: (...args: unknown[]) => void) {
   const handler = (_e: Electron.IpcRendererEvent, ...args: unknown[]) => cb(...args);
   ipcRenderer.on(channel, handler);
-  return () => ipcRenderer.removeListener(channel, handler);
+  return () => {
+    ipcRenderer.removeListener(channel, handler);
+  };
 }
 
 const api = {
