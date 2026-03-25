@@ -162,7 +162,7 @@ function fallbackMessage(priority) {
     return pickModePhrase("morteStreak").replace("{count}", count);
   }
 
-  if (priority.includes("cuidado com")) {
+  if (priority.startsWith("cuidado com ")) {
     const name = priority.replace("cuidado com ", "").split(",")[0].trim();
     return pickModePhrase("morteJogador").replace("{name}", name);
   }

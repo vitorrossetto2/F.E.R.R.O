@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { PiperProgress, PiperVoiceOption } from "../../shared/types.js";
 
 interface Props {
@@ -22,6 +22,13 @@ const FEATURE_CARDS = [
   },
 ];
 
+const PIPER_SAMPLES: Record<string, string> = {
+  "faber-medium": "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/pt/pt_BR/faber/medium/samples/speaker_0.mp3?download=true",
+  "cadu-medium": "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/pt/pt_BR/cadu/medium/samples/speaker_0.mp3?download=true",
+  "jeff-medium": "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/pt/pt_BR/jeff/medium/samples/speaker_0.mp3?download=true",
+  "edresson-low": "https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/pt/pt_BR/edresson/low/samples/speaker_0.mp3?download=true",
+};
+
 export default function PiperSetup({ onComplete }: Props) {
   const [step, setStep] = useState<SetupStep>("intro");
   const [voices, setVoices] = useState<PiperVoiceOption[]>([]);
@@ -29,6 +36,9 @@ export default function PiperSetup({ onComplete }: Props) {
   const [installing, setInstalling] = useState(false);
   const [progress, setProgress] = useState<PiperProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [previewingVoice, setPreviewingVoice] = useState<string | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const previewAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     window.ferroAPI.getAvailablePiperVoices().then((v) => setVoices(v as PiperVoiceOption[]));
@@ -43,6 +53,15 @@ export default function PiperSetup({ onComplete }: Props) {
     return unsub;
   }, [onComplete]);
 
+  useEffect(() => {
+    return () => {
+      if (previewAudioRef.current) {
+        previewAudioRef.current.pause();
+        previewAudioRef.current = null;
+      }
+    };
+  }, []);
+
   const handleInstall = async () => {
     setInstalling(true);
     setError(null);
@@ -55,6 +74,51 @@ export default function PiperSetup({ onComplete }: Props) {
     if (result.error) {
       setError(result.error);
       setInstalling(false);
+    }
+  };
+
+  const handlePreview = async (voiceId: string) => {
+    const sampleUrl = PIPER_SAMPLES[voiceId];
+    if (!sampleUrl) {
+      setPreviewError("Amostra de audio indisponivel para esta voz.");
+      return;
+    }
+
+    if (previewAudioRef.current && previewingVoice === voiceId) {
+      previewAudioRef.current.pause();
+      previewAudioRef.current.currentTime = 0;
+      previewAudioRef.current = null;
+      setPreviewingVoice(null);
+      return;
+    }
+
+    try {
+      if (previewAudioRef.current) {
+        previewAudioRef.current.pause();
+      }
+
+      const audio = new Audio(sampleUrl);
+      previewAudioRef.current = audio;
+      setPreviewError(null);
+      setPreviewingVoice(voiceId);
+      audio.onended = () => {
+        if (previewAudioRef.current === audio) {
+          previewAudioRef.current = null;
+          setPreviewingVoice(null);
+        }
+      };
+      audio.onerror = () => {
+        if (previewAudioRef.current === audio) {
+          previewAudioRef.current = null;
+          setPreviewingVoice(null);
+          setPreviewError("Nao foi possivel tocar a amostra agora.");
+        }
+      };
+      await audio.play();
+    } catch {
+      previewAudioRef.current = null;
+      setPreviewingVoice(null);
+      setPreviewError("Nao foi possivel tocar a amostra agora.");
     }
   };
 
@@ -156,6 +220,9 @@ export default function PiperSetup({ onComplete }: Props) {
             <p className="mt-1 text-sm" style={{ color: "var(--text-muted)" }}>
               Motor de voz local, gratuito e rapido
             </p>
+            <p className="mt-2 text-xs" style={{ color: "var(--text-muted)" }}>
+              Voce pode ouvir uma amostra pre-gravada antes de decidir qual voz instalar.
+            </p>
 
             <div className="mt-8 w-full max-w-xl space-y-2">
               {voices.map((voice) => (
@@ -196,12 +263,31 @@ export default function PiperSetup({ onComplete }: Props) {
                       </span>
                     )}
                   </span>
-                  <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-                    {voice.size}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      className="btn-ghost px-3 py-1 text-xs"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        void handlePreview(voice.id);
+                      }}
+                    >
+                      {previewingVoice === voice.id ? "Parar amostra" : "Ouvir amostra"}
+                    </button>
+                    <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                      {voice.size}
+                    </span>
+                  </div>
                 </label>
               ))}
             </div>
+
+            {previewError && (
+              <p className="mt-3 text-xs" style={{ color: "var(--accent-red)" }}>
+                {previewError}
+              </p>
+            )}
 
             {installing && progress && progress.stage !== "done" && progress.stage !== "error" && (
               <div className="mt-6 w-full max-w-xl">

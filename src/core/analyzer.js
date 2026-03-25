@@ -209,6 +209,13 @@ function detectLane(turretName) {
   return "side";
 }
 
+function normalizeLaneForPlayerPerspective(lane, playerTeam) {
+  if (playerTeam !== "CHAOS") return lane;
+  if (lane === "top") return "bot";
+  if (lane === "bot") return "top";
+  return lane;
+}
+
 function isAllyTurret(turretName, playerTeam) {
   const normalized = (turretName ?? "").toUpperCase();
   const turretTeam = normalized.includes("TORDER") ? "ORDER" : "CHAOS";
@@ -216,11 +223,13 @@ function isAllyTurret(turretName, playerTeam) {
 }
 
 function turretRotationHint(lane, snapshot, allied) {
+  const perspectiveLane = normalizeLaneForPlayerPerspective(lane, snapshot.activePlayerTeam);
+
   if (allied) {
-    if (lane === "mid") return pickModePhrase("torrePerdidaMid");
-    if (lane === "top") return pickModePhrase("torrePerdidaTop");
-    if (lane === "bot") return pickModePhrase("torrePerdidaBot");
-    return pickModePhrase("torrePerdidaGenerica").replace("{lane}", lane);
+    if (perspectiveLane === "mid") return pickModePhrase("torrePerdidaMid");
+    if (perspectiveLane === "top") return pickModePhrase("torrePerdidaTop");
+    if (perspectiveLane === "bot") return pickModePhrase("torrePerdidaBot");
+    return pickModePhrase("torrePerdidaGenerica").replace("{lane}", perspectiveLane);
   }
 
   const nextDragonAt = getDragonTimer(snapshot);
@@ -228,11 +237,11 @@ function turretRotationHint(lane, snapshot, allied) {
   const dragonSoon = nextDragonAt !== null && nextDragonAt - snapshot.gameTime <= 90;
   const baronSoon = nextBaronAt !== null && nextBaronAt - snapshot.gameTime <= 90;
 
-  if (lane === "mid") return pickModePhrase("torreMid");
-  if (lane === "top" && dragonSoon) return pickModePhrase("torreTopDragao");
-  if (lane === "bot" && baronSoon) return pickModePhrase("torreBotBarao");
+  if (perspectiveLane === "mid") return pickModePhrase("torreMid");
+  if (perspectiveLane === "top" && dragonSoon) return pickModePhrase("torreTopDragao");
+  if (perspectiveLane === "bot" && baronSoon) return pickModePhrase("torreBotBarao");
 
-  return pickModePhrase("torreGenerica").replace("{lane}", lane);
+  return pickModePhrase("torreGenerica").replace("{lane}", perspectiveLane);
 }
 
 function isMajorItem(definition) {
@@ -529,7 +538,7 @@ export async function analyzeSnapshot(snapshot, state) {
     ...collectLevelTriggers(snapshot, state)
   ]);
 
-  if (snapshot.gameTime - state.lastMapReminderAt >= settings.mapReminderIntervalSeconds) {
+  if (!snapshot.activePlayerIsDead && snapshot.gameTime - state.lastMapReminderAt >= settings.mapReminderIntervalSeconds) {
     triggers.push("lembrete de mapa");
     state.lastMapReminderAt = snapshot.gameTime;
   }

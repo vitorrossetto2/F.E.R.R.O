@@ -69,4 +69,23 @@ describe("coach message modes", () => {
     expect(messages[0].role).toBe("system");
     expect(messages[0].content).toContain("Tom brincalhão");
   });
+
+  it("does not turn tower warnings into death warnings", async () => {
+    const configMod = await import("../src/core/config.js");
+    const coachMod = await import("../src/core/coach.js");
+
+    configMod.settings.zaiApiKey = "";
+    configMod.settings.zaiEndpoint = "https://api.example/v1/chat/completions";
+    configMod.settings.zaiModel = "glm-5";
+    configMod.settings.coachMessageMode = "serio";
+
+    const result = await coachMod.decideCoaching(
+      { activePlayerGold: 0, enemyPlayers: [] },
+      ["Perdemos torre do mid. Toma cuidado com rotas inimigas."],
+      { objectiveStates: [] }
+    );
+
+    expect(result.message).toBe("Perdemos torre do mid. Toma cuidado com rotas inimigas.");
+    expect(String(result.message)).not.toContain("Cuidado com Perdemos torre");
+  });
 });

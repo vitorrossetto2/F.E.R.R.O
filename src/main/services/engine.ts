@@ -345,6 +345,30 @@ export class Engine extends EventEmitter {
     });
     this.log({ type: "coach_decision", gameTime, priority: decision.priority as string, shouldSpeak: decision.shouldSpeak as boolean });
 
+    if (!decision.skippedLlm) {
+      if (c.settings.logLlmPayloads) {
+        await lg.log("llm_payload", {
+          gameTime,
+          prompt: decision.prompt,
+          rawModelMessage: decision.rawModelMessage,
+          llmMs: decision.llmMs,
+          llmError: decision.llmError,
+        });
+      }
+
+      if (decision.llmError) {
+        this.send({ type: "llm_error", gameTime, error: decision.llmError, llmMs: decision.llmMs });
+      } else {
+        this.send({
+          type: "llm_response",
+          gameTime,
+          llmMs: decision.llmMs,
+          fallbackUsed: decision.fallbackUsed,
+          rawModelMessage: decision.rawModelMessage,
+        });
+      }
+    }
+
     if (decision.shouldSpeak) {
       const category = c.detectCategory(decision.priority as string);
 

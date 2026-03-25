@@ -56,6 +56,8 @@ export async function getSnapshot(logGame) {
       activePlayerName,
       activePlayerChampion: currentPlayer.championName ?? "Unknown",
       activePlayerLevel: Number(currentPlayer.level ?? 0),
+      activePlayerIsDead: Boolean(currentPlayer.isDead),
+      activePlayerRespawnTimer: Number(currentPlayer.respawnTimer ?? 0),
       activePlayerGold: Number(activePlayer.currentGold ?? 0),
       activePlayerTeam: currentTeam ?? "ORDER",
       activePlayerKda: `${currentScores.kills ?? 0}/${currentScores.deaths ?? 0}/${currentScores.assists ?? 0}`,
