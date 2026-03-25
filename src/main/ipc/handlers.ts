@@ -4,6 +4,7 @@ import * as configService from "../services/config-service.js";
 import { engine } from "../services/engine.js";
 import { installPiper, PIPER_VOICES, getVoicesDir, getPiperDir } from "../services/piper-installer.js";
 import { listPiperVoices, listElevenLabsVoices, listSystemVoices } from "../services/voice-list-service.js";
+import { getLatestElevenLabsUsageSummary } from "../services/elevenlabs-usage-service.js";
 import { getStartupState } from "../services/startup-state.js";
 import { populateEnvFromConfig } from "../lib/settings-bridge.js";
 import path from "path";
@@ -73,6 +74,15 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
 
   // ── Logs ────────────────────────────────────────────
   ipcMain.handle(IPC.LOGS_GET, () => []);
+  ipcMain.handle(IPC.ELEVENLABS_USAGE_GET, async () => {
+    try {
+      const config = configService.getAll();
+      return await getLatestElevenLabsUsageSummary(config.logging.logsDir);
+    } catch (error) {
+      console.error(TAG, "elevenlabs:usage:get error:", (error as Error).message);
+      return null;
+    }
+  });
   ipcMain.handle(IPC.LOGS_CLEAR, () => {});
 
   // ── Match Analysis ──────────────────────────────────

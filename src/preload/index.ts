@@ -24,6 +24,7 @@ const api = {
 
   // Logs
   getLogs: (count: number) => ipcRenderer.invoke(IPC.LOGS_GET, count),
+  getElevenLabsUsageSummary: () => ipcRenderer.invoke(IPC.ELEVENLABS_USAGE_GET),
   onLogEntry: (cb: (entry: unknown) => void) => sub(IPC.LOGS_ENTRY, cb),
   clearLogs: () => ipcRenderer.invoke(IPC.LOGS_CLEAR),
 

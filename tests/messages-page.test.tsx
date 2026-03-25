@@ -1,7 +1,7 @@
 import React from "react";
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
-import type { FerroConfig } from "../src/shared/types.js";
+import type { ElevenLabsUsageSummary, FerroConfig } from "../src/shared/types.js";
 import { MessagesContent } from "../src/renderer/pages/Messages.tsx";
 
 const baseConfig: FerroConfig = {
@@ -87,5 +87,31 @@ describe("Messages page", () => {
     expect(markup).toContain("Sério");
     expect(markup).toContain("Meme");
     expect(markup).toContain("Puto");
+  });
+
+  it("renders the latest ElevenLabs usage summary when available", () => {
+    const usageSummary: ElevenLabsUsageSummary = {
+      sessionId: "2026-03-25T17-35-23-511Z",
+      ttsCount: 86,
+      totalChars: 3459,
+      estimatedCredits: 3459,
+      averageCharsPerMessage: 40.22,
+      durationSeconds: 1945.46,
+      costBRL: 3.17,
+    };
+
+    const markup = renderToStaticMarkup(
+      <MessagesContent
+        config={baseConfig}
+        isElevenLabs={true}
+        elevenLabsUsageSummary={usageSummary}
+        onToggle={() => {}}
+        onSetCooldown={() => {}}
+        onSetMessageMode={() => {}}
+      />
+    );
+
+    expect(markup).toContain("Última partida: ~3.459 créditos (~R$ 3,17)");
+    expect(markup).toContain("Baseado no log mais recente: 86 falas em 32m25s.");
   });
 });

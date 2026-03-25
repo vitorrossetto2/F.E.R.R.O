@@ -13,6 +13,7 @@ export const IPC = {
 
   // Logs
   LOGS_GET: "logs:get",
+  ELEVENLABS_USAGE_GET: "elevenlabs:usage:get",
   LOGS_ENTRY: "logs:entry",
   LOGS_CLEAR: "logs:clear",
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { FerroConfig, MessageCategoryConfig, MessageMode } from "../../shared/types.js";
+import type { ElevenLabsUsageSummary, FerroConfig, MessageCategoryConfig, MessageMode } from "../../shared/types.js";
 
 const CATEGORIES = [
   { id: "objetivo", label: "Objetivos", desc: "Dragão, Barão, Arauto, Grubs" },
@@ -25,10 +25,18 @@ export const MESSAGE_MODE_OPTIONS: Array<{ id: MessageMode; label: string; desc:
   { id: "puto", label: "Puto", desc: "Mais agressivo, cobrando tudo e com palavrão." },
 ];
 
-function estimateCost(messages: Record<string, MessageCategoryConfig>): string {
+const BRL_FORMATTER = new Intl.NumberFormat("pt-BR", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+const INTEGER_FORMATTER = new Intl.NumberFormat("pt-BR");
+
+function estimateTheoreticalCost(messages: Record<string, MessageCategoryConfig>) {
   const GAME_DURATION_S = 1800;
   const AVG_CHARS_PER_MSG = 75;
-  const COST_PER_1K_CHARS = 0.30;
+  const ELEVENLABS_STARTER_USD = 5;
+  const ELEVENLABS_STARTER_CREDITS = 30000;
   const BRL_PER_USD = 5.5;
 
   let totalMessages = 0;
@@ -40,15 +48,27 @@ function estimateCost(messages: Record<string, MessageCategoryConfig>): string {
   }
 
   const totalChars = totalMessages * AVG_CHARS_PER_MSG;
-  const costUSD = (totalChars / 1000) * COST_PER_1K_CHARS;
+  const estimatedCredits = totalChars;
+  const costUSD = (estimatedCredits / ELEVENLABS_STARTER_CREDITS) * ELEVENLABS_STARTER_USD;
   const costBRL = costUSD * BRL_PER_USD;
 
-  return costBRL.toFixed(2).replace(".", ",");
+  return {
+    estimatedCredits,
+    costBRL,
+  };
+}
+
+function formatDuration(seconds: number): string {
+  const totalSeconds = Math.max(0, Math.round(seconds));
+  const minutes = Math.floor(totalSeconds / 60);
+  const remainingSeconds = totalSeconds % 60;
+  return `${minutes}m${String(remainingSeconds).padStart(2, "0")}s`;
 }
 
 interface MessagesContentProps {
   config: FerroConfig;
   isElevenLabs: boolean;
+  elevenLabsUsageSummary?: ElevenLabsUsageSummary | null;
   onToggle: (id: string) => void;
   onSetCooldown: (id: string, value: number) => void;
   onSetMessageMode: (mode: MessageMode) => void;
@@ -57,10 +77,14 @@ interface MessagesContentProps {
 export function MessagesContent({
   config,
   isElevenLabs,
+  elevenLabsUsageSummary,
   onToggle,
   onSetCooldown,
   onSetMessageMode,
 }: MessagesContentProps) {
+  const theoreticalEstimate = estimateTheoreticalCost(config.messages);
+  const usageEstimate = elevenLabsUsageSummary ?? null;
+
   return (
     <div className="space-y-8">
       <div>
@@ -119,7 +143,14 @@ export function MessagesContent({
               ElevenLabs selecionado
             </p>
             <p className="text-xs" style={{ color: "var(--text-secondary)" }}>
-              Custo estimado: ~R$ {estimateCost(config.messages)} por partida
+              {usageEstimate
+                ? `Última partida: ~${INTEGER_FORMATTER.format(usageEstimate.estimatedCredits)} créditos (~R$ ${BRL_FORMATTER.format(usageEstimate.costBRL)})`
+                : `Estimativa teórica: ~${INTEGER_FORMATTER.format(theoreticalEstimate.estimatedCredits)} créditos (~R$ ${BRL_FORMATTER.format(theoreticalEstimate.costBRL)})`}
+            </p>
+            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+              {usageEstimate
+                ? `Baseado no log mais recente: ${usageEstimate.ttsCount} falas em ${formatDuration(usageEstimate.durationSeconds)}.`
+                : "Sem log recente do ElevenLabs. Mostrando só a projeção pelo cooldown."}
             </p>
           </div>
         </div>
@@ -173,9 +204,13 @@ export function MessagesContent({
 
 export default function Messages() {
   const [config, setConfig] = useState<FerroConfig | null>(null);
+  const [elevenLabsUsageSummary, setElevenLabsUsageSummary] = useState<ElevenLabsUsageSummary | null>(null);
 
   useEffect(() => {
     window.ferroAPI.getConfig().then((c) => setConfig(c as FerroConfig));
+    window.ferroAPI.getElevenLabsUsageSummary().then((summary) => {
+      setElevenLabsUsageSummary((summary as ElevenLabsUsageSummary | null) ?? null);
+    });
     const unsub = window.ferroAPI.onConfigChanged(() => {
       window.ferroAPI.getConfig().then((c) => setConfig(c as FerroConfig));
     });
@@ -224,6 +259,7 @@ export default function Messages() {
     <MessagesContent
       config={config}
       isElevenLabs={isElevenLabs}
+      elevenLabsUsageSummary={elevenLabsUsageSummary}
       onToggle={toggle}
       onSetCooldown={setCooldown}
       onSetMessageMode={setMessageMode}

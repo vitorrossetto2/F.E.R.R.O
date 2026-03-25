@@ -151,6 +151,16 @@ export interface LogEntry {
   [key: string]: unknown;
 }
 
+export interface ElevenLabsUsageSummary {
+  sessionId: string;
+  ttsCount: number;
+  totalChars: number;
+  estimatedCredits: number;
+  averageCharsPerMessage: number;
+  durationSeconds: number;
+  costBRL: number;
+}
+
 // ── Match Analysis ─────────────────────────────────────
 
 export interface SessionSummary {
