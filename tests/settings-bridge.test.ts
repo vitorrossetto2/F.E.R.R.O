@@ -35,6 +35,7 @@ describe("settings-bridge", () => {
     delete process.env.ZAI_API_KEY;
     delete process.env.TTS_PROVIDER;
     delete process.env.TTS_ENABLED;
+    delete process.env.COACH_MESSAGE_MODE;
   });
 
   it("sets empty LLM vars when activeProvider is 'none'", async () => {
@@ -90,5 +91,16 @@ describe("settings-bridge", () => {
     expect(process.env.DRAGON_FIRST_SPAWN_SECONDS).toBe("300");
     expect(process.env.BARON_RESPAWN_SECONDS).toBe("360");
     expect(process.env.GRUBS_FIRST_SPAWN_SECONDS).toBe("480");
+  });
+
+  it("exports coach message mode from config", async () => {
+    const { initConfigStore, setPath } = await import("../src/main/services/config-service.js");
+    initConfigStore();
+    setPath("coach.messageMode", "puto");
+    const { populateEnvFromConfig } = await import("../src/main/lib/settings-bridge.js");
+
+    populateEnvFromConfig();
+
+    expect(process.env.COACH_MESSAGE_MODE).toBe("puto");
   });
 });

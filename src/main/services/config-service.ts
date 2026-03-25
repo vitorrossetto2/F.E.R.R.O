@@ -38,6 +38,9 @@ const DEFAULT_CONFIG: FerroConfig = {
       system: { voice: "Microsoft Maria Desktop" },
     },
   },
+  coach: {
+    messageMode: "serio",
+  },
   game: {
     pollIntervalSeconds: 5,
     coachingIntervalSeconds: 20,

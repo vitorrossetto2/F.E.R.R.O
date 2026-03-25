@@ -64,6 +64,7 @@ describe("config-service", () => {
     expect(config.messages).not.toHaveProperty("morte");
     expect(config.messages).not.toHaveProperty("item");
     expect(config.messages).not.toHaveProperty("counterItem");
+    expect(config.coach.messageMode).toBe("serio");
   });
 
   it("default LLM provider is 'none'", async () => {
@@ -105,5 +106,13 @@ describe("config-service", () => {
     initConfigStore();
     setPath("messages.objetivo.cooldownSeconds", 45);
     expect(getAll().messages.objetivo.cooldownSeconds).toBe(45);
+  });
+
+  it("setPath updates coach message mode", async () => {
+    const { initConfigStore, setPath, getAll } = await import("../src/main/services/config-service.js");
+    initConfigStore();
+    setPath("coach.messageMode", "puto");
+    expect(getAll().coach.messageMode).toBe("puto");
+    expect(getAll().messages.mapa.enabled).toBe(true);
   });
 });

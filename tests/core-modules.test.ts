@@ -32,6 +32,17 @@ describe("core/constants.js", () => {
     expect(PHRASES.inicioPartida).toBeDefined();
     expect(PHRASES.inicioPartida.length).toBeGreaterThan(0);
   });
+
+  it("buildSystemPrompt changes style by mode", async () => {
+    const { buildSystemPrompt } = await import("../src/core/constants.js");
+    expect(buildSystemPrompt("meme")).toContain("Tom brincalhão");
+    expect(buildSystemPrompt("puto")).toContain("Tom puto");
+  });
+
+  it("falls back to serious phrases when a mode is missing a category", async () => {
+    const { PHRASES, pickModePhrase } = await import("../src/core/constants.js");
+    expect(pickModePhrase("torreTopDragao", "meme")).toBe(PHRASES.torreTopDragao[0]);
+  });
 });
 
 describe("core/coach.js - detectCategory", () => {

@@ -15,6 +15,7 @@ let core: {
   getSnapshot: (logGame?: (...args: unknown[]) => void) => Promise<Record<string, unknown> | null>;
   speak: (text: string) => Promise<{ generateMs?: number; playMs?: number; provider?: string } | undefined>;
   createLogger: (mode?: string) => Promise<{ log: (...args: unknown[]) => Promise<void>; logGame: (...args: unknown[]) => Promise<void>; newSession: () => Promise<Record<string, unknown>>; filePath: string; gameFilePath: string }>;
+  pickModePhrase: (key: string, mode?: string) => string;
   LoopState: new () => {
     lastCoachingAt: number; lastGameTime: number | null; hasLoggedWaitingState: boolean;
     matchupDone: boolean; pendingTriggers: string[];
@@ -25,7 +26,6 @@ let core: {
     [key: string]: unknown;
   };
   settings: Record<string, unknown>;
-  PHRASES: Record<string, string[]>;
 } | null = null;
 
 export class Engine extends EventEmitter {
@@ -121,6 +121,7 @@ export class Engine extends EventEmitter {
       piperSpeaker: cfg.tts.providers.piper.speaker,
       elevenlabsApiKey: cfg.tts.providers.elevenlabs.apiKey,
       elevenlabsVoiceId: cfg.tts.providers.elevenlabs.voiceId,
+      coachMessageMode: cfg.coach.messageMode,
       logsDir: cfg.logging.logsDir,
       logSnapshots: cfg.logging.logSnapshots,
       logLlmPayloads: cfg.logging.logLlmPayloads,
@@ -159,9 +160,9 @@ export class Engine extends EventEmitter {
       getSnapshot: gameMod.getSnapshot,
       speak: voiceMod.speak,
       createLogger: loggerMod.createLogger,
+      pickModePhrase: constantsMod.pickModePhrase,
       LoopState: stateMod.LoopState,
       settings: configMod.settings,
-      PHRASES: constantsMod.PHRASES,
     };
 
     this.applyConfigToRuntime();
@@ -270,7 +271,7 @@ export class Engine extends EventEmitter {
     if (!st.matchupDone && gameTime < 120) {
       st.matchupDone = true;
       try {
-        const greeting = c.PHRASES.inicioPartida[0];
+        const greeting = c.pickModePhrase("inicioPartida");
         await c.speak(greeting);
         this.updateLastMessage(greeting, "heuristic", 0, 0);
         this.log({ type: "coach_speak", gameTime, message: greeting });

@@ -45,6 +45,7 @@ export interface EngineEvent {
 
 export type LLMProviderType = "none" | "zai" | "openai" | "gemini";
 export type TTSProviderType = "piper" | "elevenlabs" | "system";
+export type MessageMode = "serio" | "meme" | "puto";
 
 export interface LLMProviderConfig {
   apiKey: string;
@@ -82,6 +83,9 @@ export interface FerroConfig {
         voice: string;
       };
     };
+  };
+  coach: {
+    messageMode: MessageMode;
   };
   game: {
     pollIntervalSeconds: number;

@@ -1,8 +1,41 @@
-// ── Frases de fallback por categoria ─────────────────────────────
-// Edite aqui para mudar o que o coach fala sem precisar mexer na lógica.
-// Cada array é sorteado aleatoriamente. Use {name} e {pronoun} como placeholders.
+import { settings } from "./config.js";
 
-export const PHRASES = {
+export const MESSAGE_MODES = ["serio", "meme", "puto"];
+
+const SYSTEM_PROMPT_INTRO = [
+  "Você é um coach de League of Legends em PT-BR.",
+  "Dê uma dica curta e direta baseada no estado do jogo.",
+  "A resposta será lida em voz alta por TTS."
+];
+
+const SYSTEM_PROMPT_FIXED_RULES = [
+  "- Máximo 1 frase completa, até 15 palavras.",
+  "- A frase DEVE terminar com ponto final. Nunca termine com preposição ou artigo.",
+  "- Use apenas português. Troque termos ingleses: build→itens, side→lateral, push→empurrar, reset→voltar pra base, split→dividir, gank→emboscada, fed→forte.",
+  "- Acentuação correta (dragão, barão, você, está).",
+  "- Sem markdown, emojis, listas ou abreviações.",
+  "- NUNCA sugira ir atrás de um objetivo que está morto ou em cooldown.",
+  "- Só mencione dragão/barão/arauto se estiver 'disponível' nos Objetivos.",
+  "- Se não tiver nada útil, responda SILENCIO."
+];
+
+const MATCHUP_PROMPT_INTRO = [
+  "Você é um coach de League of Legends em PT-BR.",
+  "O jogador acabou de entrar na partida. Dê uma dica sobre a matchup.",
+  "A resposta será lida em voz alta por TTS."
+];
+
+const MATCHUP_PROMPT_FIXED_RULES = [
+  "- Máximo 2 frases, até 25 palavras no total.",
+  "- Primeira frase: dica principal da matchup (o que tomar cuidado ou como ganhar).",
+  "- Segunda frase: quando lutar ou quando evitar luta.",
+  "- Use apenas português. Sem termos em inglês.",
+  "- Cada frase DEVE terminar com ponto final.",
+  "- Sem markdown, emojis, listas ou abreviações.",
+  "- Acentuação correta."
+];
+
+const SERIO_PHRASES = {
   mapa: [
     "Olha o minimapa.",
     "Dá uma olhada no mapa.",
@@ -33,7 +66,6 @@ export const PHRASES = {
     "Powerspike de {count} atingido. Hora de pressionar."
   ],
 
-  // Torres inimigas destruídas (time avançando)
   torreGenerica: [
     "Caiu torre inimiga no {lane}, aproveita prioridade para rotacionar.",
     "Torre inimiga do {lane} caiu, abre o mapa e pressiona.",
@@ -52,7 +84,6 @@ export const PHRASES = {
     "Caiu torre inimiga no bot, segura wave e pensa no setup de barão."
   ],
 
-  // Torres aliadas destruídas (time perdendo pressão)
   torrePerdidaGenerica: [
     "Perdemos torre no {lane}. Cuidado com a pressão inimiga.",
     "Torre aliada do {lane} caiu. Joga mais recuado.",
@@ -81,9 +112,8 @@ export const PHRASES = {
     "Muitas mortes. Reseta a cabeça e joga safe."
   ],
 
-  // Itens
   itemFechado: [
-    "Você fechou {item}! Ficou mais forte.",
+    "Você fechou {item}. Ficou mais forte.",
     "{item} concluído. Aproveita o powerspike."
   ],
 
@@ -93,21 +123,19 @@ export const PHRASES = {
   ],
 
   inimigoAntiCura: [
-    "Inimigo comprou anti-cura. Sua sustain caiu.",
-    "Compraram anti-cura. Cuidado com trocas longas."
+    "Inimigo comprou anti-cura. Sua sustain caiu."
   ],
 
   inimigoArmadura: [
-    "Inimigo tá comprando armadura. Seu dano físico vai cair.",
+    "Inimigo tá comprando armadura. Seu dano físico vai cair."
   ],
 
   inimigoResistMagica: [
-    "Inimigo comprando resistência mágica. Seu dano mágico vai cair.",
+    "Inimigo comprando resistência mágica. Seu dano mágico vai cair."
   ],
 
-  // Level ups
   ultDisponivel: [
-    "Nível 6! Sua ult tá disponível, procura uma chance de forçar.",
+    "Nível 6. Sua ult tá disponível, procura uma chance de forçar.",
     "Bateu nível 6, ult liberada. Hora de pressionar."
   ],
 
@@ -117,16 +145,15 @@ export const PHRASES = {
   ],
 
   levelUpChave: [
-    "Nível {level} atingido. Ficou mais forte agora.",
+    "Nível {level} atingido. Ficou mais forte agora."
   ],
 
-  // Eventos de jogo
   inicioPartida: [
-    "Beleza, começou a partida! Bora jogar."
+    "Beleza, começou a partida. Bora jogar."
   ],
 
   inibidorInimigo: [
-    "Pegamos inibidor! Mantém a pressão.",
+    "Pegamos inibidor. Mantém a pressão.",
     "Inibidor inimigo destruído. Aproveita os super minions."
   ],
 
@@ -136,7 +163,7 @@ export const PHRASES = {
   ],
 
   vitoriaPartida: [
-    "Vitória! Boa partida."
+    "Vitória. Boa partida."
   ],
 
   derrotaPartida: [
@@ -144,40 +171,377 @@ export const PHRASES = {
   ]
 };
 
-// ── Itens counter por nome PT-BR (validado via ddragon 16.6.1 pt_BR) ──
-// Nomes parciais — se o nome do item contém alguma dessas strings, é classificado.
+const MEME_PHRASES = {
+  mapa: [
+    "Mapa não é enfeite, dá uma olhada aí.",
+    "Confere o minimapa antes de virar clipe de erro.",
+    "Olha o mapa, pelo amor do LP."
+  ],
 
-export const ITEM_TAGS = {
-  antiCura: [
-    "Lembrete Mortal",            // 3033
-    "Morellonomicon",             // 3165
-    "Armadura de Espinhos",       // 3075
-    "Serrespada Quimiopunk"       // 6609
+  ouroParado: [
+    "Esse ouro parado tá fazendo cosplay de decoração. Volta base e gasta.",
+    "Tá juntando ouro pra abrir banco. Reseta e compra item.",
+    "O bolso tá cheio e o inventário triste. Base agora."
   ],
-  armadura: [
-    "Coração Congelado",          // 3110
-    "Presságio de Randuin",       // 3143
-    "Armadura de Espinhos",       // 3075
-    "Couraça do Defunto",         // 3742
-    "Manopla dos Glacinatas",     // 6662
-    "Placa Gargolítica",          // 3193
-    "Jak'Sho",                    // 6665
-    "Égide de Fogo Solar",        // 3068
-    "Dança da Morte"              // 6333
+
+  inimigoFed: [
+    "{name} virou chefão. Não vira conteúdo pra {pronoun}.",
+    "{name} tá gigante. Se respeita e não peita sozinho.",
+    "{name} tá solando geral. Não entrega highlight pra {pronoun}."
   ],
-  resistMagica: [
-    "Força da Natureza",          // 4401
-    "Semblante Espiritual",       // 3065
-    "Máscara Abissal",            // 8020
-    "Limite da Razão",            // 3091 (Wit's End)
-    "Mandíbula de Malmortius",    // 3156
-    "Rookern Lamúrico",           // 2504
-    "Véu da Banshee"              // 3102
+
+  inimigoBuild: [
+    "{name} turboou os itens. Respeita a força {pronoun}.",
+    "{name} montou build de patrão. Vai na manha contra {pronoun}."
+  ],
+
+  powerspike: [
+    "Powerspike de {count} na conta. Hora de cobrar aluguel do mapa.",
+    "Você ficou forte com {count}. Agora pisa sem dormir no ponto."
+  ],
+
+  torreGenerica: [
+    "Caiu torre inimiga no {lane}. Abre o mapa e faz bagunça organizada.",
+    "Torre do {lane} caiu. Agora gira antes que o jogo lembre de te punir."
+  ],
+
+  torreMid: [
+    "Caiu a torre do mid. O mapa abriu igual porta de shopping."
+  ],
+
+  torreBotBarao: [
+    "Caiu torre inimiga no bot. Segura a wave e chama o barão pro rolê."
+  ],
+
+  torrePerdidaGenerica: [
+    "Perdemos torre no {lane}. Sem heroísmo de TikTok agora.",
+    "Nossa torre do {lane} caiu. Joga recuado e para de inventar."
+  ],
+
+  torrePerdidaMid: [
+    "Perdemos a torre do mid. Agora qualquer passeio inimigo vira problema."
+  ],
+
+  torrePerdidaTop: [
+    "Perdemos torre do top. Respeita a lateral antes de virar meme."
+  ],
+
+  torrePerdidaBot: [
+    "Perdemos torre do bot. Fica esperto com o dragão, gênio."
+  ],
+
+  morteJogador: [
+    "Cuidado com {name}. Não vira episódio repetido contra {name}.",
+    "Respeita {name} e joga colado no time."
+  ],
+
+  morteStreak: [
+    "Você morreu {count} vezes. Fecha a torneira e joga safe.",
+    "Já deu de morrer. Respira e cola no time."
+  ],
+
+  itemFechado: [
+    "Você fechou {item}. Agora dá pra falar mais grosso.",
+    "{item} pronto. Tá liberado bater com confiança."
+  ],
+
+  inimigoItemPerigoso: [
+    "{name} fechou {item}. Não testa a ciência agora.",
+    "{name} completou {item}. Respeita antes de virar piada."
+  ],
+
+  inimigoAntiCura: [
+    "Compraram anti-cura. Sua cura foi de base sem avisar."
+  ],
+
+  inimigoArmadura: [
+    "Inimigo tá de armadura. Seu dano físico vai bater fofo."
+  ],
+
+  inimigoResistMagica: [
+    "Inimigo fechando resistência mágica. Sua magia vai bater de pantufa."
+  ],
+
+  ultDisponivel: [
+    "Nível 6. A ult chegou, então para de economizar botão."
+  ],
+
+  inimigoUltAntes: [
+    "{name} pegou ult antes. Joga pianinho até empatar.",
+    "{name} tá com ult e você não. Sem gracinha agora."
+  ],
+
+  levelUpChave: [
+    "Nível {level} na conta. Agora você tem licença pra pressionar."
+  ],
+
+  inicioPartida: [
+    "Partida começou. Bora fingir que a solo queue faz sentido."
+  ],
+
+  inibidorInimigo: [
+    "Pegamos inibidor. Agora mantém a pressão e não faz fanfic.",
+    "Inibidor inimigo caiu. Usa os super minions sem dormir no ponto."
+  ],
+
+  inibidorPerdido: [
+    "Perdemos inibidor. Defende a base e para de forçar milagre.",
+    "Inibidor aliado caiu. Segura a onda e joga com cérebro."
+  ],
+
+  vitoriaPartida: [
+    "Vitória. Hoje o caos trabalhou a seu favor."
+  ],
+
+  derrotaPartida: [
+    "Derrota. Solo queue sendo solo queue."
   ]
 };
 
-// ── Cooldown por categoria (segundos) ────────────────────────────
-// Quanto tempo mínimo entre duas mensagens da MESMA categoria.
+const PUTO_PHRASES = {
+  mapa: [
+    "Olha a porra do minimapa.",
+    "Mapa existe, caralho. Usa.",
+    "Confere o minimapa agora."
+  ],
+
+  ouroParado: [
+    "Tá com ouro parado pra caralho. Volta base e compra item.",
+    "Para de passear com esse ouro no bolso. Reseta agora.",
+    "Esse ouro parado não bate sozinho. Base e gasta."
+  ],
+
+  inimigoFed: [
+    "{name} tá forte pra caralho. Não peita sozinho.",
+    "{name} tá gigante. Respeita a força {pronoun}.",
+    "{name} virou problema. Para de dar luta de graça."
+  ],
+
+  inimigoBuild: [
+    "{name} acelerou os itens. Respeita essa porra.",
+    "{name} fechou item forte. Não testa a força {pronoun}."
+  ],
+
+  powerspike: [
+    "Powerspike de {count}. Agora pisa, porra.",
+    "Você ficou forte com {count}. Vai pra frente direito."
+  ],
+
+  torreGenerica: [
+    "Caiu torre inimiga no {lane}. Roda logo e pressiona essa merda.",
+    "Torre do {lane} caiu. Usa a vantagem sem enrolar."
+  ],
+
+  torreMid: [
+    "Caiu a torre do mid. Abre o mapa e invade essa porra."
+  ],
+
+  torreTopDragao: [
+    "Caiu torre inimiga no top. Aproveita e prepara o dragão direito."
+  ],
+
+  torrePerdidaGenerica: [
+    "Perdemos torre no {lane}. Para de andar sozinho.",
+    "Nossa torre do {lane} caiu. Recuar não é pecado."
+  ],
+
+  torrePerdidaMid: [
+    "Perdemos a torre do mid. Agora qualquer rotação inimiga fode o mapa."
+  ],
+
+  torrePerdidaTop: [
+    "Perdemos torre do top. Segura a lateral e para de vacilar."
+  ],
+
+  torrePerdidaBot: [
+    "Perdemos torre do bot. Se liga no dragão e fecha a cara."
+  ],
+
+  morteJogador: [
+    "Cuidado com {name}. Para de dar mole pra {name}.",
+    "Respeita {name} e joga com o time."
+  ],
+
+  morteStreak: [
+    "Você morreu {count} vezes. Chega dessa merda e joga seguro.",
+    "Morreu demais. Para de se entregar e cola no time."
+  ],
+
+  itemFechado: [
+    "Você fechou {item}. Agora usa essa porra.",
+    "{item} pronto. Bora bater direito."
+  ],
+
+  inimigoItemPerigoso: [
+    "{name} fechou {item}. Respeita essa merda.",
+    "{name} completou {item}. Não entra torto agora."
+  ],
+
+  inimigoAntiCura: [
+    "Compraram anti-cura. Sua sustain foi pro caralho."
+  ],
+
+  inimigoArmadura: [
+    "Inimigo tá empilhando armadura. Seu dano físico vai murchar."
+  ],
+
+  inimigoResistMagica: [
+    "Inimigo tá de resistência mágica. Sua magia vai bater fofo."
+  ],
+
+  ultDisponivel: [
+    "Nível 6. Sua ult tá pronta, então usa direito."
+  ],
+
+  inimigoUltAntes: [
+    "{name} pegou ult antes. Segura essa porra até upar.",
+    "{name} tá com ult e você não. Recuar agora é obrigatório."
+  ],
+
+  levelUpChave: [
+    "Nível {level}. Você ficou forte, então joga como gente."
+  ],
+
+  inicioPartida: [
+    "Partida começou. Bora parar de fazer merda cedo."
+  ],
+
+  inibidorInimigo: [
+    "Pegamos inibidor. Mantém a pressão e fecha essa porra.",
+    "Inibidor inimigo caiu. Usa os super minions direito."
+  ],
+
+  inibidorPerdido: [
+    "Perdemos inibidor. Defende a base e para de forçar merda.",
+    "Inibidor aliado caiu. Segura a onda sem se afobar."
+  ],
+
+  vitoriaPartida: [
+    "Vitória. Finalmente fez o básico."
+  ],
+
+  derrotaPartida: [
+    "Derrota. Jogo horroroso, segue."
+  ]
+};
+
+export const MESSAGE_MODE_PROFILES = {
+  serio: {
+    label: "Sério",
+    systemStyle: [
+      "- Tom sério, direto e profissional.",
+      "- Priorize clareza, utilidade e objetividade."
+    ],
+    matchupStyle: [
+      "- Tom sério, direto e profissional.",
+      "- Explique a matchup com clareza e sem floreio."
+    ],
+    phrases: SERIO_PHRASES
+  },
+  meme: {
+    label: "Meme",
+    systemStyle: [
+      "- Tom brincalhão, debochado e levemente caótico.",
+      "- Faça humor curto, mas a dica ainda precisa ser útil na jogada.",
+      "- Não transforme a resposta em piada pura nem em bordão longo."
+    ],
+    matchupStyle: [
+      "- Tom brincalhão e provocativo.",
+      "- A dica deve soar divertida, mas continuar prática e acionável."
+    ],
+    phrases: MEME_PHRASES
+  },
+  puto: {
+    label: "Puto",
+    systemStyle: [
+      "- Tom puto, agressivo e impaciente, sempre focado na jogada.",
+      "- Pode usar palavrão leve ou médio no máximo uma vez.",
+      "- Nunca use slur, ataque identitário, ameaça ou ofensa gratuita sem instrução útil."
+    ],
+    matchupStyle: [
+      "- Tom puto e ríspido, com cobrança direta.",
+      "- Pode usar palavrão leve ou médio no máximo uma vez.",
+      "- Continue útil, claro e focado na matchup."
+    ],
+    phrases: PUTO_PHRASES
+  }
+};
+
+export function normalizeMessageMode(mode) {
+  return MESSAGE_MODE_PROFILES[mode] ? mode : "serio";
+}
+
+export function getActiveMessageMode() {
+  return normalizeMessageMode(settings.coachMessageMode);
+}
+
+export function getMessageModeProfile(mode = settings.coachMessageMode) {
+  return MESSAGE_MODE_PROFILES[normalizeMessageMode(mode)];
+}
+
+export function getPhraseSet(key, mode = settings.coachMessageMode) {
+  const normalized = normalizeMessageMode(mode);
+  return MESSAGE_MODE_PROFILES[normalized].phrases[key] ?? SERIO_PHRASES[key] ?? [];
+}
+
+export function pickModePhrase(key, mode = settings.coachMessageMode) {
+  const variants = getPhraseSet(key, mode);
+  if (variants.length === 0) return "";
+  return variants[Math.floor(Math.random() * variants.length)];
+}
+
+export function buildSystemPrompt(mode = settings.coachMessageMode) {
+  const profile = getMessageModeProfile(mode);
+  return [
+    ...SYSTEM_PROMPT_INTRO,
+    "Regras de estilo:",
+    ...profile.systemStyle,
+    "Regras fixas:",
+    ...SYSTEM_PROMPT_FIXED_RULES
+  ].join("\n");
+}
+
+export function buildMatchupPrompt(mode = settings.coachMessageMode) {
+  const profile = getMessageModeProfile(mode);
+  return [
+    ...MATCHUP_PROMPT_INTRO,
+    "Regras de estilo:",
+    ...profile.matchupStyle,
+    "Regras fixas:",
+    ...MATCHUP_PROMPT_FIXED_RULES
+  ].join("\n");
+}
+
+export const PHRASES = SERIO_PHRASES;
+
+export const ITEM_TAGS = {
+  antiCura: [
+    "Lembrete Mortal",
+    "Morellonomicon",
+    "Armadura de Espinhos",
+    "Serrespada Quimiopunk"
+  ],
+  armadura: [
+    "Coração Congelado",
+    "Presságio de Randuin",
+    "Armadura de Espinhos",
+    "Couraça do Defunto",
+    "Manopla dos Glacinatas",
+    "Placa Gargolítica",
+    "Jak'Sho",
+    "Égide de Fogo Solar",
+    "Dança da Morte"
+  ],
+  resistMagica: [
+    "Força da Natureza",
+    "Semblante Espiritual",
+    "Máscara Abissal",
+    "Limite da Razão",
+    "Mandíbula de Malmortius",
+    "Rookern Lamúrico",
+    "Véu da Banshee"
+  ]
+};
 
 export const CATEGORY_COOLDOWNS = {
   mapa: 50,
@@ -198,8 +562,6 @@ export const CATEGORY_COOLDOWNS = {
   generico: 30
 };
 
-// ── Campeãs femininas (para pronome dela/dele) ───────────────────
-
 export const FEMALE_CHAMPIONS = new Set([
   "Ahri", "Akali", "Anivia", "Annie", "Ashe", "Aurora", "Bel'Veth",
   "Briar", "Caitlyn", "Camille", "Cassiopeia", "Diana", "Elise",
@@ -213,35 +575,5 @@ export const FEMALE_CHAMPIONS = new Set([
   "Vayne", "Vi", "Xayah", "Yuumi", "Zeri", "Zoe", "Zyra"
 ]);
 
-// ── System prompt do LLM ─────────────────────────────────────────
-
-export const SYSTEM_PROMPT = [
-  "Você é um coach de League of Legends em PT-BR.",
-  "Dê uma dica curta e direta baseada no estado do jogo.",
-  "A resposta será lida em voz alta por TTS.",
-  "Regras:",
-  "- Máximo 1 frase completa, até 15 palavras.",
-  "- A frase DEVE terminar com ponto final. Nunca termine com preposição ou artigo.",
-  "- Use apenas português. Troque termos ingleses: build→itens, side→lateral, push→empurrar, reset→voltar pra base, split→dividir, gank→emboscada, fed→forte.",
-  "- Acentuação correta (dragão, barão, você, está).",
-  "- Sem markdown, emojis, listas ou abreviações.",
-  "- NUNCA sugira ir atrás de um objetivo que está morto ou em cooldown.",
-  "- Só mencione dragão/barão/arauto se estiver 'disponível' nos Objetivos.",
-  "- Se não tiver nada útil, responda SILENCIO."
-].join("\n");
-
-// ── Matchup prompt (usado 1x no início da partida) ──────────────
-
-export const MATCHUP_PROMPT = [
-  "Você é um coach de League of Legends em PT-BR.",
-  "O jogador acabou de entrar na partida. Dê uma dica sobre a matchup.",
-  "A resposta será lida em voz alta por TTS.",
-  "Regras:",
-  "- Máximo 2 frases, até 25 palavras no total.",
-  "- Primeira frase: dica principal da matchup (o que tomar cuidado ou como ganhar).",
-  "- Segunda frase: quando lutar ou quando evitar luta.",
-  "- Use apenas português. Sem termos em inglês.",
-  "- Cada frase DEVE terminar com ponto final.",
-  "- Sem markdown, emojis, listas ou abreviações.",
-  "- Acentuação correta."
-].join("\n");
+export const SYSTEM_PROMPT = buildSystemPrompt("serio");
+export const MATCHUP_PROMPT = buildMatchupPrompt("serio");

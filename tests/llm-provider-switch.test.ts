@@ -4,6 +4,12 @@ let storeData: Record<string, unknown> = {};
 const openAiCalls: Array<{ apiKey: string; baseURL: string }> = [];
 
 vi.mock("dotenv/config", () => ({}));
+vi.mock("axios", () => ({
+  default: { create: () => ({ get: async () => ({ data: {} }) }) },
+}));
+vi.mock("say", () => ({
+  default: { speak: () => {} },
+}));
 
 vi.mock("electron-store", () => {
   return {
@@ -133,5 +139,19 @@ describe("LLM provider switching", () => {
 
     expect(result).toBeNull();
     expect(openAiCalls).toHaveLength(0);
+  });
+
+  it("syncs coach message mode into loaded core settings without restart", async () => {
+    const configService = await import("../src/main/services/config-service.js");
+    configService.initConfigStore();
+
+    const { engine } = await import("../src/main/services/engine.js");
+    await (engine as unknown as { loadCore: () => Promise<void> }).loadCore();
+
+    configService.setPath("coach.messageMode", "puto");
+    engine.syncConfig();
+
+    const configMod = await import("../src/core/config.js");
+    expect(configMod.settings.coachMessageMode).toBe("puto");
   });
 });

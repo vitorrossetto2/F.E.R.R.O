@@ -47,6 +47,7 @@ export const settings = {
   piperSpeaker: getNumber("PIPER_SPEAKER", -1),
   elevenlabsApiKey: process.env.ELEVENLABS_API_KEY ?? "",
   elevenlabsVoiceId: process.env.ELEVENLABS_VOICE_ID ?? "",
+  coachMessageMode: process.env.COACH_MESSAGE_MODE ?? "serio",
   logsDir: process.env.LOGS_DIR ?? "./logs",
   logSnapshots: getBoolean("LOG_SNAPSHOTS", true),
   logLlmPayloads: getBoolean("LOG_LLM_PAYLOADS", true),

@@ -57,6 +57,7 @@ export function populateEnvFromConfig(): void {
   process.env.PIPER_SPEAKER = String(config.tts.providers.piper.speaker);
   process.env.ELEVENLABS_API_KEY = config.tts.providers.elevenlabs.apiKey;
   process.env.ELEVENLABS_VOICE_ID = config.tts.providers.elevenlabs.voiceId;
+  process.env.COACH_MESSAGE_MODE = config.coach.messageMode;
 
   // Logging
   process.env.LOGS_DIR = config.logging.logsDir;

@@ -28,6 +28,7 @@ export interface CoreSettings {
   piperSpeaker: number;
   elevenlabsApiKey: string;
   elevenlabsVoiceId: string;
+  coachMessageMode: string;
   logsDir: string;
   logSnapshots: boolean;
   logLlmPayloads: boolean;

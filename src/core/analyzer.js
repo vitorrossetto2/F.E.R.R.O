@@ -1,5 +1,5 @@
 import { settings } from "./config.js";
-import { PHRASES, ITEM_TAGS } from "./constants.js";
+import { ITEM_TAGS, pickModePhrase } from "./constants.js";
 import { getItemCatalog } from "./ddragon.js";
 
 const RESPAWN_BY_LEVEL = [
@@ -209,10 +209,6 @@ function detectLane(turretName) {
   return "side";
 }
 
-function pick(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
 function isAllyTurret(turretName, playerTeam) {
   const normalized = (turretName ?? "").toUpperCase();
   const turretTeam = normalized.includes("TORDER") ? "ORDER" : "CHAOS";
@@ -221,10 +217,10 @@ function isAllyTurret(turretName, playerTeam) {
 
 function turretRotationHint(lane, snapshot, allied) {
   if (allied) {
-    if (lane === "mid") return pick(PHRASES.torrePerdidaMid);
-    if (lane === "top") return pick(PHRASES.torrePerdidaTop);
-    if (lane === "bot") return pick(PHRASES.torrePerdidaBot);
-    return pick(PHRASES.torrePerdidaGenerica).replace("{lane}", lane);
+    if (lane === "mid") return pickModePhrase("torrePerdidaMid");
+    if (lane === "top") return pickModePhrase("torrePerdidaTop");
+    if (lane === "bot") return pickModePhrase("torrePerdidaBot");
+    return pickModePhrase("torrePerdidaGenerica").replace("{lane}", lane);
   }
 
   const nextDragonAt = getDragonTimer(snapshot);
@@ -232,11 +228,11 @@ function turretRotationHint(lane, snapshot, allied) {
   const dragonSoon = nextDragonAt !== null && nextDragonAt - snapshot.gameTime <= 90;
   const baronSoon = nextBaronAt !== null && nextBaronAt - snapshot.gameTime <= 90;
 
-  if (lane === "mid") return pick(PHRASES.torreMid);
-  if (lane === "top" && dragonSoon) return pick(PHRASES.torreTopDragao);
-  if (lane === "bot" && baronSoon) return pick(PHRASES.torreBotBarao);
+  if (lane === "mid") return pickModePhrase("torreMid");
+  if (lane === "top" && dragonSoon) return pickModePhrase("torreTopDragao");
+  if (lane === "bot" && baronSoon) return pickModePhrase("torreBotBarao");
 
-  return pick(PHRASES.torreGenerica).replace("{lane}", lane);
+  return pickModePhrase("torreGenerica").replace("{lane}", lane);
 }
 
 function isMajorItem(definition) {

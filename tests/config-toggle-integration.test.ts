@@ -133,4 +133,16 @@ describe("config toggle integration", () => {
     const shouldSkip = msgConfig && !msgConfig.enabled;
     expect(shouldSkip).toBe(false);
   });
+
+  it("setPath('coach.messageMode', 'meme') persists without touching message toggles", async () => {
+    const { initConfigStore, setPath, getAll } = await import("../src/main/services/config-service.js");
+    initConfigStore();
+
+    setPath("coach.messageMode", "meme");
+
+    const config = getAll();
+    expect(config.coach.messageMode).toBe("meme");
+    expect(config.messages.objetivo.enabled).toBe(true);
+    expect(config.messages.objetivo.cooldownSeconds).toBe(15);
+  });
 });

@@ -2,11 +2,11 @@ import OpenAI from "openai";
 
 import { getZaiBaseUrl, settings } from "./config.js";
 import {
-  PHRASES,
   CATEGORY_COOLDOWNS,
   FEMALE_CHAMPIONS,
-  SYSTEM_PROMPT,
-  MATCHUP_PROMPT
+  buildMatchupPrompt,
+  buildSystemPrompt,
+  pickModePhrase
 } from "./constants.js";
 
 function hasLlmConfig() {
@@ -23,10 +23,6 @@ function getClient() {
 }
 
 // ── helpers ──────────────────────────────────────────────────────
-
-function pick(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
 
 function genderPronoun(championName) {
   return FEMALE_CHAMPIONS.has(championName) ? "dela" : "dele";
@@ -130,74 +126,76 @@ function fallbackMessage(priority) {
   if (!priority) return "";
 
   if (priority === "lembrete de mapa") {
-    return pick(PHRASES.mapa);
+    return pickModePhrase("mapa");
   }
 
   if (priority === "ouro parado alto") {
-    return pick(PHRASES.ouroParado);
+    return pickModePhrase("ouroParado");
   }
 
   if (priority.startsWith("inimigo fed:")) {
     const name = priority.split(":")[1]?.trim();
     if (!name) return "";
     const pronoun = genderPronoun(name);
-    return pick(PHRASES.inimigoFed).replace("{name}", name).replace("{pronoun}", pronoun);
+    const template = pickModePhrase("inimigoFed");
+    return template.replace("{name}", name).replace("{pronoun}", pronoun);
   }
 
   if (priority.includes("acelerou a build")) {
     const name = priority.split(" acelerou")[0]?.trim();
     if (name) {
       const pronoun = genderPronoun(name);
-      return pick(PHRASES.inimigoBuild).replace("{name}", name).replace(/\{pronoun\}/g, pronoun);
+      const template = pickModePhrase("inimigoBuild");
+      return template.replace("{name}", name).replace(/\{pronoun\}/g, pronoun);
     }
   }
 
   if (priority.includes("powerspike")) {
     const match = priority.match(/(\d+ (?:itens|item))/);
     const count = match ? match[1] : "itens";
-    return pick(PHRASES.powerspike).replace("{count}", count);
+    return pickModePhrase("powerspike").replace("{count}", count);
   }
 
   if (priority.includes("você morreu")) {
     const match = priority.match(/(\d+) vezes/);
     const count = match ? match[1] : "";
-    return pick(PHRASES.morteStreak).replace("{count}", count);
+    return pickModePhrase("morteStreak").replace("{count}", count);
   }
 
   if (priority.includes("cuidado com")) {
     const name = priority.replace("cuidado com ", "").split(",")[0].trim();
-    return pick(PHRASES.morteJogador).replace("{name}", name);
+    return pickModePhrase("morteJogador").replace("{name}", name);
   }
 
   if (priority === "ult disponível") {
-    return pick(PHRASES.ultDisponivel);
+    return pickModePhrase("ultDisponivel");
   }
 
   if (priority.startsWith("inimigo ult antes:")) {
     const name = priority.split(":")[1]?.trim();
-    if (name) return pick(PHRASES.inimigoUltAntes).replace("{name}", name);
+    if (name) return pickModePhrase("inimigoUltAntes").replace("{name}", name);
   }
 
   if (priority.startsWith("level up chave:")) {
     const level = priority.split(":")[1]?.trim();
-    return pick(PHRASES.levelUpChave).replace("{level}", level);
+    return pickModePhrase("levelUpChave").replace("{level}", level);
   }
 
   if (priority.startsWith("item fechado:")) {
     const item = priority.split(":")[1]?.trim();
-    return pick(PHRASES.itemFechado).replace("{item}", item);
+    return pickModePhrase("itemFechado").replace("{item}", item);
   }
 
   if (priority.startsWith("inimigo counter antiCura")) {
-    return pick(PHRASES.inimigoAntiCura);
+    return pickModePhrase("inimigoAntiCura");
   }
 
   if (priority.startsWith("inimigo counter armadura")) {
-    return pick(PHRASES.inimigoArmadura);
+    return pickModePhrase("inimigoArmadura");
   }
 
   if (priority.startsWith("inimigo counter resistMagica")) {
-    return pick(PHRASES.inimigoResistMagica);
+    return pickModePhrase("inimigoResistMagica");
   }
 
   if (priority.startsWith("inimigo item:")) {
@@ -207,24 +205,24 @@ function fallbackMessage(priority) {
     if (sepIdx > 0) {
       const name = after.slice(0, sepIdx).trim();
       const item = after.slice(sepIdx + 1).trim();
-      return pick(PHRASES.inimigoItemPerigoso).replace("{name}", name).replace("{item}", item);
+      return pickModePhrase("inimigoItemPerigoso").replace("{name}", name).replace("{item}", item);
     }
   }
 
   if (priority === "perdemos inibidor") {
-    return pick(PHRASES.inibidorPerdido);
+    return pickModePhrase("inibidorPerdido");
   }
 
   if (priority === "pegamos inibidor inimigo") {
-    return pick(PHRASES.inibidorInimigo);
+    return pickModePhrase("inibidorInimigo");
   }
 
   if (priority === "vitória") {
-    return pick(PHRASES.vitoriaPartida);
+    return pickModePhrase("vitoriaPartida");
   }
 
   if (priority === "derrota") {
-    return pick(PHRASES.derrotaPartida);
+    return pickModePhrase("derrotaPartida");
   }
 
   const sentence = toSentence(priority);
@@ -345,7 +343,7 @@ export async function decideCoaching(snapshot, triggers, strategicContext) {
     const requestBody = {
       model: settings.zaiModel,
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: buildSystemPrompt() },
         { role: "user", content: prompt }
       ],
       temperature: 0.3,
@@ -435,7 +433,7 @@ export async function getMatchupTip(snapshot) {
     const requestBody = {
       model: settings.zaiModel,
       messages: [
-        { role: "system", content: MATCHUP_PROMPT },
+        { role: "system", content: buildMatchupPrompt() },
         { role: "user", content: prompt }
       ],
       temperature: 0.4,
