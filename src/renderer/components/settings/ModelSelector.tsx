@@ -1,4 +1,4 @@
-import type { LLMProviderType } from "../../../shared/types.js";
+import type { LLMProviderType } from "../../../shared/types";
 
 const LLM_MODELS: Record<string, string[]> = {
   zai: ["glm-5", "glm-5-turbo", "glm-4.7", "glm-4.6", "glm-4.5", "glm-4.5-air", "glm-4.6v"],

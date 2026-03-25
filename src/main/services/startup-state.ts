@@ -1,7 +1,7 @@
 import { existsSync } from "fs";
-import type { FerroConfig, StartupState, TTSProviderType } from "../../shared/types.js";
-import { getAll } from "./config-service.js";
-import { checkPiper } from "./piper-installer.js";
+import type { FerroConfig, StartupState, TTSProviderType } from "../../shared/types";
+import { getAll } from "./config-service";
+import { checkPiper } from "./piper-installer";
 
 function isProviderReady(config: FerroConfig, piperBinaryInstalled: boolean, piperModelExists: boolean): boolean {
   const provider: TTSProviderType = config.tts.activeProvider;

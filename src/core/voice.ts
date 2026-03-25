@@ -1,14 +1,15 @@
 import { spawn } from "node:child_process";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { unlink } from "node:fs/promises";
+import { unlink, writeFile } from "node:fs/promises";
 import https from "node:https";
 
 import say from "say";
 
-import { settings } from "./config.js";
+import { settings } from "./config";
+import type { SpeakResult } from "./types";
 
-const PHONETIC_MAP = [
+const PHONETIC_MAP: Array<[RegExp, string]> = [
   [/\bmid\b/gi, "mídi"],
   [/\bbuild\b/gi, "bíudi"],
   [/\bbuilds\b/gi, "bíudis"],
@@ -48,7 +49,7 @@ const PHONETIC_MAP = [
   [/\bstall\b/gi, "estóu"],
 ];
 
-export function toPhonetic(text) {
+export function toPhonetic(text: string): string {
   let result = text;
   for (const [pattern, replacement] of PHONETIC_MAP) {
     result = result.replace(pattern, replacement);
@@ -56,11 +57,11 @@ export function toPhonetic(text) {
   return result;
 }
 
-function runProcess(command, args, inputText = "") {
-  return new Promise((resolve, reject) => {
+function runProcess(command: string, args: string[], inputText = ""): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
     // Set cwd to the directory of the command so DLLs are found
     const cwd = path.dirname(command);
-    const spawnOpts = { stdio: ["pipe", "ignore", "pipe"] };
+    const spawnOpts: { stdio: ["pipe", "ignore", "pipe"]; cwd?: string } = { stdio: ["pipe", "ignore", "pipe"] };
     if (cwd && cwd !== ".") spawnOpts.cwd = cwd;
     const child = spawn(command, args, spawnOpts);
 
@@ -86,10 +87,10 @@ function runProcess(command, args, inputText = "") {
 
 let playbackPromise = Promise.resolve();
 
-function playWavFileAsync(filePath) {
+function playWavFileAsync(filePath: string): void {
   const escapedPath = filePath.replace(/'/g, "''");
 
-  playbackPromise = playbackPromise.then(() => new Promise((resolve) => {
+  playbackPromise = playbackPromise.then(() => new Promise<void>((resolve) => {
     const child = spawn("powershell", [
       "-NoProfile",
       "-Command",
@@ -107,7 +108,7 @@ function playWavFileAsync(filePath) {
   }));
 }
 
-async function speakWithPiper(text) {
+async function speakWithPiper(text: string): Promise<SpeakResult> {
   if (!settings.piperModelPath) {
     throw new Error("PIPER_MODEL_PATH nao configurado.");
   }
@@ -133,16 +134,16 @@ async function speakWithPiper(text) {
   return { generateMs, playMs: 0, provider: "piper" };
 }
 
-function speakWithSay(text) {
-  say.speak(text, settings.ttsVoice, 1.0, (error) => {
+function speakWithSay(text: string): SpeakResult {
+  say.speak(text, settings.ttsVoice, 1.0, (error: string | null) => {
     if (error) {
-      console.error("[TTS say] erro:", error.message);
+      console.error("[TTS say] erro:", error);
     }
   });
   return { generateMs: 0, playMs: 0, provider: "say" };
 }
 
-function pcmToWavBuffer(pcmBuffer, sampleRate = 16000, channels = 1, bitsPerSample = 16) {
+function pcmToWavBuffer(pcmBuffer: Buffer, sampleRate = 16000, channels = 1, bitsPerSample = 16): Buffer {
   const byteRate = sampleRate * channels * (bitsPerSample / 8);
   const blockAlign = channels * (bitsPerSample / 8);
   const header = Buffer.alloc(44);
@@ -164,8 +165,8 @@ function pcmToWavBuffer(pcmBuffer, sampleRate = 16000, channels = 1, bitsPerSamp
   return Buffer.concat([header, pcmBuffer]);
 }
 
-function elevenLabsSynthesizePcm(text) {
-  return new Promise((resolve, reject) => {
+function elevenLabsSynthesizePcm(text: string): Promise<Buffer> {
+  return new Promise<Buffer>((resolve, reject) => {
     if (!settings.elevenlabsApiKey) {
       reject(new Error("ELEVENLABS_API_KEY nao configurada."));
       return;
@@ -195,7 +196,7 @@ function elevenLabsSynthesizePcm(text) {
         },
       },
       (res) => {
-        const chunks = [];
+        const chunks: Buffer[] = [];
         res.on("data", (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
         res.on("end", () => {
           const out = Buffer.concat(chunks);
@@ -219,20 +220,20 @@ function elevenLabsSynthesizePcm(text) {
   });
 }
 
-async function speakWithElevenLabs(text) {
+async function speakWithElevenLabs(text: string): Promise<SpeakResult> {
   const generateStart = performance.now();
   const pcm = await elevenLabsSynthesizePcm(text);
   const wavBuffer = pcmToWavBuffer(pcm, 16000);
   const tempFile = path.join(tmpdir(), `ferro-elevenlabs-${Date.now()}.wav`);
 
-  await import("node:fs/promises").then(({ writeFile }) => writeFile(tempFile, wavBuffer));
+  await writeFile(tempFile, wavBuffer);
   const generateMs = Math.round(performance.now() - generateStart);
 
   playWavFileAsync(tempFile);
   return { generateMs, playMs: 0, provider: "elevenlabs" };
 }
 
-export async function speak(text) {
+export async function speak(text: string): Promise<SpeakResult> {
   if (!settings.ttsEnabled) {
     console.log(`[TTS disabled] ${text}`);
     return { generateMs: 0, playMs: 0, provider: "disabled" };

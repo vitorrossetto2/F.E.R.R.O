@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { ElevenLabsUsageSummary, FerroConfig, MessageCategoryConfig, MessageMode } from "../../shared/types.js";
+import type { ElevenLabsUsageSummary, FerroConfig, MessageCategoryConfig, MessageMode } from "../../shared/types";
 
 const CATEGORIES = [
   { id: "objetivo", label: "Objetivos", desc: "Dragão, Barão, Arauto, Grubs" },

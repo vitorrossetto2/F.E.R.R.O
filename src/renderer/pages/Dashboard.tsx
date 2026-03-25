@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { EngineState } from "../../shared/types.js";
-import LogPanel from "../components/dashboard/LogPanel.js";
+import type { EngineState } from "../../shared/types";
+import LogPanel from "../components/dashboard/LogPanel";
 
 const DEFAULT_STATE: EngineState = {
   status: "idle",

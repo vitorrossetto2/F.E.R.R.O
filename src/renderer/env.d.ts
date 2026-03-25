@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
-import type { FerroAPI } from "../preload/index.js";
+import type { FerroAPI } from "../preload/index";
 
 declare global {
   interface Window {

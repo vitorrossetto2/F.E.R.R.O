@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import type { TabId } from "../../App.js";
-import TabBar from "./TabBar.js";
+import type { TabId } from "../../App";
+import TabBar from "./TabBar";
 
 interface Props {
   activeTab: TabId;

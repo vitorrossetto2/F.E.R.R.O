@@ -1,19 +1,20 @@
 import OpenAI from "openai";
 
-import { getZaiBaseUrl, settings } from "./config.js";
+import { getZaiBaseUrl, settings } from "./config";
 import {
   CATEGORY_COOLDOWNS,
   FEMALE_CHAMPIONS,
   buildMatchupPrompt,
   buildSystemPrompt,
   pickModePhrase
-} from "./constants.js";
+} from "./constants";
+import type { CoachDecision, GameSnapshot, MatchupTip, SnapshotPlayer, StrategicContext } from "./types";
 
-function hasLlmConfig() {
+function hasLlmConfig(): boolean {
   return Boolean(settings.zaiApiKey && settings.zaiEndpoint && settings.zaiModel);
 }
 
-function getClient() {
+function getClient(): OpenAI | null {
   if (!hasLlmConfig()) return null;
 
   return new OpenAI({
@@ -24,11 +25,11 @@ function getClient() {
 
 // ── helpers ──────────────────────────────────────────────────────
 
-function genderPronoun(championName) {
+function genderPronoun(championName: string): string {
   return FEMALE_CHAMPIONS.has(championName) ? "dela" : "dele";
 }
 
-function toSentence(text) {
+function toSentence(text: string): string {
   if (!text) return "";
   const t = text.trim();
   return t.charAt(0).toUpperCase() + t.slice(1);
@@ -36,7 +37,7 @@ function toSentence(text) {
 
 const DANGLING_ENDINGS = /\s+(para|no|na|de|do|dos|das|em|o|a|os|as|e|ou|um|uma|com|por|ao|à|que|se|seu|sua|seus|suas|pelo|pela|nos|nas|num)$/i;
 
-function isTruncated(text) {
+function isTruncated(text: string): boolean {
   if (!text) return false;
   const t = text.trim();
   return t.length < 5 || DANGLING_ENDINGS.test(t);
@@ -46,7 +47,7 @@ function isTruncated(text) {
 
 const SIMPLE_TRIGGERS = new Set(["lembrete de mapa", "ouro parado alto"]);
 
-function isSimpleTrigger(priority) {
+function isSimpleTrigger(priority: string | null): boolean {
   if (!priority) return false;
   if (SIMPLE_TRIGGERS.has(priority)) return true;
   if (priority.includes("em 1 minuto")) return true;
@@ -74,7 +75,7 @@ function isSimpleTrigger(priority) {
 
 // ── category detection ───────────────────────────────────────────
 
-export function detectCategory(priority) {
+export function detectCategory(priority: string | null): string {
   if (!priority) return "generico";
   if (priority === "lembrete de mapa") return "mapa";
   if (priority === "ouro parado alto") return "ouroParado";
@@ -98,13 +99,13 @@ export function detectCategory(priority) {
   return "generico";
 }
 
-export function getCategoryCooldown(category) {
+export function getCategoryCooldown(category: string): number {
   return CATEGORY_COOLDOWNS[category] ?? CATEGORY_COOLDOWNS.generico;
 }
 
 // ── heuristic / fallback ─────────────────────────────────────────
 
-function heuristicAlert(snapshot, triggers) {
+function heuristicAlert(snapshot: GameSnapshot, triggers: string[]): string | null {
   if (triggers.length > 0) return triggers[0];
 
   if (snapshot.activePlayerGold >= settings.stalledGoldThreshold) {
@@ -122,7 +123,7 @@ function heuristicAlert(snapshot, triggers) {
   return null;
 }
 
-function fallbackMessage(priority) {
+function fallbackMessage(priority: string | null): string {
   if (!priority) return "";
 
   if (priority === "lembrete de mapa") {
@@ -231,11 +232,16 @@ function fallbackMessage(priority) {
 
 // ── prompt builder ───────────────────────────────────────────────
 
-function compactPlayer(player) {
+function compactPlayer(player: SnapshotPlayer): string {
   return `${player.championName}(${player.kills}/${player.deaths}/${player.assists},nv${player.level})`;
 }
 
-function buildPrompt(snapshot, triggers, priority, strategicContext) {
+function buildPrompt(
+  snapshot: GameSnapshot,
+  triggers: string[],
+  priority: string | null,
+  strategicContext: StrategicContext
+): string {
   const allies = snapshot.alliedPlayers.map(compactPlayer).join(", ");
   const enemies = snapshot.enemyPlayers.map(compactPlayer).join(", ");
 
@@ -274,7 +280,11 @@ function buildPrompt(snapshot, triggers, priority, strategicContext) {
 
 // ── main decision function ───────────────────────────────────────
 
-export async function decideCoaching(snapshot, triggers, strategicContext) {
+export async function decideCoaching(
+  snapshot: GameSnapshot,
+  triggers: string[],
+  strategicContext: StrategicContext
+): Promise<CoachDecision> {
   const priority = heuristicAlert(snapshot, triggers);
   const fallback = fallbackMessage(priority);
 
@@ -340,7 +350,7 @@ export async function decideCoaching(snapshot, triggers, strategicContext) {
   let llmError = null;
   const llmStart = performance.now();
   try {
-    const requestBody = {
+    const requestBody: any = {
       model: settings.zaiModel,
       messages: [
         { role: "system", content: buildSystemPrompt() },
@@ -359,9 +369,10 @@ export async function decideCoaching(snapshot, triggers, strategicContext) {
     message = (completion.choices?.[0]?.message?.content ?? "").trim();
     llmTokens = completion.usage ?? null;
   } catch (error) {
+    const err = error as Error;
     llmMs = Math.round(performance.now() - llmStart);
-    llmError = error.message;
-    console.error(`[Coach] LLM erro (${llmMs}ms):`, error.message);
+    llmError = err.message;
+    console.error(`[Coach] LLM erro (${llmMs}ms):`, err.message);
   }
 
   if (message && isTruncated(message)) {
@@ -415,7 +426,7 @@ export async function decideCoaching(snapshot, triggers, strategicContext) {
   };
 }
 
-export async function getMatchupTip(snapshot) {
+export async function getMatchupTip(snapshot: GameSnapshot): Promise<MatchupTip | null> {
   const client = getClient();
   if (!client) {
     return null;
@@ -430,7 +441,7 @@ export async function getMatchupTip(snapshot) {
   let llmMs = 0;
   const llmStart = performance.now();
   try {
-    const requestBody = {
+    const requestBody: any = {
       model: settings.zaiModel,
       messages: [
         { role: "system", content: buildMatchupPrompt() },
@@ -448,8 +459,9 @@ export async function getMatchupTip(snapshot) {
     llmMs = Math.round(performance.now() - llmStart);
     message = (completion.choices?.[0]?.message?.content ?? "").trim();
   } catch (error) {
+    const err = error as Error;
     llmMs = Math.round(performance.now() - llmStart);
-    console.error(`[Coach] Matchup LLM erro (${llmMs}ms):`, error.message);
+    console.error(`[Coach] Matchup LLM erro (${llmMs}ms):`, err.message);
   }
 
   if (!message || isTruncated(message)) {

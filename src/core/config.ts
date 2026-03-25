@@ -1,6 +1,8 @@
 import "dotenv/config";
 
-function getNumber(name, fallback) {
+import type { CoreSettings } from "./types";
+
+function getNumber(name: string, fallback: number): number {
   const value = process.env[name];
   if (!value) return fallback;
 
@@ -8,13 +10,13 @@ function getNumber(name, fallback) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-function getBoolean(name, fallback) {
+function getBoolean(name: string, fallback: boolean): boolean {
   const value = process.env[name];
   if (!value) return fallback;
   return value.toLowerCase() === "true";
 }
 
-export const settings = {
+export const settings: CoreSettings = {
   zaiApiKey: process.env.ZAI_API_KEY ?? "",
   zaiEndpoint:
     process.env.ZAI_ENDPOINT ?? "https://api.z.ai/api/coding/paas/v4/chat/completions",
@@ -56,11 +58,11 @@ export const settings = {
   simulationTickMs: getNumber("SIMULATION_TICK_MS", 1000)
 };
 
-export function getZaiBaseUrl() {
+export function getZaiBaseUrl(): string {
   return settings.zaiEndpoint.replace(/\/chat\/completions\/?$/, "");
 }
 
-export function assertConfig() {
+export function assertConfig(): void {
   if (!settings.zaiApiKey) {
     throw new Error("ZAI_API_KEY nao definida. Configure sua chave da Z.ai no arquivo .env.");
   }

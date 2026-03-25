@@ -1,8 +1,17 @@
 import axios from "axios";
 
-import { settings } from "./config.js";
+import { settings } from "./config";
 
-let itemCatalogPromise;
+interface DDragonItem {
+  name: string;
+  tags?: string[];
+  gold?: { total?: number };
+  into?: string[];
+}
+
+type ItemCatalog = Map<string, DDragonItem>;
+
+let itemCatalogPromise: Promise<ItemCatalog> | undefined;
 
 const FALLBACK_ITEMS = {
   "1001": { name: "Boots", tags: ["Boots"], gold: { total: 300 }, into: ["3006","3047","3111","3117","3158","3009","3020"] },
@@ -48,31 +57,31 @@ const FALLBACK_ITEMS = {
   "2003": { name: "Health Potion", tags: ["Consumable"], gold: { total: 50 }, into: [] }
 };
 
-async function fetchLatestVersion() {
+async function fetchLatestVersion(): Promise<string | undefined> {
   const response = await axios.get(settings.ddragonVersionsUrl, { timeout: 5000 });
   const versions = Array.isArray(response.data) ? response.data : [];
   return versions[0];
 }
 
-async function fetchItemCatalog() {
+async function fetchItemCatalog(): Promise<ItemCatalog> {
   const version = await fetchLatestVersion();
   if (!version) {
-    return new Map();
+    return new Map<string, DDragonItem>();
   }
 
   const response = await axios.get(
     `${settings.ddragonCdnUrl}/${version}/data/pt_BR/item.json`,
     { timeout: 5000 }
   );
-  const items = response.data?.data ?? {};
-  return new Map(Object.entries(items));
+  const items = (response.data?.data ?? {}) as Record<string, DDragonItem>;
+  return new Map<string, DDragonItem>(Object.entries(items));
 }
 
-export async function getItemCatalog() {
+export async function getItemCatalog(): Promise<ItemCatalog> {
   if (!itemCatalogPromise) {
     itemCatalogPromise = fetchItemCatalog().catch((error) => {
       console.error("[DDragon] Falha ao buscar catalogo de itens, usando fallback:", error.message);
-      return new Map(Object.entries(FALLBACK_ITEMS));
+      return new Map<string, DDragonItem>(Object.entries(FALLBACK_ITEMS));
     });
   }
 

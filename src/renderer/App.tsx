@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import type { StartupState } from "../shared/types.js";
-import AppShell from "./components/layout/AppShell.js";
-import Dashboard from "./pages/Dashboard.js";
-import MatchAnalysis from "./pages/MatchAnalysis.js";
-import Messages from "./pages/Messages.js";
-import Settings from "./pages/Settings.js";
-import PiperSetup from "./pages/PiperSetup.js";
+import type { StartupState } from "../shared/types";
+import AppShell from "./components/layout/AppShell";
+import Dashboard from "./pages/Dashboard";
+import MatchAnalysis from "./pages/MatchAnalysis";
+import Messages from "./pages/Messages";
+import Settings from "./pages/Settings";
+import PiperSetup from "./pages/PiperSetup";
 
 export type TabId = "dashboard" | "match" | "messages" | "settings";
 

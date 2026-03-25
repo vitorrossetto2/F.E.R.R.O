@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import type { FerroConfig } from "../../shared/types.js";
-import LLMProviderPanel from "../components/settings/LLMProviderPanel.js";
-import TTSProviderPanel from "../components/settings/TTSProviderPanel.js";
+import type { FerroConfig } from "../../shared/types";
+import LLMProviderPanel from "../components/settings/LLMProviderPanel";
+import TTSProviderPanel from "../components/settings/TTSProviderPanel";
 
 export default function Settings() {
   const [config, setConfig] = useState<FerroConfig | null>(null);

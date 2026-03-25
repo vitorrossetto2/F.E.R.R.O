@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { FerroConfig, StartupState, TTSProviderType, PiperVoiceOption, PiperProgress, VoiceOption } from "../../../shared/types.js";
-import APIKeyInput from "./APIKeyInput.js";
-import VoiceSelector from "./VoiceSelector.js";
+import type { FerroConfig, StartupState, TTSProviderType, PiperVoiceOption, PiperProgress, VoiceOption } from "../../../shared/types";
+import APIKeyInput from "./APIKeyInput";
+import VoiceSelector from "./VoiceSelector";
 
 const PROVIDERS: { id: TTSProviderType; name: string; desc: string; badge: string }[] = [
   { id: "piper", name: "Piper", desc: "Local, rápido, PT-BR", badge: "Gratuito" },

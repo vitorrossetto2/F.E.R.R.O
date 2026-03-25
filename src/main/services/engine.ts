@@ -1,42 +1,46 @@
 import { EventEmitter } from "events";
 import type { BrowserWindow } from "electron";
-import { IPC } from "../../shared/channels.js";
-import type { EngineState, EngineStatus, EngineEvent, LogEntry } from "../../shared/types.js";
-import { populateEnvFromConfig } from "../lib/settings-bridge.js";
-import * as configService from "./config-service.js";
+import { IPC } from "../../shared/channels";
+import type { EngineState, EngineStatus, EngineEvent, LogEntry } from "../../shared/types";
+import { populateEnvFromConfig } from "../lib/settings-bridge";
+import * as configService from "./config-service";
+import type {
+  AnalyzeSnapshotResult,
+  CoachDecision,
+  CoreLogger,
+  CoreSettings,
+  GameSnapshot,
+  LoopStateShape,
+  MatchupTip,
+  SpeakResult,
+  StrategicContext,
+} from "../../core/types";
 
 const OPENING_MATCHUP_TARGET_SECONDS = 50;
 const OPENING_MATCHUP_MAX_SECONDS = 120;
 
-// Core modules loaded once
-let core: {
-  analyzeSnapshot: (snapshot: unknown, state: unknown) => Promise<{ triggers: string[]; strategicContext: unknown }>;
-  decideCoaching: (snapshot: unknown, triggers: string[], ctx: unknown) => Promise<Record<string, unknown>>;
-  detectCategory: (priority: string) => string;
+type LoadedCore = {
+  analyzeSnapshot: (snapshot: GameSnapshot, state: LoopStateShape) => Promise<AnalyzeSnapshotResult>;
+  decideCoaching: (snapshot: GameSnapshot, triggers: string[], ctx: StrategicContext) => Promise<CoachDecision>;
+  detectCategory: (priority: string | null) => string;
   getCategoryCooldown: (category: string) => number;
-  getMatchupTip: (snapshot: unknown) => Promise<Record<string, unknown> | null>;
-  getSnapshot: (logGame?: (...args: unknown[]) => void) => Promise<Record<string, unknown> | null>;
-  speak: (text: string) => Promise<{ generateMs?: number; playMs?: number; provider?: string } | undefined>;
-  createLogger: (mode?: string) => Promise<{ log: (...args: unknown[]) => Promise<void>; logGame: (...args: unknown[]) => Promise<void>; newSession: () => Promise<Record<string, unknown>>; filePath: string; gameFilePath: string }>;
+  getMatchupTip: (snapshot: GameSnapshot) => Promise<MatchupTip | null>;
+  getSnapshot: (logGame?: CoreLogger["logGame"]) => Promise<GameSnapshot | null>;
+  speak: (text: string) => Promise<SpeakResult>;
+  createLogger: (mode?: string) => Promise<CoreLogger>;
   pickModePhrase: (key: string, mode?: string) => string;
-  LoopState: new () => {
-    lastCoachingAt: number; lastGameTime: number | null; hasLoggedWaitingState: boolean;
-    matchupDone: boolean; openingGreetingDone: boolean; pendingTriggers: string[];
-    queueTriggers: (t: string[]) => void; drainPendingTriggers: () => string[];
-    canRepeatMessage: (c: string, t: number, cd: number) => boolean;
-    markMessageSpoken: (c: string, t: number) => void;
-    detectGameReset: (t: number) => boolean; reset: () => void;
-    [key: string]: unknown;
-  };
-  settings: Record<string, unknown>;
-} | null = null;
+  LoopState: new () => LoopStateShape;
+  settings: CoreSettings;
+};
+
+let core: LoadedCore | null = null;
 
 export class Engine extends EventEmitter {
   private intervalId: ReturnType<typeof setInterval> | null = null;
   private running = false;
   private mainWindow: BrowserWindow | null = null;
-  private state: InstanceType<NonNullable<typeof core>["LoopState"]> | null = null;
-  private logger: Awaited<ReturnType<NonNullable<typeof core>["createLogger"]>> | null = null;
+  private state: LoopStateShape | null = null;
+  private logger: CoreLogger | null = null;
 
   public engineState: EngineState = {
     status: "idle",
@@ -77,7 +81,7 @@ export class Engine extends EventEmitter {
   private applyConfigToRuntime() {
     const cfg = configService.getAll();
     const llmEnabled = cfg.llm.activeProvider !== "none";
-    const llm = llmEnabled ? cfg.llm.providers[cfg.llm.activeProvider] : null;
+    const llm = cfg.llm.activeProvider === "none" ? null : cfg.llm.providers[cfg.llm.activeProvider];
 
     populateEnvFromConfig();
 
@@ -136,20 +140,28 @@ export class Engine extends EventEmitter {
     this.send({ type: "status_change", status: this.engineState.status });
   }
 
+  private requireRuntime(): { core: LoadedCore; state: LoopStateShape; logger: CoreLogger } {
+    if (!core || !this.state || !this.logger) {
+      throw new Error("Engine runtime not initialized");
+    }
+
+    return { core, state: this.state, logger: this.logger };
+  }
+
   private async loadCore() {
     if (core) return;
     this.applyConfigToRuntime();
 
     const [analyzerMod, coachMod, gameMod, voiceMod, loggerMod, stateMod, configMod, constantsMod] =
       await Promise.all([
-        import("../../core/analyzer.js"),
-        import("../../core/coach.js"),
-        import("../../core/game.js"),
-        import("../../core/voice.js"),
-        import("../../core/logger.js"),
-        import("../../core/state.js"),
-        import("../../core/config.js"),
-        import("../../core/constants.js"),
+        import("../../core/analyzer"),
+        import("../../core/coach"),
+        import("../../core/game"),
+        import("../../core/voice"),
+        import("../../core/logger"),
+        import("../../core/state"),
+        import("../../core/config"),
+        import("../../core/constants"),
       ]);
 
     console.log("[Engine] Core loaded. logsDir:", configMod.settings.logsDir, "piperExe:", configMod.settings.piperExecutable, "model:", configMod.settings.piperModelPath);
@@ -178,18 +190,20 @@ export class Engine extends EventEmitter {
 
     try {
       await this.loadCore();
+      const c = core;
+      if (!c) throw new Error("Core failed to load");
 
-      this.state = new core!.LoopState();
-      this.logger = await core!.createLogger();
+      this.state = new c.LoopState();
+      this.logger = await c.createLogger();
 
-      this.engineState.piperStatus = (core!.settings.piperModelPath as string) ? "installed" : "missing";
+      this.engineState.piperStatus = c.settings.piperModelPath ? "installed" : "missing";
       this.setStatus("waiting_for_game");
 
       await this.logger.log("coach_ready", { message: "Coach iniciado via Electron" });
       this.log({ type: "coach_ready", message: "Coach iniciado" });
-      console.log("[Engine] Started. Polling every", core!.settings.pollIntervalSeconds, "s");
+      console.log("[Engine] Started. Polling every", c.settings.pollIntervalSeconds, "s");
 
-      const pollMs = (core!.settings.pollIntervalSeconds as number) * 1000;
+      const pollMs = c.settings.pollIntervalSeconds * 1000;
       this.intervalId = setInterval(() => this.safeTick(), pollMs);
     } catch (err) {
       console.error("[Engine] Start failed:", (err as Error).message, (err as Error).stack);
@@ -215,11 +229,9 @@ export class Engine extends EventEmitter {
   }
 
   private async tick() {
-    const c = core!;
-    const st = this.state!;
-    const lg = this.logger!;
+    const { core: c, state: st, logger: lg } = this.requireRuntime();
 
-    const snapshot = await c.getSnapshot((...args: unknown[]) => lg.logGame(...args));
+    const snapshot = await c.getSnapshot((type, payload) => lg.logGame(type, payload));
 
     // No game running
     if (!snapshot) {
@@ -250,14 +262,14 @@ export class Engine extends EventEmitter {
       });
       st.hasLoggedWaitingState = false;
       this.send({ type: "game_detected", champion: snapshot.activePlayerChampion, gameTime: snapshot.gameTime });
-      this.log({ type: "game_detected", gameTime: snapshot.gameTime as number, message: `Partida detectada: ${snapshot.activePlayerChampion}` });
+      this.log({ type: "game_detected", gameTime: snapshot.gameTime, message: `Partida detectada: ${snapshot.activePlayerChampion}` });
       console.log("[Engine] Game detected:", snapshot.activePlayerChampion);
     }
 
-    const gameTime = snapshot.gameTime as number;
+    const gameTime = snapshot.gameTime;
     this.engineState.gameDetected = true;
     this.engineState.gameTime = gameTime;
-    this.engineState.activeChampion = snapshot.activePlayerChampion as string;
+    this.engineState.activeChampion = snapshot.activePlayerChampion;
     this.setStatus("coaching");
 
     // Game reset
@@ -276,7 +288,7 @@ export class Engine extends EventEmitter {
       try {
         const greeting = c.pickModePhrase("inicioPartida");
         const tts = await c.speak(greeting);
-        this.updateLastMessage(greeting, "heuristic", 0, tts?.generateMs ?? 0);
+        this.updateLastMessage(greeting, "heuristic", 0, tts.generateMs ?? 0);
         this.log({ type: "coach_speak", gameTime, message: greeting });
       } catch (err) {
         console.error("[Engine] Opening greeting error:", (err as Error).message);
@@ -288,9 +300,9 @@ export class Engine extends EventEmitter {
       try {
         const matchup = await c.getMatchupTip(snapshot);
         if (matchup) {
-          const tts = await c.speak(matchup.message as string);
-          this.updateLastMessage(matchup.message as string, "llm", matchup.llmMs as number, tts?.generateMs ?? 0);
-          this.log({ type: "coach_speak", gameTime, message: matchup.message as string });
+          const tts = await c.speak(matchup.message);
+          this.updateLastMessage(matchup.message, "llm", matchup.llmMs, tts.generateMs ?? 0);
+          this.log({ type: "coach_speak", gameTime, message: matchup.message });
           st.lastCoachingAt = gameTime;
         }
       } catch (err) {
@@ -302,8 +314,7 @@ export class Engine extends EventEmitter {
     const { triggers: newTriggers, strategicContext } = await c.analyzeSnapshot(snapshot, st);
     const pending = st.drainPendingTriggers();
     const triggers = [...new Set([...pending, ...newTriggers])];
-    const settings = c.settings as Record<string, number>;
-    const dueForCoaching = gameTime - (st.lastCoachingAt || 0) >= settings.coachingIntervalSeconds;
+    const dueForCoaching = gameTime - (st.lastCoachingAt || 0) >= c.settings.coachingIntervalSeconds;
 
     // Log snapshot to system log
     if (c.settings.logSnapshots) {
@@ -323,7 +334,7 @@ export class Engine extends EventEmitter {
     }
 
     // Coach decision
-    let decision: Record<string, unknown>;
+    let decision: CoachDecision;
     try {
       if (llmEnabled) {
         this.engineState.llmStatus = "calling";
@@ -351,7 +362,7 @@ export class Engine extends EventEmitter {
       fallbackUsed: decision.fallbackUsed, skippedLlm: decision.skippedLlm,
       llmMs: decision.llmMs, llmError: decision.llmError,
     });
-    this.log({ type: "coach_decision", gameTime, priority: decision.priority as string, shouldSpeak: decision.shouldSpeak as boolean });
+    this.log({ type: "coach_decision", gameTime, priority: decision.priority ?? "", shouldSpeak: decision.shouldSpeak });
 
     if (!decision.skippedLlm) {
       if (c.settings.logLlmPayloads) {
@@ -378,7 +389,7 @@ export class Engine extends EventEmitter {
     }
 
     if (decision.shouldSpeak) {
-      const category = c.detectCategory(decision.priority as string);
+      const category = c.detectCategory(decision.priority);
 
       // Check user toggle
       const msgCfg = configService.getAll().messages[category];
@@ -399,14 +410,14 @@ export class Engine extends EventEmitter {
       this.send({ type: "tts_start", message: decision.message });
       this.engineState.ttsStatus = "speaking";
       try {
-        const tts = await c.speak(decision.message as string);
+        const tts = await c.speak(decision.message);
         const source = decision.skippedLlm ? "heuristic" : decision.fallbackUsed ? "fallback" : "llm";
-        this.updateLastMessage(decision.message as string, source as "llm" | "heuristic" | "fallback", (decision.llmMs as number) ?? 0, tts?.generateMs ?? 0);
+        this.updateLastMessage(decision.message, source, decision.llmMs ?? 0, tts.generateMs ?? 0);
         this.engineState.ttsStatus = "idle";
-        this.send({ type: "tts_done", provider: tts?.provider ?? "unknown", generateMs: tts?.generateMs ?? 0 });
+        this.send({ type: "tts_done", provider: tts.provider ?? "unknown", generateMs: tts.generateMs ?? 0 });
         await lg.log("coach_speak", { gameTime, message: decision.message, source });
-        await lg.log("tts_success", { gameTime, provider: tts?.provider, message: decision.message, ttsGenerateMs: tts?.generateMs ?? 0, llmMs: decision.llmMs });
-        this.log({ type: "coach_speak", gameTime, message: decision.message as string, source });
+        await lg.log("tts_success", { gameTime, provider: tts.provider, message: decision.message, ttsGenerateMs: tts.generateMs ?? 0, llmMs: decision.llmMs });
+        this.log({ type: "coach_speak", gameTime, message: decision.message, source });
         console.log(`[Engine] [${Math.floor(gameTime / 60)}:${String(Math.floor(gameTime % 60)).padStart(2, "0")}] ${decision.message} [${source}]`);
       } catch (err) {
         this.engineState.ttsStatus = "error";
@@ -416,7 +427,7 @@ export class Engine extends EventEmitter {
       }
     } else {
       await lg.log("coach_silence", { gameTime, reason: decision.reason });
-      this.log({ type: "coach_silence", gameTime, reason: decision.reason as string });
+      this.log({ type: "coach_silence", gameTime, reason: decision.reason });
     }
 
     st.lastCoachingAt = gameTime;

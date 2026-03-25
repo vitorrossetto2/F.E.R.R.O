@@ -1,21 +1,37 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
+import type { SessionSummary } from "../shared/types";
 
-const cache = new Map();
+export interface SessionAnalysis {
+  [key: string]: unknown;
+}
 
-function safeNumber(value) {
+type TeamCode = "ORDER" | "CHAOS";
+type TeamStats = Record<TeamCode, number>;
+type RawEntry = Record<string, any>;
+type SnapshotEntry = {
+  ts: string;
+  sessionId: string;
+  gameTime: number;
+  data: Record<string, any>;
+};
+type TimelineItem = { itemID: number; displayName: string };
+
+const cache = new Map<string, { cacheKey: string; analysis: SessionAnalysis }>();
+
+function safeNumber(value: unknown): number {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
-function formatClock(totalSeconds) {
+function formatClock(totalSeconds: unknown): string {
   const value = Math.max(0, Math.floor(safeNumber(totalSeconds)));
   const minutes = Math.floor(value / 60);
   const seconds = value % 60;
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
-function parseJsonLines(rawText) {
+function parseJsonLines(rawText: string): RawEntry[] {
   return rawText
     .split(/\r?\n/)
     .map((line) => line.trim())
@@ -30,7 +46,7 @@ function parseJsonLines(rawText) {
     .filter(Boolean);
 }
 
-function normalizeSnapshots(entries) {
+function normalizeSnapshots(entries: RawEntry[]): SnapshotEntry[] {
   return entries
     .filter((entry) => entry.type === "api_response" && entry.data?.gameData && Array.isArray(entry.data?.allPlayers))
     .map((entry) => ({
@@ -42,9 +58,9 @@ function normalizeSnapshots(entries) {
     .sort((left, right) => left.gameTime - right.gameTime);
 }
 
-function dedupeEvents(events) {
-  const seen = new Set();
-  const result = [];
+function dedupeEvents(events: RawEntry[]): RawEntry[] {
+  const seen = new Set<string>();
+  const result: RawEntry[] = [];
 
   for (const event of events) {
     if (!event || typeof event !== "object") continue;
@@ -68,8 +84,8 @@ function dedupeEvents(events) {
   return result.sort((left, right) => safeNumber(left.EventTime) - safeNumber(right.EventTime));
 }
 
-function buildPlayerLookup(players) {
-  const lookup = new Map();
+function buildPlayerLookup(players: RawEntry[]): Map<string, RawEntry> {
+  const lookup = new Map<string, RawEntry>();
 
   for (const player of players) {
     const keys = [
@@ -90,34 +106,34 @@ function buildPlayerLookup(players) {
   return lookup;
 }
 
-function getStructureOwner(structureName) {
+function getStructureOwner(structureName: unknown): TeamCode | null {
   const name = String(structureName ?? "").toUpperCase();
   if (name.includes("TORDER")) return "ORDER";
   if (name.includes("TCHAOS")) return "CHAOS";
   return null;
 }
 
-function getOppositeTeam(team) {
+function getOppositeTeam(team: TeamCode | null): TeamCode | null {
   if (team === "ORDER") return "CHAOS";
   if (team === "CHAOS") return "ORDER";
   return null;
 }
 
-function createEmptyTeamStats() {
+function createEmptyTeamStats(): TeamStats {
   return {
     ORDER: 0,
     CHAOS: 0
   };
 }
 
-function groupPlayersByTeam(players) {
+function groupPlayersByTeam(players: RawEntry[]): Record<TeamCode, RawEntry[]> {
   return {
     ORDER: players.filter((player) => player.team === "ORDER"),
     CHAOS: players.filter((player) => player.team === "CHAOS")
   };
 }
 
-function summarizeTeam(players) {
+function summarizeTeam(players: RawEntry[]) {
   return {
     kills: players.reduce((sum, player) => sum + safeNumber(player?.scores?.kills), 0),
     deaths: players.reduce((sum, player) => sum + safeNumber(player?.scores?.deaths), 0),
@@ -131,13 +147,13 @@ function summarizeTeam(players) {
   };
 }
 
-function getPlayerKillParticipation(player, teamKills) {
+function getPlayerKillParticipation(player: RawEntry, teamKills: number): number {
   if (!teamKills) return 0;
   const scores = player?.scores ?? {};
   return Math.round((((safeNumber(scores.kills) + safeNumber(scores.assists)) / teamKills) * 100) * 10) / 10;
 }
 
-function buildPlayerSummary(player, teamKills) {
+function buildPlayerSummary(player: RawEntry, teamKills: number) {
   const scores = player?.scores ?? {};
   return {
     summonerName: player?.summonerName ?? "",
@@ -162,32 +178,32 @@ function buildPlayerSummary(player, teamKills) {
   };
 }
 
-function buildItemTimeline(snapshots, activePlayerName) {
-  const timeline = [];
-  let previousItems = [];
+function buildItemTimeline(snapshots: SnapshotEntry[], activePlayerName: string) {
+  const timeline: Array<{ time: number; clock: string; added: string[]; removed: string[] }> = [];
+  let previousItems: TimelineItem[] = [];
 
   for (const snapshot of snapshots) {
-    const player = snapshot.data.allPlayers.find((entry) => entry?.summonerName === activePlayerName);
+    const player = snapshot.data.allPlayers.find((entry: RawEntry) => entry?.summonerName === activePlayerName);
     if (!player) continue;
 
-    const currentItems = (player.items ?? [])
-      .filter((item) => safeNumber(item?.slot) < 6)
-      .map((item) => ({
+    const currentItems: TimelineItem[] = (player.items ?? [])
+      .filter((item: RawEntry) => safeNumber(item?.slot) < 6)
+      .map((item: RawEntry): TimelineItem => ({
         itemID: safeNumber(item?.itemID),
         displayName: item?.displayName ?? ""
       }))
-      .filter((item) => item.displayName);
+      .filter((item: TimelineItem) => item.displayName.length > 0);
 
-    const currentIds = new Set(currentItems.map((item) => item.itemID));
-    const previousIds = new Set(previousItems.map((item) => item.itemID));
+    const currentIds = new Set(currentItems.map((item: TimelineItem) => item.itemID));
+    const previousIds = new Set(previousItems.map((item: TimelineItem) => item.itemID));
 
     const added = currentItems
-      .filter((item) => !previousIds.has(item.itemID))
-      .map((item) => item.displayName);
+      .filter((item: TimelineItem) => !previousIds.has(item.itemID))
+      .map((item: TimelineItem) => item.displayName);
 
     const removed = previousItems
-      .filter((item) => !currentIds.has(item.itemID))
-      .map((item) => item.displayName);
+      .filter((item: TimelineItem) => !currentIds.has(item.itemID))
+      .map((item: TimelineItem) => item.displayName);
 
     if (added.length > 0 || removed.length > 0) {
       timeline.push({
@@ -204,8 +220,8 @@ function buildItemTimeline(snapshots, activePlayerName) {
   return timeline;
 }
 
-function buildObjectiveSummary(events, playerLookup) {
-  const summary = {
+function buildObjectiveSummary(events: RawEntry[], playerLookup: Map<string, RawEntry>) {
+  const summary: any = {
     dragonsByTeam: createEmptyTeamStats(),
     dragonTypes: [],
     baronsByTeam: createEmptyTeamStats(),
@@ -219,7 +235,7 @@ function buildObjectiveSummary(events, playerLookup) {
   for (const event of events) {
     const eventName = event?.EventName;
     const killer = playerLookup.get(event?.KillerName);
-    const killerTeam = killer?.team ?? null;
+    const killerTeam = (killer?.team ?? null) as TeamCode | null;
 
     if (eventName === "DragonKill" && killerTeam) {
       summary.dragonsByTeam[killerTeam] += 1;
@@ -274,8 +290,8 @@ function buildObjectiveSummary(events, playerLookup) {
   return summary;
 }
 
-function sampleSnapshots(snapshots, intervalSeconds = 30) {
-  const samples = [];
+function sampleSnapshots(snapshots: SnapshotEntry[], intervalSeconds = 30): SnapshotEntry[] {
+  const samples: SnapshotEntry[] = [];
   let nextTime = 0;
 
   for (const snapshot of snapshots) {
@@ -293,8 +309,13 @@ function sampleSnapshots(snapshots, intervalSeconds = 30) {
   return samples;
 }
 
-function buildKillLeadSeries(sampledSnapshots, events, playerLookup, activeTeam) {
-  const points = [];
+function buildKillLeadSeries(
+  sampledSnapshots: SnapshotEntry[],
+  events: RawEntry[],
+  playerLookup: Map<string, RawEntry>,
+  activeTeam: TeamCode
+) {
+  const points: Array<{ time: number; clock: string; activeTeamKills: number; enemyTeamKills: number; lead: number }> = [];
   let eventIndex = 0;
   let orderKills = 0;
   let chaosKills = 0;
@@ -324,7 +345,7 @@ function buildKillLeadSeries(sampledSnapshots, events, playerLookup, activeTeam)
   return points;
 }
 
-function buildGoldSeries(sampledSnapshots) {
+function buildGoldSeries(sampledSnapshots: SnapshotEntry[]) {
   return sampledSnapshots.map((snapshot) => ({
     time: snapshot.gameTime,
     clock: formatClock(snapshot.gameTime),
@@ -332,9 +353,9 @@ function buildGoldSeries(sampledSnapshots) {
   }));
 }
 
-function buildLevelSeries(sampledSnapshots, activePlayerName) {
+function buildLevelSeries(sampledSnapshots: SnapshotEntry[], activePlayerName: string) {
   return sampledSnapshots.map((snapshot) => {
-    const player = snapshot.data?.allPlayers?.find((entry) => entry?.summonerName === activePlayerName);
+    const player = snapshot.data?.allPlayers?.find((entry: RawEntry) => entry?.summonerName === activePlayerName);
     return {
       time: snapshot.gameTime,
       clock: formatClock(snapshot.gameTime),
@@ -343,7 +364,7 @@ function buildLevelSeries(sampledSnapshots, activePlayerName) {
   });
 }
 
-function buildEventFeed(events, playerLookup) {
+function buildEventFeed(events: RawEntry[], playerLookup: Map<string, RawEntry>) {
   return events.map((event) => {
     const eventName = event?.EventName ?? "Unknown";
     const time = safeNumber(event?.EventTime);
@@ -399,7 +420,7 @@ function buildEventFeed(events, playerLookup) {
   });
 }
 
-function getImpactScore(player) {
+function getImpactScore(player: RawEntry): number {
   const scores = player?.scores ?? {};
   return (
     safeNumber(scores.kills) * 3 +
@@ -411,8 +432,8 @@ function getImpactScore(player) {
   );
 }
 
-function getBloodiestMinute(events) {
-  const buckets = new Map();
+function getBloodiestMinute(events: RawEntry[]) {
+  const buckets = new Map<number, number>();
 
   for (const event of events) {
     if (event?.EventName !== "ChampionKill") continue;
@@ -420,7 +441,7 @@ function getBloodiestMinute(events) {
     buckets.set(minute, (buckets.get(minute) ?? 0) + 1);
   }
 
-  let bestMinute = null;
+  let bestMinute: number | null = null;
   let bestKills = 0;
   for (const [minute, kills] of buckets.entries()) {
     if (kills > bestKills) {
@@ -439,7 +460,7 @@ function getBloodiestMinute(events) {
   };
 }
 
-function getBiggestMultikill(events, playerLookup) {
+function getBiggestMultikill(events: RawEntry[], playerLookup: Map<string, RawEntry>) {
   const multikills = events.filter((event) => event?.EventName === "Multikill");
   if (multikills.length === 0) return null;
 
@@ -454,10 +475,24 @@ function getBiggestMultikill(events, playerLookup) {
   };
 }
 
-function buildInsights({ activePlayer, rawPlayers, objectives, overview, killLead, activeTeam }) {
-  const insights = [];
+function buildInsights({
+  activePlayer,
+  rawPlayers,
+  objectives,
+  overview,
+  killLead,
+  activeTeam
+}: {
+  activePlayer: any;
+  rawPlayers: RawEntry[];
+  objectives: any;
+  overview: any;
+  killLead: Array<{ lead: number }>;
+  activeTeam: TeamCode;
+}) {
+  const insights: string[] = [];
   const activeTeamLabel = activeTeam === "ORDER" ? "ORDER" : "CHAOS";
-  const enemyTeamLabel = getOppositeTeam(activeTeamLabel);
+  const enemyTeamLabel: TeamCode = activeTeamLabel === "ORDER" ? "CHAOS" : "ORDER";
   const impactSorted = [...rawPlayers].sort((left, right) => getImpactScore(right) - getImpactScore(left));
   const mvp = impactSorted[0];
 
@@ -501,7 +536,13 @@ function buildInsights({ activePlayer, rawPlayers, objectives, overview, killLea
   return insights.slice(0, 6);
 }
 
-function buildOverview(events, objectives, teamStats, durationSeconds, playerLookup) {
+function buildOverview(
+  events: RawEntry[],
+  objectives: any,
+  teamStats: Record<TeamCode, any>,
+  durationSeconds: number,
+  playerLookup: Map<string, RawEntry>
+) {
   const firstBlood = events.find((event) => event?.EventName === "FirstBlood");
   const championKills = events.filter((event) => event?.EventName === "ChampionKill").length;
   const bloodiestMinute = getBloodiestMinute(events);
@@ -524,29 +565,22 @@ function buildOverview(events, objectives, teamStats, durationSeconds, playerLoo
   };
 }
 
-function buildSessionCard(analysis) {
+function buildSessionCard(analysis: any): SessionSummary {
   return {
     sessionId: analysis.meta.sessionId,
-    fileName: analysis.meta.fileName,
-    sourcePath: analysis.meta.sourcePath,
-    modifiedAt: analysis.meta.modifiedAt,
-    firstSnapshotAt: analysis.meta.firstSnapshotAt,
-    lastSnapshotAt: analysis.meta.lastSnapshotAt,
-    activePlayerName: analysis.meta.activePlayerName,
-    activeChampion: analysis.meta.activeChampion,
-    durationSeconds: analysis.meta.durationSeconds,
-    snapshotCount: analysis.meta.snapshotCount,
-    totalKills: analysis.overview.totalKills,
-    mapName: analysis.meta.mapName
+    filename: analysis.meta.fileName,
+    startTime: analysis.meta.firstSnapshotAt,
+    sizeBytes: analysis.meta.sizeBytes,
   };
 }
 
-async function analyzeFile(filePath) {
+async function analyzeFile(filePath: string): Promise<SessionAnalysis> {
   const fileInfo = await stat(filePath);
   const cacheKey = `${fileInfo.size}:${fileInfo.mtimeMs}`;
 
-  if (cache.get(filePath)?.cacheKey === cacheKey) {
-    return cache.get(filePath).analysis;
+  const cached = cache.get(filePath);
+  if (cached?.cacheKey === cacheKey) {
+    return cached.analysis;
   }
 
   const rawText = await readFile(filePath, "utf8");
@@ -558,13 +592,13 @@ async function analyzeFile(filePath) {
   }
 
   const firstSnapshot = snapshots[0];
-  const lastSnapshot = snapshots[snapshots.length - 1];
+  const lastSnapshot = snapshots[snapshots.length - 1]!;
   const sessionId = lastSnapshot.sessionId ?? path.basename(filePath).replace(/^session-/, "").replace(/\.jsonl$/, "");
   const activePlayerName = lastSnapshot.data?.activePlayer?.summonerName ?? "";
-  const activePlayerEntry = lastSnapshot.data?.allPlayers?.find((player) => player?.summonerName === activePlayerName) ?? null;
+  const activePlayerEntry = lastSnapshot.data?.allPlayers?.find((player: RawEntry) => player?.summonerName === activePlayerName) ?? null;
   const allPlayers = Array.isArray(lastSnapshot.data?.allPlayers) ? lastSnapshot.data.allPlayers : [];
   const playerLookup = buildPlayerLookup(allPlayers);
-  const activeTeam = activePlayerEntry?.team ?? "ORDER";
+  const activeTeam: TeamCode = activePlayerEntry?.team === "CHAOS" ? "CHAOS" : "ORDER";
   const teamPlayers = groupPlayersByTeam(allPlayers);
   const teamStats = {
     ORDER: summarizeTeam(teamPlayers.ORDER),
@@ -584,6 +618,7 @@ async function analyzeFile(filePath) {
       sessionId,
       fileName: path.basename(filePath),
       sourcePath: filePath,
+      sizeBytes: fileInfo.size,
       modifiedAt: fileInfo.mtime.toISOString(),
       firstSnapshotAt: firstSnapshot.ts,
       lastSnapshotAt: lastSnapshot.ts,
@@ -604,14 +639,14 @@ async function analyzeFile(filePath) {
           code: "ORDER",
           totals: teamStats.ORDER,
           players: teamPlayers.ORDER
-            .map((player) => buildPlayerSummary(player, teamStats.ORDER.kills))
+            .map((player: RawEntry) => buildPlayerSummary(player, teamStats.ORDER.kills))
             .sort((left, right) => right.kills - left.kills || right.assists - left.assists)
         },
         CHAOS: {
           code: "CHAOS",
           totals: teamStats.CHAOS,
           players: teamPlayers.CHAOS
-            .map((player) => buildPlayerSummary(player, teamStats.CHAOS.kills))
+            .map((player: RawEntry) => buildPlayerSummary(player, teamStats.CHAOS.kills))
             .sort((left, right) => right.kills - left.kills || right.assists - left.assists)
         }
       }
@@ -638,7 +673,7 @@ async function analyzeFile(filePath) {
   return analysis;
 }
 
-export async function listSessionSummaries(sourceDir) {
+export async function listSessionSummaries(sourceDir: string): Promise<SessionSummary[]> {
   const entries = await readdir(sourceDir, { withFileTypes: true });
   const files = entries
     .filter((entry) => entry.isFile() && entry.name.startsWith("session-") && entry.name.endsWith(".jsonl"))
@@ -650,7 +685,7 @@ export async function listSessionSummaries(sourceDir) {
     .sort((left, right) => String(right.sessionId).localeCompare(String(left.sessionId)));
 }
 
-export async function getSessionAnalysis(sourceDir, sessionId) {
+export async function getSessionAnalysis(sourceDir: string, sessionId: string): Promise<SessionAnalysis> {
   const filePath = path.join(sourceDir, `session-${sessionId}.jsonl`);
   return analyzeFile(filePath);
 }

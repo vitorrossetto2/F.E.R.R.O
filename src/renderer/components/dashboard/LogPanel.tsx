@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { LogEntry } from "../../../shared/types.js";
+import type { LogEntry } from "../../../shared/types";
 
 export default function LogPanel() {
   const [expanded, setExpanded] = useState(false);

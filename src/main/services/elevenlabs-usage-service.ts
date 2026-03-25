@@ -1,7 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
-import type { ElevenLabsUsageSummary } from "../../shared/types.js";
+import type { ElevenLabsUsageSummary } from "../../shared/types";
 
 const ELEVENLABS_STARTER_USD = 5;
 const ELEVENLABS_STARTER_CREDITS = 30000;

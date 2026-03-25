@@ -1,12 +1,13 @@
-import { settings } from "./config.js";
-import { ITEM_TAGS, pickModePhrase } from "./constants.js";
-import { getItemCatalog } from "./ddragon.js";
+import { settings } from "./config";
+import { ITEM_TAGS, pickModePhrase } from "./constants";
+import { getItemCatalog } from "./ddragon";
+import type { AnalyzeSnapshotResult, GameEvent, GameSnapshot, LoopStateShape, SnapshotPlayer, StrategicContext } from "./types";
 
 const RESPAWN_BY_LEVEL = [
   10, 10, 12, 12, 14, 16, 20, 25, 28, 32.5, 35, 37.5, 40, 42.5, 45, 47.5, 50, 52.5
 ];
 
-function getObjectiveThresholds() {
+function getObjectiveThresholds(): Array<{ label: string; threshold: number; render: (name: string) => string }> {
   return [
     {
       label: "60",
@@ -31,11 +32,11 @@ function getObjectiveThresholds() {
   ];
 }
 
-function dedupe(values) {
+function dedupe(values: string[]): string[] {
   return [...new Set(values.filter(Boolean))];
 }
 
-function triggerUrgencyScore(trigger) {
+function triggerUrgencyScore(trigger: string): number {
   if (trigger.includes("nasceu agora")) return 0;
   if (trigger.includes("em 10 segundos")) return 1;
   if (trigger.includes("em 30 segundos")) return 2;
@@ -48,15 +49,15 @@ function triggerUrgencyScore(trigger) {
   return 8;
 }
 
-function sortTriggersByUrgency(triggers) {
+function sortTriggersByUrgency(triggers: string[]): string[] {
   return [...triggers].sort((a, b) => triggerUrgencyScore(a) - triggerUrgencyScore(b));
 }
 
-function getEventsByName(snapshot, names) {
-  return snapshot.events.filter((event) => names.includes(event?.EventName));
+function getEventsByName(snapshot: GameSnapshot, names: string[]): GameEvent[] {
+  return snapshot.events.filter((event) => typeof event.EventName === "string" && names.includes(event.EventName));
 }
 
-function formatDuration(seconds) {
+function formatDuration(seconds: number): string {
   const clamped = Math.max(0, Math.ceil(seconds));
   const minutes = Math.floor(clamped / 60);
   const remainingSeconds = clamped % 60;
@@ -73,7 +74,7 @@ function formatDuration(seconds) {
   return `${minLabel} e ${remainingSeconds} segundos`;
 }
 
-function getTimeIncreaseFactor(gameTimeSeconds) {
+function getTimeIncreaseFactor(gameTimeSeconds: number): number {
   const gameMinutes = gameTimeSeconds / 60;
 
   if (gameMinutes < 15) return 0;
@@ -87,15 +88,15 @@ function getTimeIncreaseFactor(gameTimeSeconds) {
   return Math.min(0.5, 0.2175 + Math.ceil(2 * (gameMinutes - 45)) * 0.0145);
 }
 
-function estimateRespawnSeconds(level, gameTimeSeconds) {
+function estimateRespawnSeconds(level: number, gameTimeSeconds: number): number {
   const base = RESPAWN_BY_LEVEL[Math.max(0, Math.min(17, Number(level || 1) - 1))];
   const total = base + (base * getTimeIncreaseFactor(gameTimeSeconds));
   return Math.ceil(total);
 }
 
-function getPlayerLookup(snapshot) {
+function getPlayerLookup(snapshot: GameSnapshot): Map<string, SnapshotPlayer> {
   const players = [...snapshot.alliedPlayers, ...snapshot.enemyPlayers];
-  const lookup = new Map();
+  const lookup = new Map<string, SnapshotPlayer>();
 
   for (const player of players) {
     lookup.set(player.summonerName, player);
@@ -105,7 +106,7 @@ function getPlayerLookup(snapshot) {
   return lookup;
 }
 
-function getDragonTimer(snapshot) {
+function getDragonTimer(snapshot: GameSnapshot): number {
   const dragonKills = getEventsByName(snapshot, ["DragonKill"]);
   if (dragonKills.length === 0) {
     return settings.dragonFirstSpawnSeconds;
@@ -115,7 +116,7 @@ function getDragonTimer(snapshot) {
   return Number(lastKill.EventTime ?? 0) + settings.dragonRespawnSeconds;
 }
 
-function getBaronTimer(snapshot) {
+function getBaronTimer(snapshot: GameSnapshot): number {
   const baronKills = getEventsByName(snapshot, ["BaronKill"]);
   if (baronKills.length === 0) {
     return settings.baronFirstSpawnSeconds;
@@ -125,7 +126,7 @@ function getBaronTimer(snapshot) {
   return Number(lastKill.EventTime ?? 0) + settings.baronRespawnSeconds;
 }
 
-function getGrubsTimer(snapshot) {
+function getGrubsTimer(snapshot: GameSnapshot): number | null {
   if (snapshot.gameTime >= settings.grubsDespawnSeconds) {
     return null;
   }
@@ -138,7 +139,7 @@ function getGrubsTimer(snapshot) {
   return settings.grubsFirstSpawnSeconds;
 }
 
-function getHeraldTimer(snapshot) {
+function getHeraldTimer(snapshot: GameSnapshot): number | null {
   if (snapshot.gameTime < settings.heraldFirstSpawnSeconds) {
     return settings.heraldFirstSpawnSeconds;
   }
@@ -159,17 +160,17 @@ function getHeraldTimer(snapshot) {
   return null;
 }
 
-function getObjectiveStates(snapshot) {
+function getObjectiveStates(snapshot: GameSnapshot): Array<{ name: string; spawnAt: number }> {
   return [
     { name: "dragão", spawnAt: getDragonTimer(snapshot) },
     { name: "vastilarvas", spawnAt: getGrubsTimer(snapshot) },
     { name: "arauto", spawnAt: getHeraldTimer(snapshot) },
     { name: "barão", spawnAt: getBaronTimer(snapshot) }
-  ].filter((objective) => objective.spawnAt !== null);
+  ].filter((objective): objective is { name: string; spawnAt: number } => objective.spawnAt !== null);
 }
 
-function collectObjectiveTriggers(snapshot, state) {
-  const triggers = [];
+function collectObjectiveTriggers(snapshot: GameSnapshot, state: LoopStateShape): string[] {
+  const triggers: string[] = [];
   const previousGameTime = state.lastAnalyzedGameTime ?? null;
 
   for (const objective of getObjectiveStates(snapshot)) {
@@ -200,7 +201,7 @@ function collectObjectiveTriggers(snapshot, state) {
   return triggers;
 }
 
-function detectLane(turretName) {
+function detectLane(turretName: string): string {
   const normalized = (turretName ?? "").toUpperCase();
   // Riot format: Turret_TOrder_L1_P3 where L0=top, L1=mid, L2=bot
   if (normalized.includes("_L1_") || normalized.includes("_MID_") || normalized.endsWith("_MID")) return "mid";
@@ -209,20 +210,20 @@ function detectLane(turretName) {
   return "side";
 }
 
-function normalizeLaneForPlayerPerspective(lane, playerTeam) {
+function normalizeLaneForPlayerPerspective(lane: string, playerTeam: string): string {
   if (playerTeam !== "CHAOS") return lane;
   if (lane === "top") return "bot";
   if (lane === "bot") return "top";
   return lane;
 }
 
-function isAllyTurret(turretName, playerTeam) {
+function isAllyTurret(turretName: string, playerTeam: string): boolean {
   const normalized = (turretName ?? "").toUpperCase();
   const turretTeam = normalized.includes("TORDER") ? "ORDER" : "CHAOS";
   return turretTeam === (playerTeam ?? "ORDER").toUpperCase();
 }
 
-function turretRotationHint(lane, snapshot, allied) {
+function turretRotationHint(lane: string, snapshot: GameSnapshot, allied: boolean): string {
   const perspectiveLane = normalizeLaneForPlayerPerspective(lane, snapshot.activePlayerTeam);
 
   if (allied) {
@@ -244,7 +245,7 @@ function turretRotationHint(lane, snapshot, allied) {
   return pickModePhrase("torreGenerica").replace("{lane}", perspectiveLane);
 }
 
-function isMajorItem(definition) {
+function isMajorItem(definition: any): boolean {
   if (!definition) return false;
 
   const tags = definition.tags ?? [];
@@ -261,7 +262,7 @@ function isMajorItem(definition) {
   return upgradesInto.length === 0 && totalGold >= 2200;
 }
 
-function summarizeBuild(player, itemCatalog) {
+function summarizeBuild(player: SnapshotPlayer, itemCatalog: Map<string, any>) {
   const enrichedItems = player.items
     .map((item) => ({
       ...item,
@@ -284,7 +285,7 @@ function summarizeBuild(player, itemCatalog) {
   };
 }
 
-function combatScore(player, build) {
+function combatScore(player: SnapshotPlayer, build: { majorItemCount: number }): number {
   return (
     (player.kills * 3) +
     (player.assists * 1.5) -
@@ -294,7 +295,7 @@ function combatScore(player, build) {
   );
 }
 
-async function buildStrategicContext(snapshot) {
+async function buildStrategicContext(snapshot: GameSnapshot): Promise<StrategicContext> {
   const itemCatalog = await getItemCatalog();
   const alliedBuilds = snapshot.alliedPlayers.map((player) => ({
     player,
@@ -368,14 +369,19 @@ async function buildStrategicContext(snapshot) {
   };
 }
 
-function collectEventTriggers(snapshot, state, newEvents, playerLookup) {
-  const triggers = [];
+function collectEventTriggers(
+  snapshot: GameSnapshot,
+  state: LoopStateShape,
+  newEvents: GameEvent[],
+  playerLookup: Map<string, SnapshotPlayer>
+): string[] {
+  const triggers: string[] = [];
 
   for (const event of newEvents) {
     const eventName = event?.EventName;
 
     if (eventName === "ChampionKill") {
-      const victim = playerLookup.get(event?.VictimName);
+      const victim = typeof event.VictimName === "string" ? playerLookup.get(event.VictimName) : undefined;
       if (victim && snapshot.enemyPlayers.some((player) => player.summonerName === victim.summonerName)) {
         const respawnSeconds = estimateRespawnSeconds(victim.level, snapshot.gameTime);
         triggers.push(
@@ -385,7 +391,7 @@ function collectEventTriggers(snapshot, state, newEvents, playerLookup) {
 
       if (event?.VictimName === snapshot.activePlayerName) {
         state.playerDeathCount = (state.playerDeathCount ?? 0) + 1;
-        const killerPlayer = playerLookup.get(event?.KillerName);
+        const killerPlayer = typeof event.KillerName === "string" ? playerLookup.get(event.KillerName) : undefined;
         const killerChamp = killerPlayer?.championName ?? event?.KillerName ?? "inimigo";
         if (state.playerDeathCount >= 3 && state.playerDeathCount % 2 === 1) {
           triggers.push(`você morreu ${state.playerDeathCount} vezes, joga mais seguro e perto do time`);
@@ -425,10 +431,10 @@ function collectEventTriggers(snapshot, state, newEvents, playerLookup) {
   return triggers;
 }
 
-const KEY_LEVELS = new Set([6, 11, 16]);
+const KEY_LEVELS = new Set<number>([6, 11, 16]);
 
-function collectLevelTriggers(snapshot, state) {
-  const triggers = [];
+function collectLevelTriggers(snapshot: GameSnapshot, state: LoopStateShape): string[] {
+  const triggers: string[] = [];
   const currentLevel = snapshot.activePlayerLevel;
 
   if (currentLevel > state.lastActiveLevel && KEY_LEVELS.has(currentLevel)) {
@@ -454,7 +460,7 @@ function collectLevelTriggers(snapshot, state) {
   return triggers;
 }
 
-function classifyCounterItem(itemName) {
+function classifyCounterItem(itemName: string): string | null {
   for (const pattern of ITEM_TAGS.antiCura) {
     if (itemName.includes(pattern)) return "antiCura";
   }
@@ -467,8 +473,8 @@ function classifyCounterItem(itemName) {
   return null;
 }
 
-function collectItemTriggers(context, state) {
-  const triggers = [];
+function collectItemTriggers(context: StrategicContext, state: LoopStateShape): string[] {
+  const triggers: string[] = [];
 
   // Player completed new major item
   for (const item of context.activePlayer.majorItemDetails) {
@@ -501,8 +507,8 @@ function collectItemTriggers(context, state) {
   return triggers;
 }
 
-function collectPowerTriggers(context, state) {
-  const triggers = [];
+function collectPowerTriggers(context: StrategicContext, state: LoopStateShape): string[] {
+  const triggers: string[] = [];
   const activeCount = context.activePlayer.majorItemCount;
   if (activeCount > state.lastActiveMajorItemCount && activeCount >= 1 && activeCount <= 3) {
     triggers.push(`você bateu powerspike de ${activeCount} ${activeCount > 1 ? "itens" : "item"}`);
@@ -526,7 +532,7 @@ function collectPowerTriggers(context, state) {
   return triggers;
 }
 
-export async function analyzeSnapshot(snapshot, state) {
+export async function analyzeSnapshot(snapshot: GameSnapshot, state: LoopStateShape): Promise<AnalyzeSnapshotResult> {
   const newEvents = snapshot.events.slice(state.lastSeenEventCount);
   const playerLookup = getPlayerLookup(snapshot);
   const strategicContext = await buildStrategicContext(snapshot);

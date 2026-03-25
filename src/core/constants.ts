@@ -1,6 +1,15 @@
-import { settings } from "./config.js";
+import type { MessageMode } from "../shared/types";
+import { settings } from "./config";
 
-export const MESSAGE_MODES = ["serio", "meme", "puto"];
+type PhraseSet = Record<string, string[]>;
+type MessageModeProfile = {
+  label: string;
+  systemStyle: string[];
+  matchupStyle: string[];
+  phrases: PhraseSet;
+};
+
+export const MESSAGE_MODES: MessageMode[] = ["serio", "meme", "puto"];
 
 const SYSTEM_PROMPT_INTRO = [
   "Você é um coach de League of Legends em PT-BR.",
@@ -35,7 +44,7 @@ const MATCHUP_PROMPT_FIXED_RULES = [
   "- Acentuação correta."
 ];
 
-const SERIO_PHRASES = {
+const SERIO_PHRASES: PhraseSet = {
   mapa: [
     "Olha o minimapa.",
     "Dá uma olhada no mapa.",
@@ -171,7 +180,7 @@ const SERIO_PHRASES = {
   ]
 };
 
-const MEME_PHRASES = {
+const MEME_PHRASES: PhraseSet = {
   mapa: [
     "Mapa não é enfeite, dá uma olhada aí.",
     "Confere o minimapa antes de virar clipe de erro.",
@@ -298,7 +307,7 @@ const MEME_PHRASES = {
   ]
 };
 
-const PUTO_PHRASES = {
+const PUTO_PHRASES: PhraseSet = {
   mapa: [
     "Olha a porra do minimapa.",
     "Mapa existe, caralho. Usa.",
@@ -425,7 +434,7 @@ const PUTO_PHRASES = {
   ]
 };
 
-export const MESSAGE_MODE_PROFILES = {
+export const MESSAGE_MODE_PROFILES: Record<MessageMode, MessageModeProfile> = {
   serio: {
     label: "Sério",
     systemStyle: [
@@ -467,30 +476,30 @@ export const MESSAGE_MODE_PROFILES = {
   }
 };
 
-export function normalizeMessageMode(mode) {
-  return MESSAGE_MODE_PROFILES[mode] ? mode : "serio";
+export function normalizeMessageMode(mode: string): MessageMode {
+  return mode in MESSAGE_MODE_PROFILES ? (mode as MessageMode) : "serio";
 }
 
-export function getActiveMessageMode() {
+export function getActiveMessageMode(): MessageMode {
   return normalizeMessageMode(settings.coachMessageMode);
 }
 
-export function getMessageModeProfile(mode = settings.coachMessageMode) {
+export function getMessageModeProfile(mode = settings.coachMessageMode): MessageModeProfile {
   return MESSAGE_MODE_PROFILES[normalizeMessageMode(mode)];
 }
 
-export function getPhraseSet(key, mode = settings.coachMessageMode) {
+export function getPhraseSet(key: string, mode = settings.coachMessageMode): string[] {
   const normalized = normalizeMessageMode(mode);
   return MESSAGE_MODE_PROFILES[normalized].phrases[key] ?? SERIO_PHRASES[key] ?? [];
 }
 
-export function pickModePhrase(key, mode = settings.coachMessageMode) {
+export function pickModePhrase(key: string, mode = settings.coachMessageMode): string {
   const variants = getPhraseSet(key, mode);
   if (variants.length === 0) return "";
   return variants[Math.floor(Math.random() * variants.length)];
 }
 
-export function buildSystemPrompt(mode = settings.coachMessageMode) {
+export function buildSystemPrompt(mode = settings.coachMessageMode): string {
   const profile = getMessageModeProfile(mode);
   return [
     ...SYSTEM_PROMPT_INTRO,
@@ -501,7 +510,7 @@ export function buildSystemPrompt(mode = settings.coachMessageMode) {
   ].join("\n");
 }
 
-export function buildMatchupPrompt(mode = settings.coachMessageMode) {
+export function buildMatchupPrompt(mode = settings.coachMessageMode): string {
   const profile = getMessageModeProfile(mode);
   return [
     ...MATCHUP_PROMPT_INTRO,
@@ -514,7 +523,7 @@ export function buildMatchupPrompt(mode = settings.coachMessageMode) {
 
 export const PHRASES = SERIO_PHRASES;
 
-export const ITEM_TAGS = {
+export const ITEM_TAGS: Record<string, string[]> = {
   antiCura: [
     "Lembrete Mortal",
     "Morellonomicon",
@@ -543,7 +552,7 @@ export const ITEM_TAGS = {
   ]
 };
 
-export const CATEGORY_COOLDOWNS = {
+export const CATEGORY_COOLDOWNS: Record<string, number> = {
   mapa: 50,
   ouroParado: 120,
   inimigoFed: 120,

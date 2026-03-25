@@ -1,43 +1,45 @@
-export class LoopState {
+import type { LoopStateShape } from "./types";
+
+export class LoopState implements LoopStateShape {
   lastCoachingAt = 0;
   lastMapReminderAt = 0;
   lastSeenEventCount = 0;
   lastActiveMajorItemCount = 0;
-  enemyThreatItemCount = new Map();
-  announcedKeys = new Set();
-  lastAnalyzedGameTime = null;
+  enemyThreatItemCount = new Map<string, number>();
+  announcedKeys = new Set<string>();
+  lastAnalyzedGameTime: number | null = null;
   playerDeathCount = 0;
   matchupDone = false;
   openingGreetingDone = false;
   lastActiveLevel = 0;
   lastEnemyLaneLevel = 0;
-  seenActiveItemIds = new Set();
-  seenEnemyItemIds = new Map();
-  seenEnemyCounterTags = new Set();
+  seenActiveItemIds = new Set<number>();
+  seenEnemyItemIds = new Map<string, Set<number>>();
+  seenEnemyCounterTags = new Set<string>();
   hasLoggedWaitingState = false;
-  lastGameTime = null;
-  lastMessageTimes = new Map();
-  pendingTriggers = [];
+  lastGameTime: number | null = null;
+  lastMessageTimes = new Map<string, number>();
+  pendingTriggers: string[] = [];
 
-  queueTriggers(triggers) {
+  queueTriggers(triggers: string[]): void {
     this.pendingTriggers.push(...triggers);
   }
 
-  drainPendingTriggers() {
+  drainPendingTriggers(): string[] {
     const drained = this.pendingTriggers.splice(0);
     return drained;
   }
 
-  canRepeatMessage(messageKey, gameTime, cooldownSeconds) {
+  canRepeatMessage(messageKey: string, gameTime: number, cooldownSeconds: number): boolean {
     const lastTime = this.lastMessageTimes.get(messageKey) ?? 0;
     return gameTime - lastTime >= cooldownSeconds;
   }
 
-  markMessageSpoken(messageKey, gameTime) {
+  markMessageSpoken(messageKey: string, gameTime: number): void {
     this.lastMessageTimes.set(messageKey, gameTime);
   }
 
-  reset() {
+  reset(): void {
     this.lastCoachingAt = 0;
     this.lastMapReminderAt = 0;
     this.lastSeenEventCount = 0;
@@ -58,7 +60,7 @@ export class LoopState {
     this.pendingTriggers = [];
   }
 
-  detectGameReset(currentGameTime) {
+  detectGameReset(currentGameTime: number): boolean {
     if (this.lastGameTime !== null && currentGameTime < this.lastGameTime - 10) {
       return true;
     }
@@ -66,6 +68,6 @@ export class LoopState {
   }
 }
 
-export function sleep(ms) {
+export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }

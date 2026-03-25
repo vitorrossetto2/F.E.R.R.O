@@ -1,5 +1,5 @@
-import { getAll } from "../services/config-service.js";
-import type { FerroConfig } from "../../shared/types.js";
+import { getAll } from "../services/config-service";
+import type { FerroConfig } from "../../shared/types";
 
 /**
  * Populates process.env with values from electron-store,

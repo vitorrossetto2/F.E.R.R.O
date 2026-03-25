@@ -1,4 +1,4 @@
-import type { TabId } from "../../App.js";
+import type { TabId } from "../../App";
 
 interface Props {
   activeTab: TabId;
@@ -6,8 +6,8 @@ interface Props {
 }
 
 const tabs: { id: TabId; label: string }[] = [
-  { id: "dashboard", label: "Dashboard" },
-  { id: "match", label: "Partida" },
+  { id: "dashboard", label: "Início" },
+  { id: "match", label: "Última Partida" },
   { id: "messages", label: "Mensagens" },
   { id: "settings", label: "Configurações" },
 ];
@@ -27,6 +27,8 @@ export default function TabBar({ activeTab, onTabChange }: Props) {
               color: active ? "var(--text-primary)" : "var(--text-muted)",
               background: "transparent",
               border: "none",
+              outline: "none",
+              boxShadow: "none",
               cursor: "pointer",
               borderRadius: "var(--radius-sm)",
             }}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { VoiceOption, TTSProviderType } from "../../../shared/types.js";
+import type { VoiceOption, TTSProviderType } from "../../../shared/types";
 
 interface Props {
   provider: TTSProviderType;

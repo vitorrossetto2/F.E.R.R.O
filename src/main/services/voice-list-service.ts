@@ -4,8 +4,8 @@ import path from "path";
 import https from "https";
 import { gunzipSync, brotliDecompressSync, inflateSync } from "zlib";
 import { exec } from "child_process";
-import { getVoicesDir } from "./piper-installer.js";
-import type { VoiceOption } from "../../shared/types.js";
+import { getVoicesDir } from "./piper-installer";
+import type { VoiceOption } from "../../shared/types";
 
 export async function listPiperVoices(): Promise<VoiceOption[]> {
   const dir = getVoicesDir();

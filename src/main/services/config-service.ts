@@ -1,7 +1,7 @@
 import path from "path";
 import os from "os";
 import Store from "electron-store";
-import type { FerroConfig } from "../../shared/types.js";
+import type { FerroConfig } from "../../shared/types";
 
 const FERROCONFIG_DIR = path.join(os.homedir(), ".ferroconfig");
 

@@ -1,12 +1,12 @@
 import { ipcMain, dialog, app, type BrowserWindow } from "electron";
-import { IPC } from "../../shared/channels.js";
-import * as configService from "../services/config-service.js";
-import { engine } from "../services/engine.js";
-import { installPiper, PIPER_VOICES, getVoicesDir, getPiperDir } from "../services/piper-installer.js";
-import { listPiperVoices, listElevenLabsVoices, listSystemVoices } from "../services/voice-list-service.js";
-import { getLatestElevenLabsUsageSummary } from "../services/elevenlabs-usage-service.js";
-import { getStartupState } from "../services/startup-state.js";
-import { populateEnvFromConfig } from "../lib/settings-bridge.js";
+import { IPC } from "../../shared/channels";
+import * as configService from "../services/config-service";
+import { engine } from "../services/engine";
+import { installPiper, PIPER_VOICES, getVoicesDir, getPiperDir } from "../services/piper-installer";
+import { listPiperVoices, listElevenLabsVoices, listSystemVoices } from "../services/voice-list-service";
+import { getLatestElevenLabsUsageSummary } from "../services/elevenlabs-usage-service";
+import { getStartupState } from "../services/startup-state";
+import { populateEnvFromConfig } from "../lib/settings-bridge";
 import path from "path";
 
 const TAG = "[IPC]";
@@ -94,7 +94,7 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
       const config = configService.getAll();
       const gameDir = path.join(config.logging.logsDir, "game");
       log("match:last loading from", gameDir);
-      const mod = await import("../../core/match-analyzer.js");
+      const mod = await import("../../core/match-analyzer");
       const sessions = await mod.listSessionSummaries(gameDir);
       if (!sessions || sessions.length === 0) {
         log("match:last no sessions found");
@@ -175,7 +175,7 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
         }
       }
 
-      const configMod = await import("../../core/config.js");
+      const configMod = await import("../../core/config");
       const currentConfig = configService.getAll();
 
       // Mutate cached settings to reflect current config
@@ -199,7 +199,7 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
         currentConfig.tts.providers.piper.modelPath || "(none)"
       );
 
-      const voiceMod = await import("../../core/voice.js");
+      const voiceMod = await import("../../core/voice");
       const result = await voiceMod.speak(text);
       log("tts:test success, provider:", result?.provider, "generateMs:", result?.generateMs);
       return { ok: true, provider: result?.provider, generateMs: result?.generateMs };

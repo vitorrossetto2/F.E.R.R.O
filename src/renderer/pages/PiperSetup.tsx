@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import type { PiperProgress, PiperVoiceOption } from "../../shared/types.js";
+import type { PiperProgress, PiperVoiceOption } from "../../shared/types";
 
 interface Props {
   onComplete: () => void;

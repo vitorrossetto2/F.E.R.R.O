@@ -5,8 +5,8 @@ import os from "os";
 import https from "https";
 import http from "http";
 import type { BrowserWindow } from "electron";
-import { IPC } from "../../shared/channels.js";
-import type { PiperVoiceOption, PiperStatus } from "../../shared/types.js";
+import { IPC } from "../../shared/channels";
+import type { PiperVoiceOption, PiperStatus } from "../../shared/types";
 
 const FERROCONFIG_DIR = path.join(os.homedir(), ".ferroconfig");
 const PIPER_DIR = path.join(FERROCONFIG_DIR, "piper");

@@ -1,10 +1,10 @@
 import { app, BrowserWindow, Menu, shell } from "electron";
 import { join } from "path";
-import { initConfigStore, getAll } from "./services/config-service.js";
-import { registerIpcHandlers } from "./ipc/handlers.js";
-import { engine } from "./services/engine.js";
-import { checkPiper, getPiperDir, getVoicesDir } from "./services/piper-installer.js";
-import { getStartupState } from "./services/startup-state.js";
+import { initConfigStore, getAll } from "./services/config-service";
+import { registerIpcHandlers } from "./ipc/handlers";
+import { engine } from "./services/engine";
+import { checkPiper, getPiperDir, getVoicesDir } from "./services/piper-installer";
+import { getStartupState } from "./services/startup-state";
 
 let mainWindow: BrowserWindow | null = null;
 

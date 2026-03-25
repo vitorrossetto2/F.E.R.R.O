@@ -1,14 +1,15 @@
 import { mkdir, appendFile } from "node:fs/promises";
 import path from "node:path";
 
-import { settings } from "./config.js";
+import { settings } from "./config";
+import type { CoreLogger, LoggerPayload, LoggerSessionInfo } from "./types";
 
-function timestampForFile() {
+function timestampForFile(): string {
   return new Date().toISOString().replace(/[:.]/g, "-");
 }
 
-function makeAppender(filePath, sessionId) {
-  return async function log(type, payload = {}) {
+function makeAppender(filePath: string, sessionId: string) {
+  return async function log(type: string, payload: LoggerPayload = {}): Promise<void> {
     const entry = {
       ts: new Date().toISOString(),
       sessionId,
@@ -20,7 +21,7 @@ function makeAppender(filePath, sessionId) {
   };
 }
 
-export async function createLogger(mode = "game") {
+export async function createLogger(mode = "game"): Promise<CoreLogger> {
   const baseDir = mode === "test" ? "test" : "";
   const systemDir = path.resolve(settings.logsDir, baseDir, "system");
   const gameDir = path.resolve(settings.logsDir, baseDir, "game");
@@ -42,7 +43,7 @@ export async function createLogger(mode = "game") {
     mode
   });
 
-  async function newSession() {
+  async function newSession(): Promise<LoggerSessionInfo> {
     const newSessionId = timestampForFile();
     filePath = path.resolve(systemDir, `session-${newSessionId}.jsonl`);
     gameFilePath = path.resolve(gameDir, `session-${newSessionId}.jsonl`);
@@ -61,8 +62,8 @@ export async function createLogger(mode = "game") {
     get sessionId() { return sessionId; },
     get filePath() { return filePath; },
     get gameFilePath() { return gameFilePath; },
-    log(...args) { return log(...args); },
-    logGame(...args) { return logGame(...args); },
+    log(type: string, payload?: LoggerPayload) { return log(type, payload); },
+    logGame(type: string, payload?: LoggerPayload) { return logGame(type, payload); },
     newSession
   };
 }

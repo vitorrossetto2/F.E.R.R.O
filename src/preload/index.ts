@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
-import { IPC } from "../shared/channels.js";
+import { IPC } from "../shared/channels";
 
 function sub(channel: string, cb: (...args: unknown[]) => void) {
   const handler = (_e: Electron.IpcRendererEvent, ...args: unknown[]) => cb(...args);

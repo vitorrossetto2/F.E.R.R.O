@@ -1,7 +1,7 @@
 import { useState } from "react";
-import type { FerroConfig, LLMProviderType } from "../../../shared/types.js";
-import APIKeyInput from "./APIKeyInput.js";
-import ModelSelector from "./ModelSelector.js";
+import type { FerroConfig, LLMProviderType } from "../../../shared/types";
+import APIKeyInput from "./APIKeyInput";
+import ModelSelector from "./ModelSelector";
 
 const PROVIDERS: { id: LLMProviderType; name: string; desc: string; badge: string }[] = [
   { id: "none", name: "Sem LLM", desc: "Apenas heuristicas locais", badge: "Gratuito" },
