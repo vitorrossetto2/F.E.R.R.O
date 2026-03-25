@@ -1,0 +1,1 @@
+F.E.R.R.O — Ferramenta Estratégica de Resposta em Rift Online
