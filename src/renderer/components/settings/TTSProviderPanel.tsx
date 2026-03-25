@@ -1,5 +1,5 @@
-import { useState } from "react";
-import type { MicaConfig, TTSProviderType, PiperVoiceOption, PiperProgress } from "../../../shared/types.js";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { MicaConfig, TTSProviderType, PiperVoiceOption, PiperProgress, VoiceOption } from "../../../shared/types.js";
 import APIKeyInput from "./APIKeyInput.js";
 import VoiceSelector from "./VoiceSelector.js";
 
@@ -8,6 +8,8 @@ const PROVIDERS: { id: TTSProviderType; name: string; desc: string; badge: strin
   { id: "elevenlabs", name: "ElevenLabs", desc: "Voz natural na nuvem", badge: "Pago" },
   { id: "system", name: "Sistema", desc: "Voz do Windows", badge: "Gratuito" },
 ];
+
+const elevenVoicesCache = new Map<string, VoiceOption[]>();
 
 interface Props {
   config: MicaConfig;
@@ -23,21 +25,117 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
   const [downloadingVoice, setDownloadingVoice] = useState<string | null>(null);
   const [downloadProgress, setDownloadProgress] = useState<PiperProgress | null>(null);
   const [voiceKey, setVoiceKey] = useState(0); // force VoiceSelector refresh
+  const [elevenVoices, setElevenVoices] = useState<VoiceOption[]>([]);
+  const [loadingElevenVoices, setLoadingElevenVoices] = useState(false);
+  const [elevenVoicesMessage, setElevenVoicesMessage] = useState<string>("");
+  const attemptedAutoLoadKeys = useRef<Set<string>>(new Set());
 
   const active = config.tts.activeProvider;
+  const elevenApiKey = config.tts.providers.elevenlabs.apiKey.trim();
+  const selectedElevenVoiceId = config.tts.providers.elevenlabs.voiceId;
+  const elevenCacheKey = useMemo(() => elevenApiKey, [elevenApiKey]);
+
+  const friendlyTtsError = (provider: TTSProviderType, rawError?: string): string => {
+    const fallback = rawError || "Erro";
+    if (provider !== "elevenlabs") return fallback;
+
+    const msg = fallback.toLowerCase();
+    if (/subscription_required|current plan|ivc_not_permitted|instantly cloned voices/.test(msg)) {
+      return "A voz selecionada exige um plano ElevenLabs com acesso a instantly cloned voices.";
+    }
+    if (/http\s*401|invalid[_\s-]?api[_\s-]?key|unauthorized/.test(msg)) {
+      return "Chave da ElevenLabs inválida. Verifique a API Key e tente novamente.";
+    }
+    if (/http\s*403|forbidden|permission|permission_denied/.test(msg)) {
+      return "Sua chave da ElevenLabs não tem permissão para este recurso de voz.";
+    }
+    if (/http\s*404|voice[_\s-]?id|voice.+not\s+found/.test(msg)) {
+      return "A voz selecionada não foi encontrada. Clique em \"Buscar vozes\" e escolha outra.";
+    }
+    if (/http\s*429|quota|credit|limit|rate\s*limit|payment/.test(msg)) {
+      return "Limite de uso/créditos da ElevenLabs atingido. Verifique seu plano.";
+    }
+    return `Erro ElevenLabs: ${fallback}`;
+  };
 
   const handleTest = async () => {
     setTesting(true);
     setTestResult(null);
     try {
       // Escrito errado, fonética correta.
-      const result = (await window.micaAPI.testTTS(active, "Olá, sou Mica EIAI, seu assistente de Ligue of Lehgends.")) as { ok: boolean; error?: string };
-      setTestResult({ ok: result.ok, message: result.ok ? "Voz tocada!" : result.error || "Erro" });
+      const result = (await window.micaAPI.testTTS(active, "Olá, sou FERRO EIAI, seu assistente de Ligue of Lehgends.")) as { ok: boolean; error?: string };
+      setTestResult({
+        ok: result.ok,
+        message: result.ok ? "Voz tocada!" : friendlyTtsError(active, result.error),
+      });
     } catch {
       setTestResult({ ok: false, message: "Erro ao testar" });
     }
     setTesting(false);
   };
+
+  const loadElevenVoices = async (mode: "manual" | "auto") => {
+    if (!elevenApiKey) {
+      setElevenVoices([]);
+      setElevenVoicesMessage("Informe sua API Key para carregar as vozes.");
+      return;
+    }
+
+    setLoadingElevenVoices(true);
+    if (mode === "manual") {
+      setElevenVoicesMessage("");
+    }
+
+    try {
+      const voices = (await window.micaAPI.listElevenLabsVoices(elevenApiKey)) as VoiceOption[];
+      elevenVoicesCache.set(elevenCacheKey, voices);
+      setElevenVoices(voices);
+      if (voices.length === 0) {
+        setElevenVoicesMessage("Nenhuma voz retornada pela API.");
+      } else {
+        setElevenVoicesMessage(
+          mode === "manual"
+            ? `${voices.length} voz(es) carregada(s).`
+            : `${voices.length} voz(es) restaurada(s).`
+        );
+        const hasSelected = voices.some((v) => v.id === selectedElevenVoiceId);
+        if (!hasSelected) {
+          await onUpdate("tts.providers.elevenlabs.voiceId", voices[0].id);
+        }
+      }
+    } catch {
+      setElevenVoices([]);
+      setElevenVoicesMessage(
+        mode === "manual"
+          ? "Erro ao buscar vozes no ElevenLabs."
+          : "Nao foi possivel restaurar as vozes do ElevenLabs."
+      );
+    }
+
+    setLoadingElevenVoices(false);
+  };
+
+  useEffect(() => {
+    if (active !== "elevenlabs") return;
+    if (!elevenCacheKey) {
+      setElevenVoices([]);
+      return;
+    }
+
+    const cachedVoices = elevenVoicesCache.get(elevenCacheKey);
+    if (cachedVoices && cachedVoices.length > 0) {
+      setElevenVoices(cachedVoices);
+      if (!elevenVoicesMessage) {
+        setElevenVoicesMessage(`${cachedVoices.length} voz(es) em cache.`);
+      }
+      return;
+    }
+
+    if (selectedElevenVoiceId && !attemptedAutoLoadKeys.current.has(elevenCacheKey)) {
+      attemptedAutoLoadKeys.current.add(elevenCacheKey);
+      void loadElevenVoices("auto");
+    }
+  }, [active, elevenCacheKey, selectedElevenVoiceId, elevenVoicesMessage]);
 
   return (
     <section className="space-y-4">
@@ -185,12 +283,41 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
               value={config.tts.providers.elevenlabs.apiKey}
               onChange={(v) => onUpdate("tts.providers.elevenlabs.apiKey", v)}
             />
-            <VoiceSelector
-              provider="elevenlabs"
-              apiKey={config.tts.providers.elevenlabs.apiKey}
-              value={config.tts.providers.elevenlabs.voiceId}
-              onChange={(v) => onUpdate("tts.providers.elevenlabs.voiceId", v)}
-            />
+            <div>
+              <div className="mb-2 flex items-center gap-2">
+                <button
+                  className="btn-ghost text-sm"
+                  disabled={loadingElevenVoices || !config.tts.providers.elevenlabs.apiKey}
+                  onClick={() => void loadElevenVoices("manual")}
+                >
+                  {loadingElevenVoices ? "Buscando..." : "Buscar vozes"}
+                </button>
+                {elevenVoicesMessage && (
+                  <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                    {elevenVoicesMessage}
+                  </span>
+                )}
+              </div>
+
+              <label className="mb-1.5 block text-xs font-medium" style={{ color: "var(--text-muted)" }}>
+                Voz ElevenLabs
+              </label>
+              <select
+                className="select-field"
+                value={config.tts.providers.elevenlabs.voiceId}
+                onChange={(e) => onUpdate("tts.providers.elevenlabs.voiceId", e.target.value)}
+                disabled={loadingElevenVoices || elevenVoices.length === 0}
+              >
+                {elevenVoices.length === 0 && (
+                  <option value="">
+                    {selectedElevenVoiceId ? "Restaurando voz salva..." : "Clique em \"Buscar vozes\""}
+                  </option>
+                )}
+                {elevenVoices.map((v) => (
+                  <option key={v.id} value={v.id}>{v.name}</option>
+                ))}
+              </select>
+            </div>
           </>
         )}
 
@@ -212,6 +339,11 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
             </span>
           )}
         </div>
+        {active === "elevenlabs" && testResult && !testResult.ok && (
+          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+            Dica: confirme a API Key, clique em "Buscar vozes" e selecione uma voz válida antes de testar.
+          </p>
+        )}
       </div>
     </section>
   );

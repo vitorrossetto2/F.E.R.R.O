@@ -45,11 +45,18 @@ export function populateEnvFromConfig(): void {
 
   // TTS — always enabled
   process.env.TTS_ENABLED = "true";
-  process.env.TTS_PROVIDER = config.tts.activeProvider === "piper" ? "piper" : "say";
+  process.env.TTS_PROVIDER =
+    config.tts.activeProvider === "piper"
+      ? "piper"
+      : config.tts.activeProvider === "elevenlabs"
+        ? "elevenlabs"
+        : "say";
   process.env.TTS_VOICE = config.tts.providers.system.voice;
   process.env.PIPER_EXECUTABLE = config.tts.providers.piper.executablePath;
   process.env.PIPER_MODEL_PATH = config.tts.providers.piper.modelPath;
   process.env.PIPER_SPEAKER = String(config.tts.providers.piper.speaker);
+  process.env.ELEVENLABS_API_KEY = config.tts.providers.elevenlabs.apiKey;
+  process.env.ELEVENLABS_VOICE_ID = config.tts.providers.elevenlabs.voiceId;
 
   // Logging
   process.env.LOGS_DIR = config.logging.logsDir;

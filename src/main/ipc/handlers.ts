@@ -10,6 +10,29 @@ import path from "path";
 const TAG = "[IPC]";
 function log(...args: unknown[]) { console.log(TAG, ...args); }
 
+function safeAsciiPreview(text: string, maxLen = 30): string {
+  // Keep log output stable on Windows terminals with non-UTF8 code pages.
+  const normalized = text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\x20-\x7E]/g, "?");
+  return normalized.length > maxLen ? normalized.slice(0, maxLen) + "..." : normalized;
+}
+
+function keyFingerprint(apiKey: string): string {
+  const clean = apiKey.trim();
+  if (!clean) return "none";
+  if (clean.length <= 8) return `${clean.slice(0, 2)}...(${clean.length})`;
+  return `${clean.slice(0, 4)}...${clean.slice(-4)} (${clean.length})`;
+}
+
+function normalizeTtsProvider(provider: string): "piper" | "elevenlabs" | "say" {
+  const normalized = provider.trim().toLowerCase();
+  if (normalized === "piper") return "piper";
+  if (normalized === "elevenlabs") return "elevenlabs";
+  return "say";
+}
+
 export function registerIpcHandlers(mainWindow: BrowserWindow): void {
   // ── Config ──────────────────────────────────────────
   ipcMain.handle(IPC.CONFIG_GET, () => {
@@ -77,10 +100,26 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
   });
 
   ipcMain.handle(IPC.VOICES_LIST_ELEVENLABS, async (_e, apiKey: string) => {
-    log("voices:list-elevenlabs", apiKey ? "(key provided)" : "(no key)");
-    const voices = await listElevenLabsVoices(apiKey);
-    log("voices:list-elevenlabs found", voices.length, "voices");
-    return voices;
+    const started = Date.now();
+    const fingerprint = keyFingerprint(apiKey);
+    log("voices:list-elevenlabs start", "key:", fingerprint);
+    try {
+      const voices = await listElevenLabsVoices(apiKey);
+      const elapsed = Date.now() - started;
+      const sample = voices.slice(0, 3).map((v) => `${v.name}(${v.id.slice(0, 6)}...)`).join(", ");
+      log(
+        "voices:list-elevenlabs done",
+        "count:", voices.length,
+        "ms:", elapsed,
+        sample ? "sample:" : "",
+        sample || ""
+      );
+      return voices;
+    } catch (error) {
+      const elapsed = Date.now() - started;
+      console.error(TAG, "voices:list-elevenlabs error after", elapsed, "ms:", (error as Error).message);
+      return [];
+    }
   });
 
   ipcMain.handle(IPC.VOICES_LIST_SYSTEM, async () => {
@@ -91,22 +130,56 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
 
   // ── TTS Test ────────────────────────────────────────
   ipcMain.handle(IPC.TTS_TEST, async (_e, _provider: string, text: string) => {
-    log("tts:test provider:", _provider, "text:", text.slice(0, 30) + "...");
+    log("tts:test provider:", _provider, "text:", safeAsciiPreview(text));
     try {
       populateEnvFromConfig();
-      const configMod = await import("../../core/config.js");
       const config = configService.getAll();
-      const ttsProvider = config.tts.activeProvider === "piper" ? "piper" : "say";
+      const configProvider =
+        config.tts.activeProvider === "piper"
+          ? "piper"
+          : config.tts.activeProvider === "elevenlabs"
+            ? "elevenlabs"
+            : "say";
+      const requestedProvider = normalizeTtsProvider(_provider);
+      const ttsProvider = requestedProvider;
+
+      if (requestedProvider !== configProvider) {
+        log("tts:test provider mismatch", "requested:", requestedProvider, "config:", configProvider);
+      }
+
+      // Recover gracefully when Piper is selected but modelPath was never set.
+      if (ttsProvider === "piper" && !config.tts.providers.piper.modelPath) {
+        const piperVoices = await listPiperVoices();
+        if (piperVoices.length > 0) {
+          const fallbackModelPath = piperVoices[0].id;
+          configService.setPath("tts.providers.piper.modelPath", fallbackModelPath);
+          log("tts:test auto-selected piper model:", fallbackModelPath);
+        }
+      }
+
+      const configMod = await import("../../core/config.js");
+      const currentConfig = configService.getAll();
 
       // Mutate cached settings to reflect current config
       configMod.settings.ttsProvider = ttsProvider;
       configMod.settings.ttsEnabled = true;
-      configMod.settings.piperExecutable = config.tts.providers.piper.executablePath;
-      configMod.settings.piperModelPath = config.tts.providers.piper.modelPath;
-      configMod.settings.piperSpeaker = config.tts.providers.piper.speaker;
-      configMod.settings.ttsVoice = config.tts.providers.system.voice;
+      configMod.settings.piperExecutable = currentConfig.tts.providers.piper.executablePath;
+      configMod.settings.piperModelPath = currentConfig.tts.providers.piper.modelPath;
+      configMod.settings.piperSpeaker = currentConfig.tts.providers.piper.speaker;
+      configMod.settings.elevenlabsApiKey = currentConfig.tts.providers.elevenlabs.apiKey;
+      configMod.settings.elevenlabsVoiceId = currentConfig.tts.providers.elevenlabs.voiceId;
+      configMod.settings.ttsVoice = currentConfig.tts.providers.system.voice;
 
-      log("tts:test using", ttsProvider, "exe:", configMod.settings.piperExecutable, "model:", configMod.settings.piperModelPath);
+      log(
+        "tts:test using",
+        ttsProvider,
+        "voiceId:",
+        currentConfig.tts.providers.elevenlabs.voiceId || "(none)",
+        "systemVoice:",
+        currentConfig.tts.providers.system.voice || "(default)",
+        "piperModel:",
+        currentConfig.tts.providers.piper.modelPath || "(none)"
+      );
 
       const voiceMod = await import("../../core/voice.js");
       const result = await voiceMod.speak(text);

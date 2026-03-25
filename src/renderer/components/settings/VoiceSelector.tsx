@@ -41,6 +41,14 @@ export default function VoiceSelector({ provider, apiKey, value, onChange }: Pro
     load();
   }, [provider, apiKey]);
 
+  useEffect(() => {
+    if (loading || voices.length === 0) return;
+    const hasSelectedVoice = voices.some((v) => v.id === value);
+    if (!value || !hasSelectedVoice) {
+      onChange(voices[0].id);
+    }
+  }, [loading, voices, value, onChange]);
+
   const label = provider === "piper" ? "Voz instalada" : provider === "elevenlabs" ? "Voz ElevenLabs" : "Voz do sistema";
 
   return (
