@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { MicaConfig, TTSProviderType, PiperVoiceOption, PiperProgress, VoiceOption } from "../../../shared/types.js";
+import type { FerroConfig, StartupState, TTSProviderType, PiperVoiceOption, PiperProgress, VoiceOption } from "../../../shared/types.js";
 import APIKeyInput from "./APIKeyInput.js";
 import VoiceSelector from "./VoiceSelector.js";
 
@@ -12,7 +12,7 @@ const PROVIDERS: { id: TTSProviderType; name: string; desc: string; badge: strin
 const elevenVoicesCache = new Map<string, VoiceOption[]>();
 
 interface Props {
-  config: MicaConfig;
+  config: FerroConfig;
   onUpdate: (path: string, value: unknown) => Promise<void>;
 }
 
@@ -28,12 +28,18 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
   const [elevenVoices, setElevenVoices] = useState<VoiceOption[]>([]);
   const [loadingElevenVoices, setLoadingElevenVoices] = useState(false);
   const [elevenVoicesMessage, setElevenVoicesMessage] = useState<string>("");
+  const [startupState, setStartupState] = useState<StartupState | null>(null);
   const attemptedAutoLoadKeys = useRef<Set<string>>(new Set());
 
   const active = config.tts.activeProvider;
   const elevenApiKey = config.tts.providers.elevenlabs.apiKey.trim();
   const selectedElevenVoiceId = config.tts.providers.elevenlabs.voiceId;
   const elevenCacheKey = useMemo(() => elevenApiKey, [elevenApiKey]);
+  const piperNeedsRepair = Boolean(
+    startupState &&
+    startupState.activeTtsProvider === "piper" &&
+    (!startupState.piperBinaryInstalled || !startupState.piperModelConfigured || !startupState.piperModelExists)
+  );
 
   const friendlyTtsError = (provider: TTSProviderType, rawError?: string): string => {
     const fallback = rawError || "Erro";
@@ -63,7 +69,7 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
     setTestResult(null);
     try {
       // Escrito errado, fonética correta.
-      const result = (await window.micaAPI.testTTS(active, "Olá, sou FERRO EIAI, seu assistente de Ligue of Lehgends.")) as { ok: boolean; error?: string };
+      const result = (await window.ferroAPI.testTTS(active, "Olá, sou FERRO EIAI, seu assistente de Ligue of Lehgends.")) as { ok: boolean; error?: string };
       setTestResult({
         ok: result.ok,
         message: result.ok ? "Voz tocada!" : friendlyTtsError(active, result.error),
@@ -72,6 +78,20 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
       setTestResult({ ok: false, message: "Erro ao testar" });
     }
     setTesting(false);
+  };
+
+  const refreshStartupState = async () => {
+    const next = (await window.ferroAPI.getStartupState()) as StartupState;
+    setStartupState(next);
+    return next;
+  };
+
+  const maybeStartEngine = async (next: StartupState) => {
+    if (!next.engineAutoStartAllowed) return;
+    const engine = await window.ferroAPI.getEngineStatus() as { status?: string };
+    if (engine.status === "idle" || engine.status === "error") {
+      await window.ferroAPI.startEngine();
+    }
   };
 
   const loadElevenVoices = async (mode: "manual" | "auto") => {
@@ -87,7 +107,7 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
     }
 
     try {
-      const voices = (await window.micaAPI.listElevenLabsVoices(elevenApiKey)) as VoiceOption[];
+      const voices = (await window.ferroAPI.listElevenLabsVoices(elevenApiKey)) as VoiceOption[];
       elevenVoicesCache.set(elevenCacheKey, voices);
       setElevenVoices(voices);
       if (voices.length === 0) {
@@ -137,6 +157,14 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
     }
   }, [active, elevenCacheKey, selectedElevenVoiceId, elevenVoicesMessage]);
 
+  useEffect(() => {
+    void refreshStartupState();
+    const unsub = window.ferroAPI.onConfigChanged(() => {
+      void refreshStartupState();
+    });
+    return unsub;
+  }, []);
+
   return (
     <section className="space-y-4">
       <h3
@@ -185,6 +213,29 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
       <div className="card-glass space-y-4 p-5">
         {active === "piper" && (
           <>
+            <div
+              className="rounded-xl px-3 py-3 text-sm"
+              style={{
+                background: piperNeedsRepair ? "rgba(245, 166, 35, 0.12)" : "rgba(52, 211, 153, 0.08)",
+                border: `1px solid ${piperNeedsRepair ? "rgba(245, 166, 35, 0.25)" : "rgba(52, 211, 153, 0.18)"}`,
+                color: "var(--text-primary)",
+              }}
+            >
+              <p className="font-medium">
+                {piperNeedsRepair ? "Piper precisa de reparo" : "Piper pronto para uso"}
+              </p>
+              <p className="mt-1" style={{ color: "var(--text-secondary)" }}>
+                {!startupState
+                  ? "Verificando instalacao do Piper..."
+                  : !startupState.piperBinaryInstalled
+                    ? "O binario do Piper nao esta instalado. Baixe uma voz para reinstalar o motor e o modelo."
+                    : !startupState.piperModelConfigured
+                      ? "Nenhuma voz Piper esta configurada. Selecione uma voz instalada ou baixe uma nova."
+                      : !startupState.piperModelExists
+                        ? "A voz configurada nao foi encontrada no disco. Baixe novamente ou selecione outra voz."
+                        : "Binario instalado e voz configurada corretamente."}
+              </p>
+            </div>
             <VoiceSelector
               key={voiceKey}
               provider="piper"
@@ -197,8 +248,8 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
                 onClick={async () => {
                   if (!showDownload) {
                     const [voices, installed] = await Promise.all([
-                      window.micaAPI.getAvailablePiperVoices() as Promise<PiperVoiceOption[]>,
-                      window.micaAPI.listPiperVoices() as Promise<{ id: string; name: string }[]>,
+                      window.ferroAPI.getAvailablePiperVoices() as Promise<PiperVoiceOption[]>,
+                      window.ferroAPI.listPiperVoices() as Promise<{ id: string; name: string }[]>,
                     ]);
                     setAvailableVoices(voices);
                     setInstalledFiles(installed.map((v) => v.id));
@@ -240,7 +291,7 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
                           onClick={async () => {
                             setDownloadingVoice(v.id);
                             setDownloadProgress(null);
-                            const unsub = window.micaAPI.onPiperProgress((p) => {
+                            const unsub = window.ferroAPI.onPiperProgress((p) => {
                               const prog = p as PiperProgress;
                               setDownloadProgress(prog);
                               if (prog.stage === "done" || prog.stage === "error") {
@@ -252,7 +303,11 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
                                 unsub();
                               }
                             });
-                            await window.micaAPI.installPiper(v.id);
+                            const result = await window.ferroAPI.installPiper(v.id) as { ok: boolean };
+                            if (result.ok) {
+                              const next = await refreshStartupState();
+                              await maybeStartEngine(next);
+                            }
                           }}
                         >
                           {downloadingVoice === v.id ? `${downloadProgress?.percent ?? 0}%` : "Baixar"}

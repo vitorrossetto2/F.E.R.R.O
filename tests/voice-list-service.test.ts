@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import path from "path";
 import os from "os";
 
-const VOICES_DIR = path.join(os.homedir(), ".micaai", "voices");
+const VOICES_DIR = path.join(os.homedir(), ".ferroconfig", "voices");
 
 vi.mock("fs", async () => {
   const actual = await vi.importActual("fs");
@@ -45,7 +45,7 @@ describe("voice-list-service", () => {
 
       for (const v of voices) {
         expect(path.isAbsolute(v.id)).toBe(true);
-        expect(v.id).toContain(".micaai");
+        expect(v.id).toContain(".ferroconfig");
       }
     });
   });

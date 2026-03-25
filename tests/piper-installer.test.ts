@@ -3,9 +3,9 @@ import os from "os";
 import path from "path";
 
 describe("piper-installer", () => {
-  const MICAAI_DIR = path.join(os.homedir(), ".micaai");
-  const PIPER_DIR = path.join(MICAAI_DIR, "piper");
-  const VOICES_DIR = path.join(MICAAI_DIR, "voices");
+  const FERROCONFIG_DIR = path.join(os.homedir(), ".ferroconfig");
+  const PIPER_DIR = path.join(FERROCONFIG_DIR, "piper");
+  const VOICES_DIR = path.join(FERROCONFIG_DIR, "voices");
 
   it("PIPER_VOICES has exactly 4 voices", async () => {
     const { PIPER_VOICES } = await import("../src/main/services/piper-installer.js");
@@ -29,12 +29,12 @@ describe("piper-installer", () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it("getPiperDir returns path inside ~/.micaai", async () => {
+  it("getPiperDir returns path inside ~/.ferroconfig", async () => {
     const { getPiperDir } = await import("../src/main/services/piper-installer.js");
     expect(getPiperDir()).toBe(PIPER_DIR);
   });
 
-  it("getVoicesDir returns path inside ~/.micaai", async () => {
+  it("getVoicesDir returns path inside ~/.ferroconfig", async () => {
     const { getVoicesDir } = await import("../src/main/services/piper-installer.js");
     expect(getVoicesDir()).toBe(VOICES_DIR);
   });

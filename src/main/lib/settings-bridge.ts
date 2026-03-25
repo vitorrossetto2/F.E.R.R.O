@@ -1,5 +1,5 @@
 import { getAll } from "../services/config-service.js";
-import type { MicaConfig } from "../../shared/types.js";
+import type { FerroConfig } from "../../shared/types.js";
 
 /**
  * Populates process.env with values from electron-store,

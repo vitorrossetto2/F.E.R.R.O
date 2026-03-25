@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import type { MicaConfig } from "../../shared/types.js";
+import type { FerroConfig } from "../../shared/types.js";
 import LLMProviderPanel from "../components/settings/LLMProviderPanel.js";
 import TTSProviderPanel from "../components/settings/TTSProviderPanel.js";
 
 export default function Settings() {
-  const [config, setConfig] = useState<MicaConfig | null>(null);
+  const [config, setConfig] = useState<FerroConfig | null>(null);
 
   useEffect(() => {
-    window.micaAPI.getConfig().then((c) => setConfig(c as MicaConfig));
-    const unsub = window.micaAPI.onConfigChanged(() => {
-      window.micaAPI.getConfig().then((c) => setConfig(c as MicaConfig));
+    window.ferroAPI.getConfig().then((c) => setConfig(c as FerroConfig));
+    const unsub = window.ferroAPI.onConfigChanged(() => {
+      window.ferroAPI.getConfig().then((c) => setConfig(c as FerroConfig));
     });
     return unsub;
   }, []);
@@ -23,7 +23,7 @@ export default function Settings() {
   }
 
   const updateConfig = async (path: string, value: unknown) => {
-    await window.micaAPI.setConfig(path, value);
+    await window.ferroAPI.setConfig(path, value);
     setConfig((prev) => {
       if (!prev) return prev;
       const clone = structuredClone(prev);

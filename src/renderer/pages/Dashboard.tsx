@@ -21,9 +21,9 @@ export default function Dashboard() {
   const [engine, setEngine] = useState<EngineState>(DEFAULT_STATE);
 
   useEffect(() => {
-    window.micaAPI.getEngineStatus().then((s) => setEngine(s as EngineState));
-    const unsub = window.micaAPI.onEngineEvent(() => {
-      window.micaAPI.getEngineStatus().then((s) => setEngine(s as EngineState));
+    window.ferroAPI.getEngineStatus().then((s) => setEngine(s as EngineState));
+    const unsub = window.ferroAPI.onEngineEvent(() => {
+      window.ferroAPI.getEngineStatus().then((s) => setEngine(s as EngineState));
     });
     return unsub;
   }, []);

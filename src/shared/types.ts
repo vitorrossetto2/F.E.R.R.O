@@ -57,7 +57,7 @@ export interface MessageCategoryConfig {
   cooldownSeconds: number;
 }
 
-export interface MicaConfig {
+export interface FerroConfig {
   llm: {
     activeProvider: LLMProviderType;
     providers: {
@@ -110,9 +110,18 @@ export interface MicaConfig {
   };
   app: {
     onboardingCompleted: boolean;
-    piperInstalled: boolean;
     windowBounds: { x: number; y: number; width: number; height: number } | null;
   };
+}
+
+export interface StartupState {
+  onboardingCompleted: boolean;
+  needsOnboarding: boolean;
+  piperBinaryInstalled: boolean;
+  piperModelConfigured: boolean;
+  piperModelExists: boolean;
+  activeTtsProvider: TTSProviderType;
+  engineAutoStartAllowed: boolean;
 }
 
 // ── Voice / Model selectors ────────────────────────────

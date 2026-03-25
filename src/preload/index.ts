@@ -42,8 +42,6 @@ const api = {
   testLLM: (provider: string) => ipcRenderer.invoke(IPC.LLM_TEST, provider),
 
   // Piper
-  checkPiper: () => ipcRenderer.invoke(IPC.PIPER_CHECK),
-  getPiperStatus: () => ipcRenderer.invoke(IPC.PIPER_STATUS),
   getAvailablePiperVoices: () => ipcRenderer.invoke(IPC.PIPER_AVAILABLE_VOICES),
   installPiper: (voiceId: string) => ipcRenderer.invoke(IPC.PIPER_INSTALL, voiceId),
   onPiperProgress: (cb: (data: unknown) => void) => sub(IPC.PIPER_PROGRESS, cb),
@@ -51,10 +49,10 @@ const api = {
   // System
   selectDirectory: () => ipcRenderer.invoke(IPC.DIALOG_SELECT_DIR),
   getAppVersion: () => ipcRenderer.invoke(IPC.APP_VERSION),
-  isFirstRun: () => ipcRenderer.invoke(IPC.APP_IS_FIRST_RUN),
+  getStartupState: () => ipcRenderer.invoke(IPC.APP_GET_STARTUP_STATE),
   completeOnboarding: () => ipcRenderer.invoke(IPC.APP_COMPLETE_ONBOARDING),
 };
 
-export type MicaAPI = typeof api;
+export type FerroAPI = typeof api;
 
-contextBridge.exposeInMainWorld("micaAPI", api);
+contextBridge.exposeInMainWorld("ferroAPI", api);

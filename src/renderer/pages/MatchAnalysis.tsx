@@ -15,7 +15,7 @@ export default function MatchAnalysis() {
   const [data, setData] = useState<MatchData | null | undefined>(undefined);
 
   useEffect(() => {
-    window.micaAPI.getLastMatch().then((d) => setData(d as MatchData | null));
+    window.ferroAPI.getLastMatch().then((d) => setData(d as MatchData | null));
   }, []);
 
   // Loading

@@ -78,18 +78,18 @@ describe("config-service", () => {
     expect(getAll().tts.activeProvider).toBe("piper");
   });
 
-  it("piper executablePath points to ~/.micaai/piper/piper.exe", async () => {
+  it("piper executablePath points to ~/.ferroconfig/piper/piper.exe", async () => {
     const { initConfigStore, getAll } = await import("../src/main/services/config-service.js");
     initConfigStore();
     const p = getAll().tts.providers.piper.executablePath;
-    expect(p).toContain(".micaai");
+    expect(p).toContain(".ferroconfig");
     expect(p).toContain("piper.exe");
   });
 
-  it("logs dir points to ~/.micaai/logs", async () => {
+  it("logs dir points to ~/.ferroconfig/logs", async () => {
     const { initConfigStore, getAll } = await import("../src/main/services/config-service.js");
     initConfigStore();
-    expect(getAll().logging.logsDir).toContain(".micaai");
+    expect(getAll().logging.logsDir).toContain(".ferroconfig");
     expect(getAll().logging.logsDir).toContain("logs");
   });
 

@@ -71,28 +71,27 @@ export class Engine extends EventEmitter {
     this.send({ type: "status_change", status });
   }
 
-  private async loadCore() {
-    if (core) return;
+  private applyConfigToRuntime() {
+    const cfg = configService.getAll();
+    const llmEnabled = cfg.llm.activeProvider !== "none";
+    const llm = llmEnabled ? cfg.llm.providers[cfg.llm.activeProvider] : null;
+
     populateEnvFromConfig();
 
-    const [analyzerMod, coachMod, gameMod, voiceMod, loggerMod, stateMod, configMod, constantsMod] =
-      await Promise.all([
-        import("../../core/analyzer.js"),
-        import("../../core/coach.js"),
-        import("../../core/game.js"),
-        import("../../core/voice.js"),
-        import("../../core/logger.js"),
-        import("../../core/state.js"),
-        import("../../core/config.js"),
-        import("../../core/constants.js"),
-      ]);
+    this.engineState.llmStatus = llmEnabled
+      ? this.engineState.llmStatus === "calling"
+        ? "calling"
+        : "idle"
+      : "disabled";
+    this.engineState.piperStatus = cfg.tts.providers.piper.modelPath ? "installed" : "missing";
 
-    // Mutate bundled settings with real config values
-    const cfg = configService.getAll();
-    const llm = cfg.llm.activeProvider !== "none" ? cfg.llm.providers[cfg.llm.activeProvider] : null;
-    const s = configMod.settings;
+    if (!core) return;
+
+    const s = core.settings;
     Object.assign(s, {
-      zaiApiKey: llm?.apiKey ?? "", zaiEndpoint: llm?.endpoint ?? "", zaiModel: llm?.model ?? "",
+      zaiApiKey: llm?.apiKey ?? "",
+      zaiEndpoint: llm?.endpoint ?? "",
+      zaiModel: llm?.model ?? "",
       liveClientBaseUrl: "https://127.0.0.1:2999",
       pollIntervalSeconds: cfg.game.pollIntervalSeconds,
       coachingIntervalSeconds: cfg.game.coachingIntervalSeconds,
@@ -110,17 +109,46 @@ export class Engine extends EventEmitter {
       objectiveThirtySecondsCallSeconds: cfg.objectives.thirtySecondsCall,
       objectiveTenSecondsCallSeconds: cfg.objectives.tenSecondsCall,
       ttsEnabled: true,
-      ttsProvider: cfg.tts.activeProvider === "piper" ? "piper" : "say",
+      ttsProvider:
+        cfg.tts.activeProvider === "piper"
+          ? "piper"
+          : cfg.tts.activeProvider === "elevenlabs"
+            ? "elevenlabs"
+            : "say",
       ttsVoice: cfg.tts.providers.system.voice,
       piperExecutable: cfg.tts.providers.piper.executablePath,
       piperModelPath: cfg.tts.providers.piper.modelPath,
       piperSpeaker: cfg.tts.providers.piper.speaker,
+      elevenlabsApiKey: cfg.tts.providers.elevenlabs.apiKey,
+      elevenlabsVoiceId: cfg.tts.providers.elevenlabs.voiceId,
       logsDir: cfg.logging.logsDir,
       logSnapshots: cfg.logging.logSnapshots,
       logLlmPayloads: cfg.logging.logLlmPayloads,
     });
+  }
 
-    console.log("[Engine] Core loaded. logsDir:", s.logsDir, "piperExe:", s.piperExecutable, "model:", s.piperModelPath);
+  public syncConfig() {
+    this.applyConfigToRuntime();
+    this.send({ type: "status_change", status: this.engineState.status });
+  }
+
+  private async loadCore() {
+    if (core) return;
+    this.applyConfigToRuntime();
+
+    const [analyzerMod, coachMod, gameMod, voiceMod, loggerMod, stateMod, configMod, constantsMod] =
+      await Promise.all([
+        import("../../core/analyzer.js"),
+        import("../../core/coach.js"),
+        import("../../core/game.js"),
+        import("../../core/voice.js"),
+        import("../../core/logger.js"),
+        import("../../core/state.js"),
+        import("../../core/config.js"),
+        import("../../core/constants.js"),
+      ]);
+
+    console.log("[Engine] Core loaded. logsDir:", configMod.settings.logsDir, "piperExe:", configMod.settings.piperExecutable, "model:", configMod.settings.piperModelPath);
 
     core = {
       analyzeSnapshot: analyzerMod.analyzeSnapshot,
@@ -135,6 +163,8 @@ export class Engine extends EventEmitter {
       settings: configMod.settings,
       PHRASES: constantsMod.PHRASES,
     };
+
+    this.applyConfigToRuntime();
   }
 
   async start() {

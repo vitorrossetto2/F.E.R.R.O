@@ -2,8 +2,9 @@ import { ipcMain, dialog, app, type BrowserWindow } from "electron";
 import { IPC } from "../../shared/channels.js";
 import * as configService from "../services/config-service.js";
 import { engine } from "../services/engine.js";
-import { checkPiper, installPiper, PIPER_VOICES, getVoicesDir, getPiperDir } from "../services/piper-installer.js";
+import { installPiper, PIPER_VOICES, getVoicesDir, getPiperDir } from "../services/piper-installer.js";
 import { listPiperVoices, listElevenLabsVoices, listSystemVoices } from "../services/voice-list-service.js";
+import { getStartupState } from "../services/startup-state.js";
 import { populateEnvFromConfig } from "../lib/settings-bridge.js";
 import path from "path";
 
@@ -33,6 +34,10 @@ function normalizeTtsProvider(provider: string): "piper" | "elevenlabs" | "say" 
   return "say";
 }
 
+function emitConfigChanged(mainWindow: BrowserWindow, configPath: string, value: unknown): void {
+  mainWindow.webContents.send(IPC.CONFIG_CHANGED, { path: configPath, value });
+}
+
 export function registerIpcHandlers(mainWindow: BrowserWindow): void {
   // ── Config ──────────────────────────────────────────
   ipcMain.handle(IPC.CONFIG_GET, () => {
@@ -42,12 +47,15 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
   ipcMain.handle(IPC.CONFIG_SET, (_e, configPath: string, value: unknown) => {
     log("config:set", configPath, typeof value === "string" && value.length > 20 ? value.slice(0, 20) + "..." : value);
     configService.setPath(configPath, value);
-    mainWindow.webContents.send(IPC.CONFIG_CHANGED, { path: configPath, value });
+    engine.syncConfig();
+    emitConfigChanged(mainWindow, configPath, value);
   });
 
   ipcMain.handle(IPC.CONFIG_RESET, () => {
     log("config:reset");
     configService.reset();
+    engine.syncConfig();
+    emitConfigChanged(mainWindow, "config", null);
   });
 
   // ── Engine ──────────────────────────────────────────
@@ -225,13 +233,6 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
   });
 
   // ── Piper ───────────────────────────────────────────
-  ipcMain.handle(IPC.PIPER_CHECK, () => {
-    const status = checkPiper();
-    log("piper:check installed:", status.installed, status.path ?? "");
-    return status;
-  });
-
-  ipcMain.handle(IPC.PIPER_STATUS, () => checkPiper());
   ipcMain.handle(IPC.PIPER_AVAILABLE_VOICES, () => PIPER_VOICES);
 
   ipcMain.handle(IPC.PIPER_INSTALL, async (_e, voiceId: string) => {
@@ -246,7 +247,8 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
         const modelPath = path.join(voicesDir, `${voice.file}.onnx`);
         configService.setPath("tts.providers.piper.executablePath", exePath);
         configService.setPath("tts.providers.piper.modelPath", modelPath);
-        configService.setPath("app.piperInstalled", true);
+        emitConfigChanged(mainWindow, "tts.providers.piper.executablePath", exePath);
+        emitConfigChanged(mainWindow, "tts.providers.piper.modelPath", modelPath);
         log("piper:install success. exe:", exePath, "model:", modelPath);
       }
     } else {
@@ -263,15 +265,16 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
 
   ipcMain.handle(IPC.APP_VERSION, () => app.getVersion());
 
-  ipcMain.handle(IPC.APP_IS_FIRST_RUN, () => {
-    const first = configService.isFirstRun();
-    log("app:isFirstRun:", first);
-    return first;
+  ipcMain.handle(IPC.APP_GET_STARTUP_STATE, () => {
+    const startup = getStartupState();
+    log("app:getStartupState", startup);
+    return startup;
   });
 
   ipcMain.handle(IPC.APP_COMPLETE_ONBOARDING, () => {
     log("app:completeOnboarding");
     configService.setPath("app.onboardingCompleted", true);
+    emitConfigChanged(mainWindow, "app.onboardingCompleted", true);
   });
 
   log("All IPC handlers registered");

@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
  * Integration test: simulates the exact flow when user toggles a message category.
  *
  * Flow:
- * 1. Renderer calls: micaAPI.setConfig("messages.mapa.enabled", false)
+ * 1. Renderer calls: ferroAPI.setConfig("messages.mapa.enabled", false)
  * 2. IPC handler calls: configService.setPath("messages.mapa.enabled", false)
  * 3. configService.setPath calls: store.set("messages.mapa.enabled", false)
  * 4. Engine tick reads: configService.getAll().messages["mapa"].enabled

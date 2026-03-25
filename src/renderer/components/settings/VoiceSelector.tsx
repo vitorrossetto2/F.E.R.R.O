@@ -20,11 +20,11 @@ export default function VoiceSelector({ provider, apiKey, value, onChange }: Pro
       try {
         let result: VoiceOption[] = [];
         if (provider === "piper") {
-          result = (await window.micaAPI.listPiperVoices()) as VoiceOption[];
+          result = (await window.ferroAPI.listPiperVoices()) as VoiceOption[];
         } else if (provider === "elevenlabs" && apiKey) {
-          result = (await window.micaAPI.listElevenLabsVoices(apiKey)) as VoiceOption[];
+          result = (await window.ferroAPI.listElevenLabsVoices(apiKey)) as VoiceOption[];
         } else if (provider === "system") {
-          result = (await window.micaAPI.listSystemVoices()) as VoiceOption[];
+          result = (await window.ferroAPI.listSystemVoices()) as VoiceOption[];
         }
         setVoices(result);
       } catch {

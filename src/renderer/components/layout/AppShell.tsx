@@ -5,10 +5,11 @@ import TabBar from "./TabBar.js";
 interface Props {
   activeTab: TabId;
   onTabChange: (tab: TabId) => void;
+  notice?: ReactNode;
   children: ReactNode;
 }
 
-export default function AppShell({ activeTab, onTabChange, children }: Props) {
+export default function AppShell({ activeTab, onTabChange, notice, children }: Props) {
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden" style={{ background: "var(--bg-void)" }}>
       {/* Top navigation bar */}
@@ -48,6 +49,7 @@ export default function AppShell({ activeTab, onTabChange, children }: Props) {
       {/* Page content */}
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-4xl px-6 py-10">
+          {notice}
           {children}
         </div>
       </main>

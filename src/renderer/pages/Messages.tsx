@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { MicaConfig, MessageCategoryConfig } from "../../shared/types.js";
+import type { FerroConfig, MessageCategoryConfig } from "../../shared/types.js";
 
 const CATEGORIES = [
   { id: "objetivo", label: "Objetivos", desc: "Dragão, Barão, Arauto, Grubs" },
@@ -41,12 +41,12 @@ function estimateCost(messages: Record<string, MessageCategoryConfig>): string {
 }
 
 export default function Messages() {
-  const [config, setConfig] = useState<MicaConfig | null>(null);
+  const [config, setConfig] = useState<FerroConfig | null>(null);
 
   useEffect(() => {
-    window.micaAPI.getConfig().then((c) => setConfig(c as MicaConfig));
-    const unsub = window.micaAPI.onConfigChanged(() => {
-      window.micaAPI.getConfig().then((c) => setConfig(c as MicaConfig));
+    window.ferroAPI.getConfig().then((c) => setConfig(c as FerroConfig));
+    const unsub = window.ferroAPI.onConfigChanged(() => {
+      window.ferroAPI.getConfig().then((c) => setConfig(c as FerroConfig));
     });
     return unsub;
   }, []);
@@ -65,7 +65,7 @@ export default function Messages() {
       clone.messages[id] = { ...clone.messages[id], enabled: newEnabled };
       return clone;
     });
-    await window.micaAPI.setConfig(`messages.${id}.enabled`, newEnabled);
+    await window.ferroAPI.setConfig(`messages.${id}.enabled`, newEnabled);
   };
 
   const setCooldown = async (id: string, value: number) => {
@@ -78,7 +78,7 @@ export default function Messages() {
       clone.messages[id] = { ...clone.messages[id], cooldownSeconds: value };
       return clone;
     });
-    await window.micaAPI.setConfig(`messages.${id}.cooldownSeconds`, value);
+    await window.ferroAPI.setConfig(`messages.${id}.cooldownSeconds`, value);
   };
 
   return (

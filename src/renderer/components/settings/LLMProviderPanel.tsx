@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { MicaConfig, LLMProviderType } from "../../../shared/types.js";
+import type { FerroConfig, LLMProviderType } from "../../../shared/types.js";
 import APIKeyInput from "./APIKeyInput.js";
 import ModelSelector from "./ModelSelector.js";
 
@@ -11,7 +11,7 @@ const PROVIDERS: { id: LLMProviderType; name: string; desc: string }[] = [
 ];
 
 interface Props {
-  config: MicaConfig;
+  config: FerroConfig;
   onUpdate: (path: string, value: unknown) => Promise<void>;
 }
 
@@ -26,7 +26,7 @@ export default function LLMProviderPanel({ config, onUpdate }: Props) {
     setTesting(true);
     setTestResult(null);
     try {
-      const result = (await window.micaAPI.testLLM(active)) as { ok: boolean; ms?: number; error?: string };
+      const result = (await window.ferroAPI.testLLM(active)) as { ok: boolean; ms?: number; error?: string };
       setTestResult({
         ok: result.ok,
         message: result.ok ? `Conectado (${result.ms}ms)` : result.error || "Erro",

@@ -9,10 +9,18 @@ import {
   MATCHUP_PROMPT
 } from "./constants.js";
 
-const client = new OpenAI({
-  apiKey: settings.zaiApiKey,
-  baseURL: getZaiBaseUrl()
-});
+function hasLlmConfig() {
+  return Boolean(settings.zaiApiKey && settings.zaiEndpoint && settings.zaiModel);
+}
+
+function getClient() {
+  if (!hasLlmConfig()) return null;
+
+  return new OpenAI({
+    apiKey: settings.zaiApiKey,
+    baseURL: getZaiBaseUrl()
+  });
+}
 
 // ── helpers ──────────────────────────────────────────────────────
 
@@ -310,6 +318,23 @@ export async function decideCoaching(snapshot, triggers, strategicContext) {
   }
 
   const prompt = buildPrompt(snapshot, triggers, priority, strategicContext);
+  const client = getClient();
+
+  if (!client) {
+    return {
+      shouldSpeak: !!fallback,
+      message: fallback,
+      reason: "llm desabilitada ou nao configurada",
+      priority,
+      prompt,
+      rawModelMessage: "",
+      fallbackUsed: !!fallback,
+      llmMs: 0,
+      llmTokens: null,
+      llmError: null,
+      skippedLlm: true
+    };
+  }
 
   let message = "";
   let llmMs = 0;
@@ -393,6 +418,11 @@ export async function decideCoaching(snapshot, triggers, strategicContext) {
 }
 
 export async function getMatchupTip(snapshot) {
+  const client = getClient();
+  if (!client) {
+    return null;
+  }
+
   const myChamp = snapshot.activePlayerChampion;
   const enemies = snapshot.enemyPlayers.map((p) => p.championName).join(", ");
 

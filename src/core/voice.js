@@ -223,7 +223,7 @@ async function speakWithElevenLabs(text) {
   const generateStart = performance.now();
   const pcm = await elevenLabsSynthesizePcm(text);
   const wavBuffer = pcmToWavBuffer(pcm, 16000);
-  const tempFile = path.join(tmpdir(), `mica-elevenlabs-${Date.now()}.wav`);
+  const tempFile = path.join(tmpdir(), `ferro-elevenlabs-${Date.now()}.wav`);
 
   await import("node:fs/promises").then(({ writeFile }) => writeFile(tempFile, wavBuffer));
   const generateMs = Math.round(performance.now() - generateStart);

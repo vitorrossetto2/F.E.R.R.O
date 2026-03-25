@@ -1,11 +1,11 @@
 import path from "path";
 import os from "os";
 import Store from "electron-store";
-import type { MicaConfig } from "../../shared/types.js";
+import type { FerroConfig } from "../../shared/types.js";
 
-const MICAAI_DIR = path.join(os.homedir(), ".micaai");
+const FERROCONFIG_DIR = path.join(os.homedir(), ".ferroconfig");
 
-const DEFAULT_CONFIG: MicaConfig = {
+const DEFAULT_CONFIG: FerroConfig = {
   llm: {
     activeProvider: "none",
     providers: {
@@ -30,7 +30,7 @@ const DEFAULT_CONFIG: MicaConfig = {
     activeProvider: "piper",
     providers: {
       piper: {
-        executablePath: path.join(MICAAI_DIR, "piper", "piper.exe"),
+        executablePath: path.join(FERROCONFIG_DIR, "piper", "piper.exe"),
         modelPath: "",
         speaker: -1,
       },
@@ -75,55 +75,47 @@ const DEFAULT_CONFIG: MicaConfig = {
     generico: { enabled: true, cooldownSeconds: 30 },
   },
   logging: {
-    logsDir: path.join(MICAAI_DIR, "logs"),
+    logsDir: path.join(FERROCONFIG_DIR, "logs"),
     logSnapshots: true,
     logLlmPayloads: true,
   },
   app: {
     onboardingCompleted: false,
-    piperInstalled: false,
     windowBounds: null,
   },
 };
 
-let store: Store<MicaConfig>;
+let store: Store<FerroConfig>;
 
-export function initConfigStore(): Store<MicaConfig> {
-  store = new Store<MicaConfig>({
+export function initConfigStore(): Store<FerroConfig> {
+  store = new Store<FerroConfig>({
     name: "config",
     defaults: DEFAULT_CONFIG,
   });
   return store;
 }
 
-export function getConfigStore(): Store<MicaConfig> {
+export function getConfigStore(): Store<FerroConfig> {
   if (!store) return initConfigStore();
   return store;
 }
 
-export function getAll(): MicaConfig {
+export function getAll(): FerroConfig {
   return getConfigStore().store;
 }
 
-export function get<K extends keyof MicaConfig>(key: K): MicaConfig[K] {
+export function get<K extends keyof FerroConfig>(key: K): FerroConfig[K] {
   return getConfigStore().get(key);
 }
 
-export function set<K extends keyof MicaConfig>(key: K, value: MicaConfig[K]): void {
+export function set<K extends keyof FerroConfig>(key: K, value: FerroConfig[K]): void {
   getConfigStore().set(key, value);
 }
 
 export function setPath(path: string, value: unknown): void {
-  getConfigStore().set(path as keyof MicaConfig, value as never);
+  getConfigStore().set(path as keyof FerroConfig, value as never);
 }
 
 export function reset(): void {
   getConfigStore().clear();
-}
-
-export function isFirstRun(): boolean {
-  return !getConfigStore().get("app.piperInstalled" as keyof MicaConfig) &&
-    getConfigStore().get("tts" as keyof MicaConfig) &&
-    (getConfigStore().get("tts" as keyof MicaConfig) as MicaConfig["tts"]).activeProvider === "piper" &&
-    !(getConfigStore().get("tts" as keyof MicaConfig) as MicaConfig["tts"]).providers.piper.modelPath;
 }

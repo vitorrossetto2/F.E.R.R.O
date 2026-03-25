@@ -7,7 +7,7 @@ export default function LogPanel() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const unsub = window.micaAPI.onLogEntry((entry: unknown) => {
+    const unsub = window.ferroAPI.onLogEntry((entry: unknown) => {
       setLogs((prev) => {
         const next = [...prev, entry as LogEntry];
         return next.length > 300 ? next.slice(-300) : next;

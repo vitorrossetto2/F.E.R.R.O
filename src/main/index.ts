@@ -4,6 +4,7 @@ import { initConfigStore, getAll } from "./services/config-service.js";
 import { registerIpcHandlers } from "./ipc/handlers.js";
 import { engine } from "./services/engine.js";
 import { checkPiper, getPiperDir, getVoicesDir } from "./services/piper-installer.js";
+import { getStartupState } from "./services/startup-state.js";
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -30,7 +31,9 @@ function createWindow(): void {
   log("  Voices dir:", getVoicesDir());
 
   const piperStatus = checkPiper();
+  const startupState = getStartupState(appConfig);
   log("Piper installed:", piperStatus.installed, piperStatus.path ?? "");
+  log("Startup state:", startupState);
 
   const bounds = config.get("app.windowBounds" as never) as {
     x: number; y: number; width: number; height: number;
@@ -79,12 +82,13 @@ function createWindow(): void {
   registerIpcHandlers(mainWindow);
   engine.setWindow(mainWindow);
 
-  // Auto-start engine if TTS is ready
-  if (piperStatus.installed || appConfig.tts.activeProvider === "system") {
-    log("Auto-starting engine (TTS ready)");
+  if (startupState.engineAutoStartAllowed) {
+    log("Auto-starting engine (startup state ready)");
     engine.start();
+  } else if (startupState.needsOnboarding) {
+    warn("Engine NOT auto-started: onboarding is incomplete");
   } else {
-    warn("Engine NOT auto-started: Piper not installed and TTS not set to system");
+    warn("Engine NOT auto-started: active TTS provider is not ready");
   }
 
   if (process.env.ELECTRON_RENDERER_URL) {

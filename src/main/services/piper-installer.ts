@@ -8,9 +8,9 @@ import type { BrowserWindow } from "electron";
 import { IPC } from "../../shared/channels.js";
 import type { PiperVoiceOption, PiperStatus } from "../../shared/types.js";
 
-const MICAAI_DIR = path.join(os.homedir(), ".micaai");
-const PIPER_DIR = path.join(MICAAI_DIR, "piper");
-const VOICES_DIR = path.join(MICAAI_DIR, "voices");
+const FERROCONFIG_DIR = path.join(os.homedir(), ".ferroconfig");
+const PIPER_DIR = path.join(FERROCONFIG_DIR, "piper");
+const VOICES_DIR = path.join(FERROCONFIG_DIR, "voices");
 const PIPER_EXE = path.join(PIPER_DIR, "piper.exe");
 
 const PIPER_BINARY_URL =
@@ -54,7 +54,7 @@ function downloadFile(url: string, destPath: string, onProgress?: (percent: numb
   return new Promise((resolve, reject) => {
     const follow = (currentUrl: string) => {
       const client = currentUrl.startsWith("https") ? https : http;
-      client.get(currentUrl, { headers: { "User-Agent": "MicaAI/1.0" } }, (res) => {
+      client.get(currentUrl, { headers: { "User-Agent": "FerroConfig/1.0" } }, (res) => {
         if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
           const location = res.headers.location;
           const resolved = location.startsWith("http") ? location : new URL(location, currentUrl).href;
@@ -111,7 +111,7 @@ export async function installPiper(
 
     // Step 1: Download piper binary zip
     if (!existsSync(PIPER_EXE)) {
-      const zipPath = path.join(MICAAI_DIR, "piper.zip");
+      const zipPath = path.join(FERROCONFIG_DIR, "piper.zip");
       send("downloading_binary", 0, "Baixando Piper...");
 
       await downloadFile(PIPER_BINARY_URL, zipPath, (p) => {
@@ -119,11 +119,11 @@ export async function installPiper(
       });
 
       // Step 2: Extract zip — the zip contains a nested piper/ folder,
-      // so we extract to MICAAI_DIR which creates MICAAI_DIR/piper/
+      // so we extract to FERROCONFIG_DIR which creates FERROCONFIG_DIR/piper/
       send("extracting", 0, "Extraindo Piper...");
       const AdmZip = (await import("adm-zip")).default;
       const zip = new AdmZip(zipPath);
-      zip.extractAllTo(MICAAI_DIR, true);
+      zip.extractAllTo(FERROCONFIG_DIR, true);
       send("extracting", 100, "Piper extraído");
 
       await unlink(zipPath).catch(() => {});

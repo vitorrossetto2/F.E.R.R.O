@@ -34,8 +34,6 @@ export const IPC = {
   LLM_TEST: "llm:test",
 
   // Piper Installer
-  PIPER_STATUS: "piper:status",
-  PIPER_CHECK: "piper:check",
   PIPER_INSTALL: "piper:install",
   PIPER_PROGRESS: "piper:progress",
   PIPER_AVAILABLE_VOICES: "piper:available-voices",
@@ -43,6 +41,6 @@ export const IPC = {
   // System
   DIALOG_SELECT_DIR: "dialog:selectDirectory",
   APP_VERSION: "app:version",
-  APP_IS_FIRST_RUN: "app:isFirstRun",
+  APP_GET_STARTUP_STATE: "app:getStartupState",
   APP_COMPLETE_ONBOARDING: "app:completeOnboarding",
 } as const;
