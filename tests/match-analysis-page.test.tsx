@@ -71,16 +71,17 @@ describe("MatchAnalysis data normalization", () => {
     expect(normalized).not.toBeNull();
     expect(normalized?.sessionInfo.duration).toBe(438);
     expect(normalized?.activePlayerChampion).toBe("Alistar");
-    expect(normalized?.activePlayerStats).toEqual({ kills: 0, deaths: 3, assists: 0, creepScore: 30 });
+    expect(normalized?.activePlayerStats).toEqual({ kills: 0, deaths: 3, assists: 0, creepScore: 30, level: 0 });
     expect(normalized?.objectives.dragons.ORDER).toBe(1);
-    expect(normalized?.events[0]).toEqual({
+    expect(normalized?.events[0]).toMatchObject({
       type: "kill",
+      category: "kill",
       time: 94.88,
       description: "Ashe eliminou Alistar",
       team: "CHAOS",
     });
     expect(normalized?.players.ORDER["Mickael#XD1"]?.championName).toBe("Alistar");
-    expect(normalized?.insights[0]).toEqual({ label: "Insight", value: "First blood saiu em 01:21" });
+    expect(normalized?.insights[0]).toEqual({ label: "Leitura", value: "Primeiro abate saiu em 01:21" });
   });
 
   it("keeps the legacy match payload shape intact", () => {
