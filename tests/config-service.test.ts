@@ -1,0 +1,109 @@
+import { describe, it, expect, beforeEach, vi } from "vitest";
+
+vi.mock("electron-store", () => {
+  let data: Record<string, unknown> = {};
+  return {
+    default: class MockStore {
+      constructor(opts: { defaults?: Record<string, unknown> }) {
+        data = opts.defaults ? JSON.parse(JSON.stringify(opts.defaults)) : {};
+      }
+      get store() { return JSON.parse(JSON.stringify(data)); }
+      get(key: string) {
+        const keys = key.split(".");
+        let obj: unknown = data;
+        for (const k of keys) obj = (obj as Record<string, unknown>)?.[k];
+        return obj;
+      }
+      set(key: string, value: unknown) {
+        if (typeof key === "string" && typeof value === "object" && value !== null && !Array.isArray(value) && key in data) {
+          Object.assign(data[key] as Record<string, unknown>, value);
+          return;
+        }
+        const keys = key.split(".");
+        let obj: Record<string, unknown> = data;
+        for (let i = 0; i < keys.length - 1; i++) {
+          if (!obj[keys[i]] || typeof obj[keys[i]] !== "object") obj[keys[i]] = {};
+          obj = obj[keys[i]] as Record<string, unknown>;
+        }
+        obj[keys[keys.length - 1]] = value;
+      }
+      clear() { data = {}; }
+    },
+  };
+});
+
+describe("config-service", () => {
+  beforeEach(async () => {
+    vi.resetModules();
+  });
+
+  it("getAll returns default config with correct message categories", async () => {
+    const { initConfigStore, getAll } = await import("../src/main/services/config-service.js");
+    initConfigStore();
+    const config = getAll();
+
+    // Must have all real categories from CATEGORY_COOLDOWNS
+    expect(config.messages.objetivo).toEqual({ enabled: true, cooldownSeconds: 15 });
+    expect(config.messages.torre).toEqual({ enabled: true, cooldownSeconds: 30 });
+    expect(config.messages.torrePerdida).toEqual({ enabled: true, cooldownSeconds: 30 });
+    expect(config.messages.morteJogador).toEqual({ enabled: true, cooldownSeconds: 90 });
+    expect(config.messages.morteStreak).toEqual({ enabled: true, cooldownSeconds: 180 });
+    expect(config.messages.itemFechado).toEqual({ enabled: true, cooldownSeconds: 30 });
+    expect(config.messages.inimigoItem).toEqual({ enabled: true, cooldownSeconds: 60 });
+    expect(config.messages.powerspike).toEqual({ enabled: true, cooldownSeconds: 60 });
+    expect(config.messages.mapa).toEqual({ enabled: true, cooldownSeconds: 50 });
+    expect(config.messages.inimigoFed).toEqual({ enabled: true, cooldownSeconds: 120 });
+    expect(config.messages.inimigoBuild).toEqual({ enabled: true, cooldownSeconds: 120 });
+    expect(config.messages.ouroParado).toEqual({ enabled: true, cooldownSeconds: 120 });
+    expect(config.messages.levelUp).toEqual({ enabled: true, cooldownSeconds: 30 });
+    expect(config.messages.inibidor).toEqual({ enabled: true, cooldownSeconds: 60 });
+    expect(config.messages.generico).toEqual({ enabled: true, cooldownSeconds: 30 });
+
+    // Must NOT have old wrong keys
+    expect(config.messages).not.toHaveProperty("kill");
+    expect(config.messages).not.toHaveProperty("morte");
+    expect(config.messages).not.toHaveProperty("item");
+    expect(config.messages).not.toHaveProperty("counterItem");
+  });
+
+  it("default LLM provider is 'none'", async () => {
+    const { initConfigStore, getAll } = await import("../src/main/services/config-service.js");
+    initConfigStore();
+    expect(getAll().llm.activeProvider).toBe("none");
+  });
+
+  it("default TTS provider is 'piper'", async () => {
+    const { initConfigStore, getAll } = await import("../src/main/services/config-service.js");
+    initConfigStore();
+    expect(getAll().tts.activeProvider).toBe("piper");
+  });
+
+  it("piper executablePath points to ~/.micaai/piper/piper.exe", async () => {
+    const { initConfigStore, getAll } = await import("../src/main/services/config-service.js");
+    initConfigStore();
+    const p = getAll().tts.providers.piper.executablePath;
+    expect(p).toContain(".micaai");
+    expect(p).toContain("piper.exe");
+  });
+
+  it("logs dir points to ~/.micaai/logs", async () => {
+    const { initConfigStore, getAll } = await import("../src/main/services/config-service.js");
+    initConfigStore();
+    expect(getAll().logging.logsDir).toContain(".micaai");
+    expect(getAll().logging.logsDir).toContain("logs");
+  });
+
+  it("setPath updates nested values", async () => {
+    const { initConfigStore, setPath, getAll } = await import("../src/main/services/config-service.js");
+    initConfigStore();
+    setPath("messages.mapa.enabled", false);
+    expect(getAll().messages.mapa.enabled).toBe(false);
+  });
+
+  it("setPath updates message cooldown", async () => {
+    const { initConfigStore, setPath, getAll } = await import("../src/main/services/config-service.js");
+    initConfigStore();
+    setPath("messages.objetivo.cooldownSeconds", 45);
+    expect(getAll().messages.objetivo.cooldownSeconds).toBe(45);
+  });
+});
