@@ -100,7 +100,7 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
         log("match:last no sessions found");
         return null;
       }
-      const last = sessions[sessions.length - 1];
+      const last = sessions[0];
       log("match:last analyzing session", last.sessionId);
       const analysis = await mod.getSessionAnalysis(gameDir, last.sessionId);
       return analysis;

@@ -5,6 +5,9 @@ import type { EngineState, EngineStatus, EngineEvent, LogEntry } from "../../sha
 import { populateEnvFromConfig } from "../lib/settings-bridge.js";
 import * as configService from "./config-service.js";
 
+const OPENING_MATCHUP_TARGET_SECONDS = 50;
+const OPENING_MATCHUP_MAX_SECONDS = 120;
+
 // Core modules loaded once
 let core: {
   analyzeSnapshot: (snapshot: unknown, state: unknown) => Promise<{ triggers: string[]; strategicContext: unknown }>;
@@ -18,7 +21,7 @@ let core: {
   pickModePhrase: (key: string, mode?: string) => string;
   LoopState: new () => {
     lastCoachingAt: number; lastGameTime: number | null; hasLoggedWaitingState: boolean;
-    matchupDone: boolean; pendingTriggers: string[];
+    matchupDone: boolean; openingGreetingDone: boolean; pendingTriggers: string[];
     queueTriggers: (t: string[]) => void; drainPendingTriggers: () => string[];
     canRepeatMessage: (c: string, t: number, cd: number) => boolean;
     markMessageSpoken: (c: string, t: number) => void;
@@ -266,24 +269,29 @@ export class Engine extends EventEmitter {
     }
     st.lastGameTime = gameTime;
 
-    // Matchup at game start
+    // Opening messages
     const llmEnabled = configService.getAll().llm.activeProvider !== "none";
-    if (!st.matchupDone && gameTime < 120) {
-      st.matchupDone = true;
+    if (!st.openingGreetingDone && gameTime < OPENING_MATCHUP_MAX_SECONDS) {
+      st.openingGreetingDone = true;
       try {
         const greeting = c.pickModePhrase("inicioPartida");
-        await c.speak(greeting);
-        this.updateLastMessage(greeting, "heuristic", 0, 0);
+        const tts = await c.speak(greeting);
+        this.updateLastMessage(greeting, "heuristic", 0, tts?.generateMs ?? 0);
         this.log({ type: "coach_speak", gameTime, message: greeting });
+      } catch (err) {
+        console.error("[Engine] Opening greeting error:", (err as Error).message);
+      }
+    }
 
-        if (llmEnabled) {
-          const matchup = await c.getMatchupTip(snapshot);
-          if (matchup) {
-            const tts = await c.speak(matchup.message as string);
-            this.updateLastMessage(matchup.message as string, "llm", matchup.llmMs as number, tts?.generateMs ?? 0);
-            this.log({ type: "coach_speak", gameTime, message: matchup.message as string });
-            st.lastCoachingAt = gameTime;
-          }
+    if (!st.matchupDone && llmEnabled && gameTime >= OPENING_MATCHUP_TARGET_SECONDS && gameTime < OPENING_MATCHUP_MAX_SECONDS) {
+      st.matchupDone = true;
+      try {
+        const matchup = await c.getMatchupTip(snapshot);
+        if (matchup) {
+          const tts = await c.speak(matchup.message as string);
+          this.updateLastMessage(matchup.message as string, "llm", matchup.llmMs as number, tts?.generateMs ?? 0);
+          this.log({ type: "coach_speak", gameTime, message: matchup.message as string });
+          st.lastCoachingAt = gameTime;
         }
       } catch (err) {
         console.error("[Engine] Matchup error:", (err as Error).message);

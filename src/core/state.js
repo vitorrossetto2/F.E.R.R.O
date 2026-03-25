@@ -8,6 +8,7 @@ export class LoopState {
   lastAnalyzedGameTime = null;
   playerDeathCount = 0;
   matchupDone = false;
+  openingGreetingDone = false;
   lastActiveLevel = 0;
   lastEnemyLaneLevel = 0;
   seenActiveItemIds = new Set();
@@ -47,6 +48,7 @@ export class LoopState {
     this.lastGameTime = null;
     this.playerDeathCount = 0;
     this.matchupDone = false;
+    this.openingGreetingDone = false;
     this.lastActiveLevel = 0;
     this.lastEnemyLaneLevel = 0;
     this.seenActiveItemIds = new Set();
