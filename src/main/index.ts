@@ -47,6 +47,9 @@ function createWindow(): void {
     minWidth: 900,
     minHeight: 600,
     show: false,
+    icon: app.isPackaged
+      ? join(process.resourcesPath, "icon.png")
+      : join(__dirname, "../../resources/icon.png"),
     backgroundColor: "#08080c",
     title: "F.E.R.R.O Coach",
     webPreferences: {
