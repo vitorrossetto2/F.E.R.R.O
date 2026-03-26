@@ -70,6 +70,29 @@ describe("coach message modes", () => {
     expect(messages[0].content).toContain("Tom brincalhão");
   });
 
+  it("fallback for 10-second timers uses 'está para nascer'", async () => {
+    const configMod = await import("../src/core/config.js");
+    const coachMod = await import("../src/core/coach.js");
+    configMod.settings.zaiApiKey = "";
+    configMod.settings.zaiEndpoint = "https://api.example/v1/chat/completions";
+    configMod.settings.zaiModel = "glm-5";
+    configMod.settings.coachMessageMode = "serio";
+
+    const dragon = await coachMod.decideCoaching(
+      { activePlayerGold: 0, enemyPlayers: [] },
+      ["dragão em 10 segundos"],
+      { objectiveStates: [] }
+    );
+    expect(dragon.message).toBe("Dragão está para nascer.");
+
+    const grubs = await coachMod.decideCoaching(
+      { activePlayerGold: 0, enemyPlayers: [] },
+      ["vastilarvas em 10 segundos"],
+      { objectiveStates: [] }
+    );
+    expect(grubs.message).toBe("Vastilarvas estão para nascer.");
+  });
+
   it("does not turn tower warnings into death warnings", async () => {
     const configMod = await import("../src/core/config.js");
     const coachMod = await import("../src/core/coach.js");
@@ -87,5 +110,19 @@ describe("coach message modes", () => {
 
     expect(result.message).toBe("Perdemos torre do mid. Toma cuidado com rotas inimigas.");
     expect(String(result.message)).not.toContain("Cuidado com Perdemos torre");
+  });
+
+  it("no template produces preposition + {pronoun} without a noun", async () => {
+    const { MESSAGE_MODE_PROFILES } = await import("../src/core/constants.js");
+    const badPatterns = [/com \{pronoun\}/, /pra \{pronoun\}/, /contra \{pronoun\}/];
+    for (const [mode, profile] of Object.entries(MESSAGE_MODE_PROFILES)) {
+      for (const [key, phrases] of Object.entries(profile.phrases)) {
+        for (const phrase of phrases as string[]) {
+          for (const pattern of badPatterns) {
+            expect(phrase, `${mode}/${key}: "${phrase}"`).not.toMatch(pattern);
+          }
+        }
+      }
+    }
   });
 });

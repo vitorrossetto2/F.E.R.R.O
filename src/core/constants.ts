@@ -67,7 +67,7 @@ const SERIO_PHRASES: PhraseSet = {
 
   inimigoBuild: [
     "{name} acelerou os itens. Respeita a força {pronoun}.",
-    "{name} fechou item forte. Cuidado com {pronoun}."
+    "{name} fechou item forte. Cuidado com a força {pronoun}."
   ],
 
   powerspike: [
@@ -194,14 +194,14 @@ const MEME_PHRASES: PhraseSet = {
   ],
 
   inimigoFed: [
-    "{name} virou chefão. Não vira conteúdo pra {pronoun}.",
+    "{name} virou chefão. Não vira conteúdo pra ele não.",
     "{name} tá gigante. Se respeita e não peita sozinho.",
-    "{name} tá solando geral. Não entrega highlight pra {pronoun}."
+    "{name} tá solando geral. Não entrega highlight de graça."
   ],
 
   inimigoBuild: [
     "{name} turboou os itens. Respeita a força {pronoun}.",
-    "{name} montou build de patrão. Vai na manha contra {pronoun}."
+    "{name} montou build de patrão. Vai na manha e respeita."
   ],
 
   powerspike: [
