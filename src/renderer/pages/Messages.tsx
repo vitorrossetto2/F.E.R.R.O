@@ -179,21 +179,23 @@ export function MessagesContent({
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  min={5}
-                  max={600}
-                  value={cfg.cooldownSeconds}
-                  onChange={(e) => onSetCooldown(cat.id, parseInt(e.target.value) || 5)}
-                  className="input-field w-16 text-center text-xs"
-                  disabled={!cfg.enabled}
-                  style={{ opacity: cfg.enabled ? 1 : 0.4 }}
-                />
-                <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-                  seg
-                </span>
-              </div>
+              {(cat.id === "mapa" || cat.id === "objetivo") && (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={5}
+                    max={600}
+                    value={cfg.cooldownSeconds}
+                    onChange={(e) => onSetCooldown(cat.id, parseInt(e.target.value) || 5)}
+                    className="input-field w-16 text-center text-xs"
+                    disabled={!cfg.enabled}
+                    style={{ opacity: cfg.enabled ? 1 : 0.4 }}
+                  />
+                  <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                    {cat.id === "mapa" ? "intervalo (seg)" : "seg"}
+                  </span>
+                </div>
+              )}
             </div>
           );
         })}
