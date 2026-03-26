@@ -586,3 +586,30 @@ export const FEMALE_CHAMPIONS = new Set([
 
 export const SYSTEM_PROMPT = buildSystemPrompt("serio");
 export const MATCHUP_PROMPT = buildMatchupPrompt("serio");
+
+export const CATEGORY_PRIORITIES: Record<string, number> = {
+  objetivo: 3,
+  fimDeJogo: 3,
+  torre: 2,
+  torrePerdida: 2,
+  morteStreak: 2,
+  inibidor: 2,
+  powerspike: 1,
+  itemFechado: 1,
+  inimigoFed: 1,
+  inimigoItem: 1,
+  inimigoBuild: 1,
+  levelUp: 1,
+  morteJogador: 1,
+  mapa: 0,
+  ouroParado: 0,
+  generico: 0,
+};
+
+export const COOLDOWN_GROUPS: Record<string, string> = {
+  inimigoFed: "inimigoPerigo",
+  inimigoItem: "inimigoPerigo",
+  inimigoBuild: "inimigoPerigo",
+};
+
+export const GROUP_COOLDOWN_SECONDS = 180;

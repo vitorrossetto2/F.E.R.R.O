@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeAll } from "vitest";
+import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
 
 // Mock dotenv (config.js imports it)
 vi.mock("dotenv/config", () => ({}));
@@ -167,5 +167,31 @@ describe("core/voice.js - toPhonetic", () => {
   it("is case insensitive", () => {
     expect(toPhonetic("MID")).toContain("mídi");
     expect(toPhonetic("Mid")).toContain("mídi");
+  });
+});
+
+describe("category priorities and cooldown groups", () => {
+  beforeEach(() => { vi.resetModules(); });
+
+  it("exports CATEGORY_PRIORITIES with correct values", async () => {
+    const { CATEGORY_PRIORITIES } = await import("../src/core/constants.js");
+    expect(CATEGORY_PRIORITIES.objetivo).toBe(3);
+    expect(CATEGORY_PRIORITIES.fimDeJogo).toBe(3);
+    expect(CATEGORY_PRIORITIES.torre).toBe(2);
+    expect(CATEGORY_PRIORITIES.mapa).toBe(0);
+    expect(CATEGORY_PRIORITIES.generico).toBe(0);
+  });
+
+  it("exports COOLDOWN_GROUPS mapping categories to group names", async () => {
+    const { COOLDOWN_GROUPS } = await import("../src/core/constants.js");
+    expect(COOLDOWN_GROUPS.inimigoFed).toBe("inimigoPerigo");
+    expect(COOLDOWN_GROUPS.inimigoItem).toBe("inimigoPerigo");
+    expect(COOLDOWN_GROUPS.inimigoBuild).toBe("inimigoPerigo");
+    expect(COOLDOWN_GROUPS.mapa).toBeUndefined();
+  });
+
+  it("exports GROUP_COOLDOWN_SECONDS", async () => {
+    const { GROUP_COOLDOWN_SECONDS } = await import("../src/core/constants.js");
+    expect(GROUP_COOLDOWN_SECONDS).toBe(180);
   });
 });
