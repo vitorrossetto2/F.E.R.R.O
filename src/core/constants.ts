@@ -50,24 +50,35 @@ const SERIO_PHRASES: PhraseSet = {
     "Dá uma olhada no mapa.",
     "Checa o minimapa.",
     "Não esquece de olhar o mapa.",
-    "Olho no mapa."
+    "Olho no mapa.",
+    "Confere a visão no mapa.",
+    "Passa o olho no minimapa antes de avançar.",
+    "Mapa. Olha lá."
   ],
 
   ouroParado: [
     "Você está com muito ouro parado. Pensa em voltar pra base.",
     "Muito ouro guardado. Volta pra base e gasta.",
-    "Ouro acumulando. Hora de dar um reset."
+    "Ouro acumulando. Hora de dar um reset.",
+    "Tá com ouro sobrando. Volta base e fecha item.",
+    "Ouro parado demais. Reseta e fortalece."
   ],
 
   inimigoFed: [
     "{name} está muito forte. Cuidado com a força {pronoun}.",
     "{name} tá carregando o jogo. Evita lutar contra.",
-    "{name} está fed. Não enfrenta sozinho."
+    "{name} está fed. Não enfrenta sozinho.",
+    "{name} tá dominando. Joga em grupo contra {name}.",
+    "Cuidado, {name} tá forte. Foca outros alvos primeiro.",
+    "Respeita {name} nas lutas. Espera o time pra engajar."
   ],
 
   inimigoBuild: [
     "{name} acelerou os itens. Respeita a força {pronoun}.",
-    "{name} fechou item forte. Cuidado com a força {pronoun}."
+    "{name} fechou item forte. Cuidado com a força {pronoun}.",
+    "{name} tá com itens avançados. Evita confronto direto.",
+    "{name} acelerou a build. Joga com o time contra {name}.",
+    "{name} tá montando itens rápido. Cuidado no um contra um."
   ],
 
   powerspike: [
@@ -128,7 +139,10 @@ const SERIO_PHRASES: PhraseSet = {
 
   inimigoItemPerigoso: [
     "{name} fechou {item}. Cuidado, ficou mais forte.",
-    "{name} completou {item}. Respeita a força."
+    "{name} completou {item}. Respeita a força.",
+    "{name} tem {item} agora. Evita trocar sozinho.",
+    "{name} fechou {item}. Joga mais cauteloso.",
+    "{name} completou {item}. Não subestima o dano."
   ],
 
   inimigoAntiCura: [
@@ -184,24 +198,37 @@ const MEME_PHRASES: PhraseSet = {
   mapa: [
     "Mapa não é enfeite, dá uma olhada aí.",
     "Confere o minimapa antes de virar clipe de erro.",
-    "Olha o mapa, pelo amor do LP."
+    "Olha o mapa, pelo amor do LP.",
+    "O minimapa tá ali pedindo atenção. Dá um olho.",
+    "Mapa existe. Usa antes de virar meme.",
+    "Olha o minimapa antes que alguém olhe pra você.",
+    "Confere o mapa. Informação gratuita ali.",
+    "Minimapa. Olha. Agradece depois."
   ],
 
   ouroParado: [
     "Esse ouro parado tá fazendo cosplay de decoração. Volta base e gasta.",
     "Tá juntando ouro pra abrir banco. Reseta e compra item.",
-    "O bolso tá cheio e o inventário triste. Base agora."
+    "O bolso tá cheio e o inventário triste. Base agora.",
+    "Tá fazendo poupança? Volta base e investe nos itens.",
+    "Ouro parado é ouro inútil. Reseta e gasta."
   ],
 
   inimigoFed: [
     "{name} virou chefão. Não vira conteúdo pra ele não.",
     "{name} tá gigante. Se respeita e não peita sozinho.",
-    "{name} tá solando geral. Não entrega highlight de graça."
+    "{name} tá solando geral. Não entrega highlight de graça.",
+    "{name} tá imprimindo ouro. Não vai na onda sozinho.",
+    "Respeita {name}. Esse aí tá jogando outro jogo.",
+    "{name} virou problema do time inteiro. Não tenta resolver sozinho."
   ],
 
   inimigoBuild: [
     "{name} turboou os itens. Respeita a força {pronoun}.",
-    "{name} montou build de patrão. Vai na manha e respeita."
+    "{name} montou build de patrão. Vai na manha e respeita.",
+    "{name} tá de itens de respeito. Não facilita.",
+    "{name} acelerou os itens. Esse aí tá perigoso.",
+    "{name} montou o kit completo. Evita confronto solo."
   ],
 
   powerspike: [
@@ -256,7 +283,10 @@ const MEME_PHRASES: PhraseSet = {
 
   inimigoItemPerigoso: [
     "{name} fechou {item}. Não testa a ciência agora.",
-    "{name} completou {item}. Respeita antes de virar piada."
+    "{name} completou {item}. Respeita antes de virar piada.",
+    "{name} fechou {item}. Agora a coisa ficou séria de verdade.",
+    "{name} com {item} é outro campeão. Se liga.",
+    "{name} completou {item}. Respeita antes de trocar."
   ],
 
   inimigoAntiCura: [
@@ -311,24 +341,37 @@ const PUTO_PHRASES: PhraseSet = {
   mapa: [
     "Olha a porra do minimapa.",
     "Mapa existe, caralho. Usa.",
-    "Confere o minimapa agora."
+    "Confere o minimapa agora.",
+    "Olha o mapa, porra. Não é difícil.",
+    "Mapa ali embaixo. Usa essa merda.",
+    "Confere o minimapa antes de fazer besteira.",
+    "Olha o mapa agora. Sem desculpa.",
+    "Minimapa, caralho. Um olho lá, outro aqui."
   ],
 
   ouroParado: [
     "Tá com ouro parado pra caralho. Volta base e compra item.",
     "Para de passear com esse ouro no bolso. Reseta agora.",
-    "Esse ouro parado não bate sozinho. Base e gasta."
+    "Esse ouro parado não bate sozinho. Base e gasta.",
+    "Volta base e gasta esse ouro. Tá jogando de cofre.",
+    "Para de juntar ouro e compra item, porra."
   ],
 
   inimigoFed: [
     "{name} tá forte pra caralho. Não peita sozinho.",
     "{name} tá gigante. Respeita a força {pronoun}.",
-    "{name} virou problema. Para de dar luta de graça."
+    "{name} virou problema. Para de dar luta de graça.",
+    "{name} tá comendo geral. Para de alimentar.",
+    "Respeita {name} e joga com o time, porra.",
+    "{name} tá forte demais. Não peita essa merda sozinho."
   ],
 
   inimigoBuild: [
     "{name} acelerou os itens. Respeita essa porra.",
-    "{name} fechou item forte. Não testa a força {pronoun}."
+    "{name} fechou item forte. Não testa a força {pronoun}.",
+    "{name} tá montando tudo. Não vai sozinho nessa merda.",
+    "{name} acelerou os itens. Joga com o time agora.",
+    "{name} tá de itens fortes. Respeita ou morre."
   ],
 
   powerspike: [
@@ -383,7 +426,10 @@ const PUTO_PHRASES: PhraseSet = {
 
   inimigoItemPerigoso: [
     "{name} fechou {item}. Respeita essa merda.",
-    "{name} completou {item}. Não entra torto agora."
+    "{name} completou {item}. Não entra torto agora.",
+    "{name} fechou {item}. Agora fodeu se trocar sozinho.",
+    "{name} com {item} é problema. Respeita a força.",
+    "{name} completou {item}. Evita confronto direto."
   ],
 
   inimigoAntiCura: [

@@ -195,3 +195,25 @@ describe("category priorities and cooldown groups", () => {
     expect(GROUP_COOLDOWN_SECONDS).toBe(180);
   });
 });
+
+describe("phrase variation minimums", () => {
+  beforeEach(() => { vi.resetModules(); });
+
+  it("key categories have minimum phrase counts in all modes", async () => {
+    const { MESSAGE_MODE_PROFILES } = await import("../src/core/constants.js");
+    const minimums: Record<string, number> = {
+      mapa: 8,
+      inimigoFed: 6,
+      inimigoItemPerigoso: 5,
+      inimigoBuild: 5,
+      ouroParado: 5,
+    };
+
+    for (const [mode, profile] of Object.entries(MESSAGE_MODE_PROFILES)) {
+      for (const [key, min] of Object.entries(minimums)) {
+        const phrases = profile.phrases[key] ?? [];
+        expect(phrases.length, `${mode}/${key}: expected >= ${min}, got ${phrases.length}`).toBeGreaterThanOrEqual(min);
+      }
+    }
+  });
+});
