@@ -69,6 +69,7 @@ export interface FerroConfig {
   };
   tts: {
     activeProvider: TTSProviderType;
+    volume: number;
     providers: {
       piper: {
         executablePath: string;

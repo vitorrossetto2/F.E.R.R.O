@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { unlink, writeFile } from "node:fs/promises";
+import { readFile, unlink, writeFile } from "node:fs/promises";
 import https from "node:https";
 
 import say from "say";
@@ -129,6 +129,12 @@ async function speakWithPiper(text: string): Promise<SpeakResult> {
   await runProcess(settings.piperExecutable, args, text);
   const generateMs = Math.round(performance.now() - generateStart);
 
+  if (settings.ttsVolume < 0.99) {
+    const wavData = await readFile(tempFile);
+    const scaled = scaleWavVolume(wavData, settings.ttsVolume);
+    await writeFile(tempFile, scaled);
+  }
+
   playWavFileAsync(tempFile);
 
   return { generateMs, playMs: 0, provider: "piper" };
@@ -226,11 +232,24 @@ async function speakWithElevenLabs(text: string): Promise<SpeakResult> {
   const wavBuffer = pcmToWavBuffer(pcm, 16000);
   const tempFile = path.join(tmpdir(), `ferro-elevenlabs-${Date.now()}.wav`);
 
-  await writeFile(tempFile, wavBuffer);
+  const finalWav = settings.ttsVolume < 0.99 ? scaleWavVolume(wavBuffer, settings.ttsVolume) : wavBuffer;
+  await writeFile(tempFile, finalWav);
   const generateMs = Math.round(performance.now() - generateStart);
 
   playWavFileAsync(tempFile);
   return { generateMs, playMs: 0, provider: "elevenlabs" };
+}
+
+export function scaleWavVolume(wavBuffer: Buffer, volume: number): Buffer {
+  if (volume >= 0.99) return wavBuffer;
+  const result = Buffer.from(wavBuffer);
+  for (let i = 44; i < result.length - 1; i += 2) {
+    const sample = result.readInt16LE(i);
+    const scaled = Math.round(sample * volume);
+    const clamped = Math.max(-32768, Math.min(32767, scaled));
+    result.writeInt16LE(clamped, i);
+  }
+  return result;
 }
 
 export async function speak(text: string): Promise<SpeakResult> {

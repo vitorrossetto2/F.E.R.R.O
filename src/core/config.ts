@@ -43,6 +43,7 @@ export const settings: CoreSettings = {
   objectiveTenSecondsCallSeconds: getNumber("OBJECTIVE_TEN_SECONDS_CALL_SECONDS", 12),
   ttsEnabled: getBoolean("TTS_ENABLED", true),
   ttsProvider: process.env.TTS_PROVIDER ?? "auto",
+  ttsVolume: getNumber("TTS_VOLUME", 0.8),
   ttsVoice: process.env.TTS_VOICE ?? undefined,
   piperExecutable: process.env.PIPER_EXECUTABLE ?? "piper",
   piperModelPath: process.env.PIPER_MODEL_PATH ?? "",

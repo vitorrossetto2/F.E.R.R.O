@@ -28,6 +28,7 @@ const DEFAULT_CONFIG: FerroConfig = {
   },
   tts: {
     activeProvider: "piper",
+    volume: 0.8,
     providers: {
       piper: {
         executablePath: path.join(FERROCONFIG_DIR, "piper", "piper.exe"),

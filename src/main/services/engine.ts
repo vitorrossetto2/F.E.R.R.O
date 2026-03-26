@@ -123,6 +123,7 @@ export class Engine extends EventEmitter {
           : cfg.tts.activeProvider === "elevenlabs"
             ? "elevenlabs"
             : "say",
+      ttsVolume: cfg.tts.volume,
       ttsVoice: cfg.tts.providers.system.voice,
       piperExecutable: cfg.tts.providers.piper.executablePath,
       piperModelPath: cfg.tts.providers.piper.modelPath,

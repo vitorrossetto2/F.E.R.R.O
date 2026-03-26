@@ -22,6 +22,7 @@ export interface CoreSettings {
   objectiveTenSecondsCallSeconds: number;
   ttsEnabled: boolean;
   ttsProvider: string;
+  ttsVolume: number;
   ttsVoice?: string;
   piperExecutable: string;
   piperModelPath: string;
