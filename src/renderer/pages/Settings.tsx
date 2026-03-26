@@ -51,6 +51,34 @@ export default function Settings() {
       <LLMProviderPanel config={config} onUpdate={updateConfig} />
       <TTSProviderPanel config={config} onUpdate={updateConfig} />
 
+      {/* Volume */}
+      <section className="space-y-4">
+        <h3
+          className="text-lg font-semibold"
+          style={{ fontFamily: "var(--font-display)", color: "var(--text-primary)" }}
+        >
+          Volume da voz
+        </h3>
+        <div className="card-glass space-y-3 p-5">
+          <div className="flex items-center gap-4">
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={Math.round((config.tts.volume ?? 0.8) * 100)}
+              onChange={(e) => updateConfig("tts.volume", parseInt(e.target.value) / 100)}
+              className="flex-1 accent-[var(--accent-blue)]"
+            />
+            <span className="w-10 text-right text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
+              {Math.round((config.tts.volume ?? 0.8) * 100)}%
+            </span>
+          </div>
+          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+            Controla o volume do TTS via Piper e ElevenLabs. Não afeta a voz do sistema.
+          </p>
+        </div>
+      </section>
+
       {/* Logging */}
       <section className="space-y-4">
         <h3
