@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { EngineState } from "../../shared/types";
 
 type TeamCode = "ORDER" | "CHAOS";
 
@@ -616,11 +617,36 @@ export function normalizeMatchData(payload: unknown): MatchData | null {
 }
 
 export default function MatchAnalysis() {
+  const [engineStatus, setEngineStatus] = useState<EngineState["status"]>("idle");
+
+  useEffect(() => {
+    window.ferroAPI.getEngineStatus().then((s) => setEngineStatus((s as EngineState).status));
+    const unsub = window.ferroAPI.onEngineEvent(() => {
+      window.ferroAPI.getEngineStatus().then((s) => setEngineStatus((s as EngineState).status));
+    });
+    return unsub;
+  }, []);
+
   const [data, setData] = useState<MatchData | null | undefined>(undefined);
 
   useEffect(() => {
     window.ferroAPI.getLastMatch().then((matchData) => setData(normalizeMatchData(matchData)));
   }, []);
+
+  if (engineStatus === "coaching") {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <div className="card-glass max-w-md p-8">
+          <h2 className="text-xl font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--text-primary)" }}>
+            Partida em andamento
+          </h2>
+          <p className="mt-3 text-sm" style={{ color: "var(--text-secondary)" }}>
+            A análise estará disponível quando o jogo terminar.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (data === undefined) {
     return (
