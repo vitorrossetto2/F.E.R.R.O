@@ -1,4 +1,5 @@
 import type { LoopStateShape } from "./types";
+import { CATEGORY_PRIORITIES, COOLDOWN_GROUPS, GROUP_COOLDOWN_SECONDS } from "./constants";
 
 export class LoopState implements LoopStateShape {
   lastCoachingAt = 0;
@@ -20,9 +21,47 @@ export class LoopState implements LoopStateShape {
   lastGameTime: number | null = null;
   lastMessageTimes = new Map<string, number>();
   pendingTriggers: string[] = [];
+  lastSpeakGameTime = 0;
+  lastGroupMessageTimes = new Map<string, number>();
 
   queueTriggers(triggers: string[]): void {
-    this.pendingTriggers.push(...triggers);
+    for (const trigger of triggers) {
+      this.pendingTriggers.push(trigger);
+    }
+    while (this.pendingTriggers.length > 2) {
+      let lowestIdx = 0;
+      let lowestPrio = Infinity;
+      for (let i = 0; i < this.pendingTriggers.length; i++) {
+        const cat = this._triggerCategory(this.pendingTriggers[i]);
+        const prio = CATEGORY_PRIORITIES[cat] ?? 0;
+        if (prio < lowestPrio) {
+          lowestPrio = prio;
+          lowestIdx = i;
+        }
+      }
+      this.pendingTriggers.splice(lowestIdx, 1);
+    }
+  }
+
+  private _triggerCategory(trigger: string): string {
+    if (trigger === "lembrete de mapa") return "mapa";
+    if (trigger === "ouro parado alto") return "ouroParado";
+    if (trigger.startsWith("inimigo fed:")) return "inimigoFed";
+    if (
+      trigger.includes("em 1 minuto") ||
+      trigger.includes("em 30 segundos") ||
+      trigger.includes("em 10 segundos") ||
+      trigger.includes("nasceu agora")
+    )
+      return "objetivo";
+    if (trigger.includes("torre")) return "torre";
+    if (trigger.includes("powerspike")) return "powerspike";
+    if (trigger.startsWith("item fechado:")) return "itemFechado";
+    if (trigger.startsWith("inimigo item:") || trigger.startsWith("inimigo counter"))
+      return "inimigoItem";
+    if (trigger.includes("acelerou a build")) return "inimigoBuild";
+    if (trigger.includes("inibidor")) return "inibidor";
+    return "generico";
   }
 
   drainPendingTriggers(): string[] {
@@ -37,6 +76,26 @@ export class LoopState implements LoopStateShape {
 
   markMessageSpoken(messageKey: string, gameTime: number): void {
     this.lastMessageTimes.set(messageKey, gameTime);
+  }
+
+  canSpeakGlobal(gameTime: number): boolean {
+    return gameTime - this.lastSpeakGameTime >= 8;
+  }
+
+  markGlobalSpeak(gameTime: number): void {
+    this.lastSpeakGameTime = gameTime;
+  }
+
+  canRepeatGroup(category: string, gameTime: number): boolean {
+    const groupName = COOLDOWN_GROUPS[category];
+    if (!groupName) return true;
+    const lastTime = this.lastGroupMessageTimes.get(groupName);
+    if (lastTime === undefined) return true;
+    return gameTime - lastTime >= GROUP_COOLDOWN_SECONDS;
+  }
+
+  markGroupSpoken(groupName: string, gameTime: number): void {
+    this.lastGroupMessageTimes.set(groupName, gameTime);
   }
 
   reset(): void {
@@ -58,6 +117,8 @@ export class LoopState implements LoopStateShape {
     this.seenEnemyCounterTags = new Set();
     this.lastMessageTimes = new Map();
     this.pendingTriggers = [];
+    this.lastSpeakGameTime = 0;
+    this.lastGroupMessageTimes = new Map();
   }
 
   detectGameReset(currentGameTime: number): boolean {

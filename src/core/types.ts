@@ -192,10 +192,16 @@ export interface LoopStateShape {
   lastGameTime: number | null;
   lastMessageTimes: Map<string, number>;
   pendingTriggers: string[];
+  lastSpeakGameTime: number;
+  lastGroupMessageTimes: Map<string, number>;
   queueTriggers(triggers: string[]): void;
   drainPendingTriggers(): string[];
   canRepeatMessage(messageKey: string, gameTime: number, cooldownSeconds: number): boolean;
   markMessageSpoken(messageKey: string, gameTime: number): void;
+  canSpeakGlobal(gameTime: number): boolean;
+  markGlobalSpeak(gameTime: number): void;
+  canRepeatGroup(category: string, gameTime: number): boolean;
+  markGroupSpoken(groupName: string, gameTime: number): void;
   reset(): void;
   detectGameReset(currentGameTime: number): boolean;
 }
