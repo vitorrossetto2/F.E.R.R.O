@@ -4,6 +4,7 @@ import { IPC } from "../../shared/channels";
 import type { EngineState, EngineStatus, EngineEvent, LogEntry } from "../../shared/types";
 import { populateEnvFromConfig } from "../lib/settings-bridge";
 import * as configService from "./config-service";
+import { CATEGORY_PRIORITIES, COOLDOWN_GROUPS } from "../../core/constants";
 import type {
   AnalyzeSnapshotResult,
   CoachDecision,
@@ -398,13 +399,37 @@ export class Engine extends EventEmitter {
         return;
       }
 
-      // Cooldown
+      // Category cooldown
       const cooldown = msgCfg?.cooldownSeconds ?? c.getCategoryCooldown(category);
       if (!st.canRepeatMessage(category, gameTime, cooldown)) {
         st.queueTriggers(triggers.filter((t) => c.detectCategory(t) !== category));
         return;
       }
+
+      // Group cooldown (e.g. inimigoPerigo group)
+      if (!st.canRepeatGroup(category, gameTime)) {
+        this.log({ type: "msg_skipped", gameTime, message: `Grupo de "${category}" em cooldown` });
+        return;
+      }
+
+      // Global rate limiter (8s minimum between speaks)
+      if (!st.canSpeakGlobal(gameTime)) {
+        const prio = CATEGORY_PRIORITIES[category] ?? 0;
+        if (prio >= 2 && decision.priority) {
+          st.queueTriggers([decision.priority]);
+        }
+        this.log({ type: "msg_rate_limited", gameTime, message: `Rate limited: "${category}" (prio ${prio})` });
+        return;
+      }
+
       st.markMessageSpoken(category, gameTime);
+      st.markGlobalSpeak(gameTime);
+
+      // Mark group cooldown if applicable
+      const groupName = COOLDOWN_GROUPS[category];
+      if (groupName) {
+        st.markGroupSpoken(groupName, gameTime);
+      }
 
       // Speak
       this.send({ type: "tts_start", message: decision.message });
