@@ -126,6 +126,13 @@ function heuristicAlert(snapshot: GameSnapshot, triggers: string[]): string | nu
 function fallbackMessage(priority: string | null): string {
   if (!priority) return "";
 
+  if (priority.includes("em 10 segundos")) {
+    const name = priority.replace(" em 10 segundos", "").trim();
+    const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
+    const verb = name === "vastilarvas" ? "estão" : "está";
+    return `${capitalized} ${verb} para nascer.`;
+  }
+
   if (priority === "lembrete de mapa") {
     return pickModePhrase("mapa");
   }
