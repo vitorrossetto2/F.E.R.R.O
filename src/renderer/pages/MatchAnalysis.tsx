@@ -373,6 +373,41 @@ function deriveResult(data: MatchData): "vitória" | "derrota" | "indefinido" {
   return "indefinido";
 }
 
+function getHeroResultBadge(
+  data: MatchData,
+  result: "vitória" | "derrota" | "indefinido"
+): { label: string; background: string; color: string } {
+  if (data.sessionInfo.gameMode === "PRACTICETOOL") {
+    return {
+      label: "Treino",
+      background: "rgba(91, 139, 245, 0.12)",
+      color: "var(--glow-blue)",
+    };
+  }
+
+  if (result === "vitória") {
+    return {
+      label: "Vitória",
+      background: "rgba(52, 211, 153, 0.12)",
+      color: "var(--accent-green)",
+    };
+  }
+
+  if (result === "derrota") {
+    return {
+      label: "Derrota",
+      background: "rgba(244, 112, 104, 0.12)",
+      color: "var(--accent-red)",
+    };
+  }
+
+  return {
+    label: "Sem resultado oficial",
+    background: "rgba(255,255,255,0.06)",
+    color: "var(--text-secondary)",
+  };
+}
+
 function buildImpactFactors(
   data: MatchData,
   result: "vitória" | "derrota" | "indefinido"
@@ -687,6 +722,7 @@ export default function MatchAnalysis() {
   const killTag = killDelta > 0 ? "Na frente em abates" : killDelta < 0 ? "Atrás em abates" : "Abates empatados";
   const killTagColor = killDelta > 0 ? "var(--accent-green)" : killDelta < 0 ? "var(--accent-red)" : "var(--text-secondary)";
   const result = deriveResult(data);
+  const heroResultBadge = getHeroResultBadge(data, result);
   const killParticipation = myTeam && activePlayerStats && myTeam.kills > 0
     ? ((activePlayerStats.kills + activePlayerStats.assists) / myTeam.kills) * 100
     : 0;
@@ -725,22 +761,9 @@ export default function MatchAnalysis() {
             </h2>
             <span
               className="rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.16em]"
-              style={{
-                background:
-                  result === "vitória"
-                    ? "rgba(52, 211, 153, 0.12)"
-                    : result === "derrota"
-                    ? "rgba(244, 112, 104, 0.12)"
-                    : "rgba(255,255,255,0.06)",
-                color:
-                  result === "vitória"
-                    ? "var(--accent-green)"
-                    : result === "derrota"
-                    ? "var(--accent-red)"
-                    : "var(--text-secondary)",
-              }}
+              style={{ background: heroResultBadge.background, color: heroResultBadge.color }}
             >
-              {result === "vitória" ? "Vitória" : result === "derrota" ? "Derrota" : "Indefinido"}
+              {heroResultBadge.label}
             </span>
           </div>
 

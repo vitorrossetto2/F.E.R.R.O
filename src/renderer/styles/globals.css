@@ -252,3 +252,35 @@ body {
 .animate-in-delay-2 { animation-delay: 0.2s; opacity: 0; }
 .animate-in-delay-3 { animation-delay: 0.3s; opacity: 0; }
 .animate-in-delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+/* ── Stat card ─────────────────────────────────────── */
+
+.stat-card {
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-1px);
+}
+
+.status-chip {
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.status-chip-on {
+  background: rgba(52, 211, 153, 0.14);
+  border-color: rgba(52, 211, 153, 0.28);
+  color: var(--accent-green);
+}
+
+.status-chip-off {
+  background: rgba(244, 112, 104, 0.14);
+  border-color: rgba(244, 112, 104, 0.28);
+  color: var(--accent-red);
+}

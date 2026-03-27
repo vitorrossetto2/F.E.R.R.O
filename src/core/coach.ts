@@ -357,6 +357,7 @@ export async function decideCoaching(
   let llmError = null;
   const llmStart = performance.now();
   try {
+    const isGlm = settings.zaiModel.includes("glm");
     const requestBody: any = {
       model: settings.zaiModel,
       messages: [
@@ -364,12 +365,9 @@ export async function decideCoaching(
         { role: "user", content: prompt }
       ],
       temperature: 0.3,
-      max_tokens: 500
+      max_tokens: 500,
+      ...(isGlm && { thinking: { type: "disabled" } })
     };
-
-    if (settings.zaiModel.includes("glm")) {
-      requestBody.extra_body = { thinking: { enabled: false } };
-    }
 
     const completion = await client.chat.completions.create(requestBody);
     llmMs = Math.round(performance.now() - llmStart);
@@ -448,6 +446,7 @@ export async function getMatchupTip(snapshot: GameSnapshot): Promise<MatchupTip 
   let llmMs = 0;
   const llmStart = performance.now();
   try {
+    const isGlm = settings.zaiModel.includes("glm");
     const requestBody: any = {
       model: settings.zaiModel,
       messages: [
@@ -455,12 +454,9 @@ export async function getMatchupTip(snapshot: GameSnapshot): Promise<MatchupTip 
         { role: "user", content: prompt }
       ],
       temperature: 0.4,
-      max_tokens: 500
+      max_tokens: 500,
+      ...(isGlm && { thinking: { type: "disabled" } })
     };
-
-    if (settings.zaiModel.includes("glm")) {
-      requestBody.extra_body = { thinking: { enabled: false } };
-    }
 
     const completion = await client.chat.completions.create(requestBody);
     llmMs = Math.round(performance.now() - llmStart);

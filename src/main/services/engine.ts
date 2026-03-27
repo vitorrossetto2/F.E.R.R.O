@@ -305,10 +305,15 @@ export class Engine extends EventEmitter {
           const tts = await c.speak(matchup.message);
           this.updateLastMessage(matchup.message, "llm", matchup.llmMs, tts.generateMs ?? 0);
           this.log({ type: "coach_speak", gameTime, message: matchup.message });
+          await lg.log("matchup_tip", { gameTime, message: matchup.message, llmMs: matchup.llmMs });
           st.lastCoachingAt = gameTime;
+          console.log(`[Engine] Matchup tip: "${matchup.message}" (${matchup.llmMs}ms)`);
+        } else {
+          await lg.log("matchup_skip", { gameTime, reason: "getMatchupTip returned null" });
         }
       } catch (err) {
         console.error("[Engine] Matchup error:", (err as Error).message);
+        await lg.log("matchup_error", { gameTime, error: (err as Error).message });
       }
     }
 
