@@ -245,7 +245,7 @@ function isMajorItem(definition: any): boolean {
   }
 
   if (tags.includes("Boots")) {
-    return true;
+    return false;
   }
 
   const totalGold = Number(definition.gold?.total ?? 0);
