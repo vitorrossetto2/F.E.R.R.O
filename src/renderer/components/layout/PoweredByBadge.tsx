@@ -17,7 +17,7 @@ export default function PoweredByBadge() {
         <div className="aspect-[1536/572] w-20">
           <img
             className="block size-full object-contain object-left opacity-80 transition-opacity hover:opacity-100"
-            src="/logo_fortech.png"
+            src="./logo_fortech.png"
             alt="ForTech Digital"
           />
         </div>

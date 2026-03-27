@@ -1,19 +1,30 @@
-﻿# F.E.R.R.O - Ferramenta Estratégica de Resposta em Rift Online
+﻿<p>
+  <img src="resources/icon.png" alt="F.E.R.R.O logo" width="80" align="left" style="margin-right: 16px;" />
+  <strong style="font-size: 1.5em;">F.E.R.R.O</strong><br>
+  <em>Ferramenta Estratégica de Resposta em Rift Online</em><br><br>
+  Coach por voz em tempo real para League of Legends. Analisa a partida, gera conselho tático (heurística ou LLM) e fala pra você — tudo em português.
+</p>
 
-<img src="resources/icon.png" alt="F.E.R.R.O logo" width="96" />
+<br clear="left"/>
 
-Coach por voz em tempo real para League of Legends, com análise de partida, configuração de mensagens e múltiplos providers de LLM/TTS.
+<p>
+  <a href="https://buymeacoffee.com/mickaelxd"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee" /></a>
+  <img src="https://img.shields.io/badge/platform-Windows-blue?style=for-the-badge&logo=windows" alt="Windows" />
+  <img src="https://img.shields.io/badge/Electron-React-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" />
+  <img src="https://img.shields.io/badge/license-MIT-green?style=for-the-badge" alt="MIT License" />
+</p>
 
-## Visão geral
+---
 
-O F.E.R.R.O roda como app desktop (Electron) e:
+## Como funciona
 
-- Lê o estado da partida pela Live Client Data API do LoL (`https://127.0.0.1:2999/liveclientdata/allgamedata`)
-- Analisa eventos, ouro, objetivos e contexto de jogo
-- Decide se deve falar algo naquele momento
-- Gera mensagem via LLM (ou heurística, se LLM estiver desativada)
-- Converte para voz (Piper, ElevenLabs ou voz do sistema)
-- Mostra status, logs e telemetria no dashboard
+O F.E.R.R.O roda como app desktop (Electron) e se conecta à partida em andamento:
+
+1. **Leitura** — polls a Live Client Data API do LoL em tempo real
+2. **Análise** — detecta eventos, power spikes, objetivos, mortes e economia
+3. **Decisão** — escolhe o que falar com base em cooldowns, prioridade e contexto
+4. **Geração** — monta a frase via heurística ou LLM (OpenAI, Z.ai, Gemini)
+5. **Voz** — fala com Piper (local), ElevenLabs (cloud) ou voz do sistema
 
 ## Galeria
 
@@ -38,101 +49,89 @@ O F.E.R.R.O roda como app desktop (Electron) e:
 
 ## Funcionalidades
 
-- Coaching em tempo real com cooldown por categoria e por grupo de eventos
-- Modo de tom do coach: `serio`, `meme`, `puto`
-- Ajuste fino por categoria de mensagem (objetivos, mapa, risco, economia, etc.)
-- Onboarding com instalação automática do Piper no primeiro uso
-- Preview de voz e teste de TTS direto na interface
-- Teste de LLM no app (conexão e exemplo de resposta de coaching)
-- Análise da última sessão com métricas, timeline e insights
-- Logs detalhados de runtime, snapshots e payload de LLM (opcional)
+| Categoria | Detalhe |
+|-----------|---------|
+| Coaching em tempo real | Cooldown por categoria e grupo de eventos |
+| Tom do coach | `serio`, `meme`, `puto` |
+| Mensagens | Ajuste fino por categoria (objetivos, mapa, risco, economia...) + presets |
+| Onboarding | Instalação automática do Piper no primeiro uso |
+| TTS | Preview e teste direto na interface |
+| LLM | Teste de conexão e exemplo de resposta no app |
+| Pós-partida | Métricas, timeline e insights da última sessão |
+| Debug | Logs de runtime, snapshots e payload de LLM (opcional) |
 
 ## Stack
 
-- `Electron` + `electron-vite`
-- `React` + `TypeScript` + `Tailwind CSS`
-- `electron-store` para persistência de configuração
-- `OpenAI SDK` (compatível com endpoints OpenAI-like, ZAI e Gemini OpenAI compat)
-- `Piper`, `ElevenLabs` e `say` para TTS
+| Camada | Tecnologia |
+|--------|-----------|
+| Desktop | Electron + electron-vite |
+| UI | React 19 + TypeScript + Tailwind CSS 4 |
+| Config | electron-store |
+| LLM | OpenAI SDK (compatível com Z.ai, OpenAI e Gemini) |
+| TTS | Piper (local), ElevenLabs (cloud), say (sistema) |
 
 ## Requisitos
 
-- Windows (build atual empacota para `portable win x64`)
-- Node.js 20+ e npm
-- Cliente do League of Legends em execução para coaching em tempo real
-- Internet para usar LLM remota e/ou ElevenLabs
+- **Windows** (portable x64)
+- **Node.js 20+** e npm
+- **League of Legends** em execução para coaching ao vivo
+- Internet para LLM remota e/ou ElevenLabs
 
-## Instalação (dev)
+## Início rápido
 
 ```bash
+# dev
 npm install
 npm run dev
+
+# build
+npm run build:win    # gera portable em dist/
 ```
-
-## Build
-
-```bash
-npm run build
-npm run build:win
-```
-
-Artefatos gerados em `dist/`.
 
 ## Fluxo de uso
 
 1. Abra o app
-2. No primeiro uso, complete onboarding do Piper
-3. Vá em **Configurações** e ajuste:
-   - provider de LLM (`none`, `zai`, `openai`, `gemini`)
-   - provider de voz (`piper`, `elevenlabs`, `system`)
-4. (Opcional) Vá em **Mensagens** e aplique preset (`essencial`, `equilibrado`, `agressivo`)
-5. Inicie uma partida no LoL
-6. O engine entra em `waiting_for_game` e depois `coaching` automaticamente
+2. No primeiro uso, complete o onboarding do Piper
+3. Em **Configurações**, escolha provider de LLM e voz
+4. (Opcional) Em **Mensagens**, aplique um preset (`essencial`, `equilibrado`, `agressivo`)
+5. Inicie uma partida no LoL — o engine detecta e começa a coachear automaticamente
 
 ## Estrutura do projeto
 
 ```text
 src/
   core/        lógica de jogo, análise, decisão e voz
-  main/        processo principal electron, IPC e serviços
-  renderer/    interface (dashboard, análise, mensagens, settings)
+  main/        processo principal Electron, IPC e serviços
+  renderer/    interface React (dashboard, análise, mensagens, settings)
   preload/     ponte segura entre renderer e main
   shared/      tipos e canais IPC compartilhados
 resources/
-  icon.*       icones do app
+  icon.*       ícones do app
   screens/     capturas usadas no README
 ```
 
-## Configurações e dados locais
+## Dados locais
 
-Por padrão, o app usa `~/.ferroconfig` para:
+O app usa `~/.ferroconfig` para config, binários do Piper, modelos de voz e logs.
 
-- `config` (persistência do `electron-store`)
-- binário do Piper e modelos de voz
-- logs de runtime e sessão
+## Troubleshooting
 
-## Troubleshooting rápido
+| Problema | Solução |
+|----------|---------|
+| `waiting_for_game` para sempre | Confirme que está em partida (não apenas no client). Teste `https://127.0.0.1:2999/liveclientdata/allgamedata` no navegador |
+| Piper sem voz | Valide paths em config ou rode onboarding novamente em Configurações > Voz |
+| ElevenLabs mudo | Confira API key e `voiceId`. Use o botão de teste de voz |
+| LLM sem resposta | Confira `endpoint`, `model` e API key. Use teste de LLM em Configurações |
 
-- `status waiting_for_game` para sempre:
-  - confirme que você está em partida (não apenas no client)
-  - teste `https://127.0.0.1:2999/liveclientdata/allgamedata` localmente
-- Piper sem voz:
-  - valide `tts.providers.piper.executablePath` e `modelPath`
-  - rode onboarding novamente em Configurações > Voz
-- ElevenLabs não fala:
-  - confira API key e `voiceId`
-  - use botão de teste de voz na UI
-- LLM sem resposta:
-  - confira `endpoint`, `model` e API key do provider ativo
-  - use teste de LLM em Configurações
+## Scripts
 
-## Scripts úteis
-
-- `npm run dev` - desenvolvimento
-- `npm run build` - build de produção
-- `npm run build:win` - empacota portável Windows
-- `npm test` - testes com Vitest
-- `npm run typecheck` - validação TypeScript
+| Comando | Descrição |
+|---------|-----------|
+| `npm run dev` | Desenvolvimento com hot-reload |
+| `npm run build` | Build de produção |
+| `npm run build:win` | Empacota portable Windows |
+| `npm test` | Testes (Vitest) |
+| `npm run typecheck` | Validação TypeScript |
 
 ## Créditos
 
