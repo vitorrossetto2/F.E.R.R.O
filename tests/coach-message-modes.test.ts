@@ -112,6 +112,19 @@ describe("coach message modes", () => {
     expect(String(result.message)).not.toContain("Cuidado com Perdemos torre");
   });
 
+  it("system prompt includes anti-generic rules", async () => {
+    const { buildSystemPrompt } = await import("../src/core/constants.js");
+    const prompt = buildSystemPrompt("serio");
+    expect(prompt).toContain("Sempre mencione pelo menos um campeão");
+    expect(prompt).toContain("NUNCA dê conselhos genéricos");
+  });
+
+  it("matchup prompt includes lane opponent rules", async () => {
+    const { buildMatchupPrompt } = await import("../src/core/constants.js");
+    const prompt = buildMatchupPrompt("serio");
+    expect(prompt).toContain("adversário direto");
+  });
+
   it("no template produces preposition + {pronoun} without a noun", async () => {
     const { MESSAGE_MODE_PROFILES } = await import("../src/core/constants.js");
     const badPatterns = [/com \{pronoun\}/, /pra \{pronoun\}/, /contra \{pronoun\}/];

@@ -252,8 +252,9 @@ function buildPrompt(
   const allies = snapshot.alliedPlayers.map(compactPlayer).join(", ");
   const enemies = snapshot.enemyPlayers.map(compactPlayer).join(", ");
 
+  const position = snapshot.activePlayerPosition ?? "UNKNOWN";
   const lines = [
-    `${Math.floor(snapshot.gameTime / 60)}min | ${snapshot.activePlayerChampion} nv${snapshot.activePlayerLevel} ${snapshot.activePlayerKda} | ouro:${snapshot.activePlayerGold}`,
+    `${Math.floor(snapshot.gameTime / 60)}min | ${snapshot.activePlayerChampion} nv${snapshot.activePlayerLevel} ${snapshot.activePlayerKda} | ouro:${snapshot.activePlayerGold} | posição: ${position}`,
     `Aliados: ${allies}`,
     `Inimigos: ${enemies}`
   ];
@@ -438,9 +439,13 @@ export async function getMatchupTip(snapshot: GameSnapshot): Promise<MatchupTip 
   }
 
   const myChamp = snapshot.activePlayerChampion;
-  const enemies = snapshot.enemyPlayers.map((p) => p.championName).join(", ");
+  const myPos = snapshot.activePlayerPosition ?? "UNKNOWN";
+  const laneOpponent = snapshot.enemyPlayers.find((p) => p.position === myPos);
+  const otherEnemies = snapshot.enemyPlayers.filter((p) => p.position !== myPos).map((p) => p.championName).join(", ");
 
-  const prompt = `Você é ${myChamp}. Inimigos: ${enemies}. Dê a dica de matchup.`;
+  const prompt = laneOpponent
+    ? `Você é ${myChamp} na lane ${myPos}. Seu adversário direto é ${laneOpponent.championName}. Outros inimigos: ${otherEnemies}. Dê a dica de matchup.`
+    : `Você é ${myChamp} na posição ${myPos}. Inimigos: ${snapshot.enemyPlayers.map((p) => p.championName).join(", ")}. Dê a dica de matchup.`;
 
   let message = "";
   let llmMs = 0;

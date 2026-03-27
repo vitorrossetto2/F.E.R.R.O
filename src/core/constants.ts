@@ -25,7 +25,11 @@ const SYSTEM_PROMPT_FIXED_RULES = [
   "- Sem markdown, emojis, listas ou abreviações.",
   "- NUNCA sugira ir atrás de um objetivo que está morto ou em cooldown.",
   "- Só mencione dragão/barão/arauto se estiver 'disponível' nos Objetivos.",
-  "- Se não tiver nada útil, responda SILENCIO."
+  "- Se não tiver nada útil, responda SILENCIO.",
+  "- Sempre mencione pelo menos um campeão por nome na dica.",
+  "- Sempre referencie um objetivo, lane ou situação específica do estado do jogo.",
+  "- NUNCA dê conselhos genéricos como 'foque em farmar', 'evite confrontos', 'jogue seguro'. Esses são inúteis.",
+  "- Se receber posição do jogador, adapte a dica pra essa posição."
 ];
 
 const MATCHUP_PROMPT_INTRO = [
@@ -41,7 +45,9 @@ const MATCHUP_PROMPT_FIXED_RULES = [
   "- Use apenas português. Sem termos em inglês.",
   "- Cada frase DEVE terminar com ponto final.",
   "- Sem markdown, emojis, listas ou abreviações.",
-  "- Acentuação correta."
+  "- Acentuação correta.",
+  "- Identifique o adversário direto da lane do jogador e foque a dica nele.",
+  "- Mencione o nome do adversário direto na dica."
 ];
 
 const SERIO_PHRASES: PhraseSet = {
