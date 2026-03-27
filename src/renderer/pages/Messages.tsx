@@ -118,6 +118,27 @@ export const MESSAGE_MODE_OPTIONS: Array<{ id: MessageMode; label: string; desc:
   { id: "puto", label: "Puto", desc: "Tom agressivo, cobrança alta e pressão constante." },
 ];
 
+const MODE_PREVIEWS: Record<MessageMode, string[]> = {
+  serio: [
+    "Olha o minimapa.",
+    "Tristana está muito forte. Evita confronto direto.",
+    "Muito ouro guardado. Volta pra base e gasta.",
+    "Caiu torre inimiga no bot, aproveita prioridade."
+  ],
+  meme: [
+    "Mapa não é enfeite, dá uma olhada aí.",
+    "Tristana virou chefão. Não vira conteúdo pra ele não.",
+    "Esse ouro parado tá fazendo cosplay de decoração.",
+    "Caiu torre do bot. Agora gira antes que o jogo lembre de te punir."
+  ],
+  puto: [
+    "Olha a porra do minimapa.",
+    "Tristana tá forte pra caralho. Não peita sozinho.",
+    "Tá com ouro parado pra caralho. Volta base e compra item.",
+    "Caiu torre inimiga no bot. Roda logo e pressiona essa merda."
+  ]
+};
+
 const BRL_FORMATTER = new Intl.NumberFormat("pt-BR", {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
@@ -341,6 +362,28 @@ export function MessagesContent({
                 <p className="mt-2 text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
                   {activeMode.desc}
                 </p>
+                <div className="mt-3 card-glass p-4 space-y-2">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em]" style={{ color: "var(--text-muted)" }}>
+                    Exemplos
+                  </p>
+                  {MODE_PREVIEWS[config.coach.messageMode].map((phrase, i) => (
+                    <p key={i} className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                      "{phrase}"
+                    </p>
+                  ))}
+                  <button
+                    type="button"
+                    className="mt-2 rounded-full px-3 py-1.5 text-xs font-medium transition"
+                    style={{ border: "1px solid var(--border-subtle)", color: "var(--text-secondary)" }}
+                    onClick={() => {
+                      const phrases = MODE_PREVIEWS[config.coach.messageMode];
+                      const phrase = phrases[Math.floor(Math.random() * phrases.length)];
+                      window.ferroAPI.testTTS(config.tts.activeProvider, phrase);
+                    }}
+                  >
+                    Ouvir exemplo
+                  </button>
+                </div>
               </div>
 
               <div>
