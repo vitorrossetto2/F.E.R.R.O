@@ -397,6 +397,9 @@ function collectEventTriggers(
       const lane = detectLane(turretName);
       const allied = isAllyTurret(turretName, snapshot.activePlayerTeam);
       triggers.push(turretRotationHint(lane, snapshot, allied));
+      if (allied && snapshot.activePlayerPosition === "JUNGLE" && lane !== "unknown") {
+        triggers.push(`lane precisa de ajuda: ${lane}`);
+      }
     }
 
     if (eventName === "InhibKilled") {
@@ -523,6 +526,34 @@ function collectPowerTriggers(context: StrategicContext, state: LoopStateShape):
   return triggers;
 }
 
+function collectJungleTriggers(
+  snapshot: GameSnapshot,
+  state: LoopStateShape,
+  newEvents: GameEvent[],
+  playerLookup: Map<string, SnapshotPlayer>
+): string[] {
+  if (snapshot.activePlayerPosition !== "JUNGLE") return [];
+
+  const triggers: string[] = [];
+
+  for (const event of newEvents) {
+    if (event?.EventName !== "ChampionKill") continue;
+
+    const victim = typeof event.VictimName === "string" ? playerLookup.get(event.VictimName) : undefined;
+    if (!victim) continue;
+
+    // Enemy died — suggest pressuring their lane
+    if (snapshot.enemyPlayers.some((p) => p.summonerName === victim.summonerName)) {
+      const lane = victim.position ?? "UNKNOWN";
+      if (lane !== "JUNGLE" && lane !== "UNKNOWN") {
+        triggers.push(`gank oportunidade: ${lane.toLowerCase()} vulnerável, ${victim.championName} morreu`);
+      }
+    }
+  }
+
+  return triggers;
+}
+
 export async function analyzeSnapshot(snapshot: GameSnapshot, state: LoopStateShape): Promise<AnalyzeSnapshotResult> {
   const newEvents = snapshot.events.slice(state.lastSeenEventCount);
   const playerLookup = getPlayerLookup(snapshot);
@@ -530,6 +561,7 @@ export async function analyzeSnapshot(snapshot: GameSnapshot, state: LoopStateSh
   const triggers = dedupe([
     ...collectObjectiveTriggers(snapshot, state),
     ...collectEventTriggers(snapshot, state, newEvents, playerLookup),
+    ...collectJungleTriggers(snapshot, state, newEvents, playerLookup),
     ...collectPowerTriggers(strategicContext, state),
     ...collectItemTriggers(strategicContext, state),
     ...collectLevelTriggers(snapshot, state)

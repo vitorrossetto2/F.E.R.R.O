@@ -197,6 +197,21 @@ const SERIO_PHRASES: PhraseSet = {
 
   derrotaPartida: [
     "Derrota. Faz parte, próxima a gente ganha."
+  ],
+
+  jungleGank: [
+    "{lane} tá vulnerável. Bom momento pra gankar.",
+    "Oportunidade no {lane}. Considera uma emboscada.",
+    "{lane} aberto. Se tiver caminho, vai.",
+    "Janela pra pressionar {lane}. Aproveita.",
+    "Considera gankar {lane} agora."
+  ],
+  junglePressao: [
+    "{lane} precisa de ajuda. Passa por lá.",
+    "Tá perdendo pressão no {lane}. Dá um suporte.",
+    "{lane} tá sofrendo. Alivia a pressão.",
+    "Time precisa de presença no {lane}.",
+    "Ajuda o {lane} antes de perder mais."
   ]
 };
 
@@ -340,6 +355,21 @@ const MEME_PHRASES: PhraseSet = {
 
   derrotaPartida: [
     "Derrota. Solo queue sendo solo queue."
+  ],
+
+  jungleGank: [
+    "{lane} tá pedindo visita. Faz o delivery.",
+    "Oportunidade no {lane}. Vai antes que alguém roube.",
+    "{lane} aberto feito porta de mercado. Aproveita.",
+    "Tem emboscada fácil no {lane}. Não ignora.",
+    "{lane} vulnerável. Hora de aparecer."
+  ],
+  junglePressao: [
+    "{lane} tá apanhando. Dá um help.",
+    "Seus aliados no {lane} tão sofrendo. Passa lá.",
+    "{lane} precisa de ajuda. Para de farmar e vai.",
+    "Time precisa de você no {lane}. Bora.",
+    "{lane} tá caindo. Alivia antes de virar meme."
   ]
 };
 
@@ -483,6 +513,21 @@ const PUTO_PHRASES: PhraseSet = {
 
   derrotaPartida: [
     "Derrota. Jogo horroroso, segue."
+  ],
+
+  jungleGank: [
+    "{lane} tá de graça. Vai gankar logo.",
+    "Oportunidade no {lane}, porra. Vai.",
+    "{lane} aberto. Para de farmar e ganka.",
+    "Tem emboscada fácil no {lane}. Não perde isso.",
+    "{lane} vulnerável. Aparece lá agora."
+  ],
+  junglePressao: [
+    "{lane} tá apanhando. Vai ajudar, caralho.",
+    "{lane} precisa de você agora. Para de enrolar.",
+    "Seus aliados no {lane} tão morrendo. Faz alguma coisa.",
+    "{lane} tá sofrendo. Alivia essa merda.",
+    "Vai pro {lane} antes de perder tudo."
   ]
 };
 
@@ -620,6 +665,8 @@ export const CATEGORY_COOLDOWNS: Record<string, number> = {
   levelUp: 30,
   inibidor: 60,
   fimDeJogo: 0,
+  jungleGank: 60,
+  junglePressao: 90,
   generico: 30
 };
 
@@ -653,6 +700,8 @@ export const CATEGORY_PRIORITIES: Record<string, number> = {
   inimigoBuild: 1,
   levelUp: 1,
   morteJogador: 1,
+  jungleGank: 1,
+  junglePressao: 1,
   mapa: 0,
   ouroParado: 0,
   generico: 0,

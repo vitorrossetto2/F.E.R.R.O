@@ -70,6 +70,8 @@ function isSimpleTrigger(priority: string | null): boolean {
   if (priority.startsWith("item fechado:")) return true;
   if (priority.startsWith("inimigo item:")) return true;
   if (priority.startsWith("inimigo counter")) return true;
+  if (priority.startsWith("gank oportunidade:")) return true;
+  if (priority.startsWith("lane precisa de ajuda:")) return true;
   return false;
 }
 
@@ -92,6 +94,8 @@ export function detectCategory(priority: string | null): string {
   if (priority.startsWith("item fechado:")) return "itemFechado";
   if (priority.startsWith("inimigo item:") || priority.startsWith("inimigo counter")) return "inimigoItem";
   if (priority.includes("inibidor")) return "inibidor";
+  if (priority.startsWith("gank oportunidade:")) return "jungleGank";
+  if (priority.startsWith("lane precisa de ajuda:")) return "junglePressao";
   if (priority === "vitória" || priority === "derrota") return "fimDeJogo";
   if (priority.includes("em 1 minuto") || priority.includes("em 30 segundos") ||
       priority.includes("em 10 segundos") || priority.includes("nasceu agora") ||
@@ -231,6 +235,17 @@ function fallbackMessage(priority: string | null): string {
 
   if (priority === "derrota") {
     return pickModePhrase("derrotaPartida");
+  }
+
+  if (priority.startsWith("gank oportunidade:")) {
+    const match = priority.match(/gank oportunidade: (\w+)/);
+    const lane = match ? match[1] : "lane";
+    return pickModePhrase("jungleGank").replace("{lane}", lane);
+  }
+
+  if (priority.startsWith("lane precisa de ajuda:")) {
+    const lane = priority.replace("lane precisa de ajuda: ", "").trim();
+    return pickModePhrase("junglePressao").replace("{lane}", lane);
   }
 
   const sentence = toSentence(priority);

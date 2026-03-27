@@ -139,3 +139,45 @@ describe("coach message modes", () => {
     }
   });
 });
+
+describe("jungle triggers", () => {
+  beforeEach(() => { vi.resetModules(); });
+
+  it("detectCategory recognizes jungle triggers", async () => {
+    const { detectCategory } = await import("../src/core/coach.js");
+    expect(detectCategory("gank oportunidade: bot vulnerável, Draven morreu")).toBe("jungleGank");
+    expect(detectCategory("lane precisa de ajuda: top")).toBe("junglePressao");
+  });
+
+  it("jungle gank trigger produces a phrase with lane", async () => {
+    const configMod = await import("../src/core/config.js");
+    const coachMod = await import("../src/core/coach.js");
+    configMod.settings.zaiApiKey = "";
+    configMod.settings.coachMessageMode = "serio";
+
+    const result = await coachMod.decideCoaching(
+      { activePlayerGold: 0, enemyPlayers: [], activePlayerPosition: "JUNGLE" },
+      ["gank oportunidade: bot vulnerável, Draven morreu"],
+      { objectiveStates: [] }
+    );
+    expect(result.skippedLlm).toBe(true);
+    expect(result.message).toBeTruthy();
+    expect(result.message).toContain("bot");
+  });
+
+  it("jungle pressure trigger produces a phrase with lane", async () => {
+    const configMod = await import("../src/core/config.js");
+    const coachMod = await import("../src/core/coach.js");
+    configMod.settings.zaiApiKey = "";
+    configMod.settings.coachMessageMode = "serio";
+
+    const result = await coachMod.decideCoaching(
+      { activePlayerGold: 0, enemyPlayers: [], activePlayerPosition: "JUNGLE" },
+      ["lane precisa de ajuda: top"],
+      { objectiveStates: [] }
+    );
+    expect(result.skippedLlm).toBe(true);
+    expect(result.message).toBeTruthy();
+    expect(result.message).toContain("top");
+  });
+});

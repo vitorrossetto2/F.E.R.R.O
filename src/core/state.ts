@@ -61,6 +61,8 @@ export class LoopState implements LoopStateShape {
       return "inimigoItem";
     if (trigger.includes("acelerou a build")) return "inimigoBuild";
     if (trigger.includes("inibidor")) return "inibidor";
+    if (trigger.startsWith("gank oportunidade:")) return "jungleGank";
+    if (trigger.startsWith("lane precisa de ajuda:")) return "junglePressao";
     return "generico";
   }
 
