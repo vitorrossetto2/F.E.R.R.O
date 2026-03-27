@@ -300,6 +300,10 @@ export function MessagesContent({
   onSetMessageMode,
   onApplyPreset,
 }: MessagesContentProps) {
+  const [llmExample, setLlmExample] = useState<{ message: string; llmMs: number } | null>(null);
+  const [llmLoading, setLlmLoading] = useState(false);
+  const [llmError, setLlmError] = useState<string | null>(null);
+
   const theoreticalEstimate = estimateTheoreticalCost(messages);
   const usageEstimate = elevenLabsUsageSummary ?? null;
   const activeMessages = countEnabled(messages);
@@ -384,6 +388,62 @@ export function MessagesContent({
                     Ouvir exemplo
                   </button>
                 </div>
+                {config.llm.activeProvider !== "none" && (
+                  <div className="mt-3 card-glass p-4 space-y-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em]" style={{ color: "var(--text-muted)" }}>
+                      Exemplo da IA
+                    </p>
+                    <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                      Cenário fictício: Jinx bot, 3 min, Draven 2/0 na lane.
+                    </p>
+                    {llmExample && (
+                      <p className="text-sm leading-relaxed" style={{ color: "var(--text-primary)" }}>
+                        "{llmExample.message}"
+                        <span className="ml-2 text-xs" style={{ color: "var(--text-muted)" }}>
+                          ({llmExample.llmMs}ms)
+                        </span>
+                      </p>
+                    )}
+                    {llmError && (
+                      <p className="text-xs" style={{ color: "var(--accent-red)" }}>{llmError}</p>
+                    )}
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        disabled={llmLoading}
+                        className="rounded-full px-3 py-1.5 text-xs font-medium transition"
+                        style={{ border: "1px solid var(--border-subtle)", color: "var(--text-secondary)", opacity: llmLoading ? 0.5 : 1 }}
+                        onClick={async () => {
+                          setLlmLoading(true);
+                          setLlmError(null);
+                          try {
+                            const result = await (window.ferroAPI as any).testLLMCoaching();
+                            if (result.ok) {
+                              setLlmExample({ message: result.message, llmMs: result.llmMs });
+                            } else {
+                              setLlmError(result.error);
+                            }
+                          } catch (e) {
+                            setLlmError((e as Error).message);
+                          }
+                          setLlmLoading(false);
+                        }}
+                      >
+                        {llmLoading ? "Gerando..." : "Gerar exemplo"}
+                      </button>
+                      {llmExample && (
+                        <button
+                          type="button"
+                          className="rounded-full px-3 py-1.5 text-xs font-medium transition"
+                          style={{ border: "1px solid var(--border-subtle)", color: "var(--text-secondary)" }}
+                          onClick={() => window.ferroAPI.testTTS(config.tts.activeProvider, llmExample.message)}
+                        >
+                          Ouvir
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>

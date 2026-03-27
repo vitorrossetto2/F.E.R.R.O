@@ -33,6 +33,7 @@ export const IPC = {
 
   // LLM
   LLM_TEST: "llm:test",
+  LLM_TEST_COACHING: "llm:test-coaching",
 
   // Piper Installer
   PIPER_INSTALL: "piper:install",

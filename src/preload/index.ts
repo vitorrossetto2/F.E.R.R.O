@@ -41,6 +41,7 @@ const api = {
   // TTS / LLM
   testTTS: (provider: string, text: string) => ipcRenderer.invoke(IPC.TTS_TEST, provider, text),
   testLLM: (provider: string) => ipcRenderer.invoke(IPC.LLM_TEST, provider),
+  testLLMCoaching: () => ipcRenderer.invoke(IPC.LLM_TEST_COACHING),
 
   // Piper
   getAvailablePiperVoices: () => ipcRenderer.invoke(IPC.PIPER_AVAILABLE_VOICES),
