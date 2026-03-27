@@ -37,7 +37,7 @@ describe("analyzer behavior", () => {
   function makeSnapshot(overrides: Record<string, unknown> = {}) {
     return {
       gameTime: 832,
-      activePlayerName: "Mickael",
+      activePlayerName: "TestPlayer",
       activePlayerChampion: "Jax",
       activePlayerLevel: 11,
       activePlayerGold: 1000,
@@ -45,8 +45,7 @@ describe("analyzer behavior", () => {
       activePlayerKda: "3/2/1",
       activePlayerIsDead: false,
       alliedPlayers: [
-        {
-          summonerName: "Mickael",
+        { summonerName: "TestPlayer",
           championName: "Jax",
           level: 11,
           kills: 3,

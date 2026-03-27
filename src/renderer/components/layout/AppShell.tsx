@@ -43,7 +43,7 @@ export default function AppShell({ activeTab, onTabChange, notice, children }: P
 
         {/* Version */}
         <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-          v0.1.0
+          v1.0.0
         </span>
       </header>
 

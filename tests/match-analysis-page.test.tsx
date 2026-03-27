@@ -24,7 +24,7 @@ describe("MatchAnalysis data normalization", () => {
             totals: { kills: 5, deaths: 5, assists: 3, cs: 100, averageLevel: 5.4 },
             players: [
               {
-                summonerName: "Mickael#XD1",
+                summonerName: "TestPlayer#001",
                 championName: "Alistar",
                 kills: 0,
                 deaths: 3,
@@ -80,7 +80,7 @@ describe("MatchAnalysis data normalization", () => {
       description: "Ashe eliminou Alistar",
       team: "CHAOS",
     });
-    expect(normalized?.players.ORDER["Mickael#XD1"]?.championName).toBe("Alistar");
+    expect(normalized?.players.ORDER["TestPlayer#001"]?.championName).toBe("Alistar");
     expect(normalized?.insights[0]).toEqual({ label: "Leitura", value: "Primeiro abate saiu em 01:21" });
   });
 

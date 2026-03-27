@@ -1,7 +1,7 @@
 {
   "name": "f.e.r.r.o",
-  "version": "0.1.0",
-  "description": "F.E.R.R.O — Coach de voz em tempo real para League of Legends",
+  "version": "1.0.0",
+  "description": "F.E.R.R.O — Ferramenta Estratégica de Resposta em Rift Online",
   "main": "./out/main/index.js",
   "type": "module",
   "scripts": {
@@ -14,7 +14,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
-  "author": "Mickael",
+  "author": "Mickael - Fortech Digital",
   "license": "MIT",
   "dependencies": {
     "adm-zip": "^0.5.16",
@@ -43,7 +43,7 @@
     "vitest": "^4.1.1"
   },
   "build": {
-    "appId": "com.mickael.ferro",
+    "appId": "com.mickael.fortech.ferro",
     "productName": "F.E.R.R.O",
     "directories": {
       "buildResources": "resources",
