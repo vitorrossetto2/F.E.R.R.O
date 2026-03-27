@@ -217,3 +217,14 @@ describe("phrase variation minimums", () => {
     }
   });
 });
+
+describe("snapshot position field", () => {
+  it("SnapshotPlayer includes position field", async () => {
+    const player: import("../src/core/types").SnapshotPlayer = {
+      summonerName: "Test", championName: "Ahri", level: 6,
+      kills: 1, deaths: 0, assists: 2, creepScore: 80,
+      currentGold: 1500, items: [], position: "MIDDLE"
+    };
+    expect(player.position).toBe("MIDDLE");
+  });
+});

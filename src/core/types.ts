@@ -53,6 +53,7 @@ export interface SnapshotPlayer {
   creepScore: number;
   currentGold: number;
   items: CompactItem[];
+  position: string;
 }
 
 export interface GameEvent {
@@ -81,6 +82,7 @@ export interface GameSnapshot {
   activePlayerGold: number;
   activePlayerTeam: string;
   activePlayerKda: string;
+  activePlayerPosition: string;
   alliedPlayers: SnapshotPlayer[];
   enemyPlayers: SnapshotPlayer[];
   events: GameEvent[];

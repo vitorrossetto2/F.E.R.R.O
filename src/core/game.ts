@@ -29,7 +29,8 @@ function compactPlayer(player: any): SnapshotPlayer {
         id: Number(item?.itemID ?? 0),
         name: item?.displayName ?? ""
       }))
-      .filter((item: CompactItem) => item.name.length > 0)
+      .filter((item: CompactItem) => item.name.length > 0),
+    position: player?.position ?? "UNKNOWN"
   };
 }
 
@@ -64,6 +65,7 @@ export async function getSnapshot(
       activePlayerGold: Number(activePlayer.currentGold ?? 0),
       activePlayerTeam: currentTeam ?? "ORDER",
       activePlayerKda: `${currentScores.kills ?? 0}/${currentScores.deaths ?? 0}/${currentScores.assists ?? 0}`,
+      activePlayerPosition: currentPlayer.position ?? "UNKNOWN",
       alliedPlayers: allPlayers
         .filter((player: any) => player?.team === currentTeam)
         .map(compactPlayer),
