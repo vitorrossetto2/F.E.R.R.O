@@ -210,13 +210,6 @@ function detectLane(turretName: string): string {
   return "side";
 }
 
-function normalizeLaneForPlayerPerspective(lane: string, playerTeam: string): string {
-  if (playerTeam !== "CHAOS") return lane;
-  if (lane === "top") return "bot";
-  if (lane === "bot") return "top";
-  return lane;
-}
-
 function isAllyTurret(turretName: string, playerTeam: string): boolean {
   const normalized = (turretName ?? "").toUpperCase();
   const turretTeam = normalized.includes("TORDER") ? "ORDER" : "CHAOS";
@@ -224,13 +217,11 @@ function isAllyTurret(turretName: string, playerTeam: string): boolean {
 }
 
 function turretRotationHint(lane: string, snapshot: GameSnapshot, allied: boolean): string {
-  const perspectiveLane = normalizeLaneForPlayerPerspective(lane, snapshot.activePlayerTeam);
-
   if (allied) {
-    if (perspectiveLane === "mid") return pickModePhrase("torrePerdidaMid");
-    if (perspectiveLane === "top") return pickModePhrase("torrePerdidaTop");
-    if (perspectiveLane === "bot") return pickModePhrase("torrePerdidaBot");
-    return pickModePhrase("torrePerdidaGenerica").replace("{lane}", perspectiveLane);
+    if (lane === "mid") return pickModePhrase("torrePerdidaMid");
+    if (lane === "top") return pickModePhrase("torrePerdidaTop");
+    if (lane === "bot") return pickModePhrase("torrePerdidaBot");
+    return pickModePhrase("torrePerdidaGenerica").replace("{lane}", lane);
   }
 
   const nextDragonAt = getDragonTimer(snapshot);
@@ -238,11 +229,11 @@ function turretRotationHint(lane: string, snapshot: GameSnapshot, allied: boolea
   const dragonSoon = nextDragonAt !== null && nextDragonAt - snapshot.gameTime <= 90;
   const baronSoon = nextBaronAt !== null && nextBaronAt - snapshot.gameTime <= 90;
 
-  if (perspectiveLane === "mid") return pickModePhrase("torreMid");
-  if (perspectiveLane === "top" && dragonSoon) return pickModePhrase("torreTopDragao");
-  if (perspectiveLane === "bot" && baronSoon) return pickModePhrase("torreBotBarao");
+  if (lane === "mid") return pickModePhrase("torreMid");
+  if (lane === "top" && dragonSoon) return pickModePhrase("torreTopDragao");
+  if (lane === "bot" && baronSoon) return pickModePhrase("torreBotBarao");
 
-  return pickModePhrase("torreGenerica").replace("{lane}", perspectiveLane);
+  return pickModePhrase("torreGenerica").replace("{lane}", lane);
 }
 
 function isMajorItem(definition: any): boolean {

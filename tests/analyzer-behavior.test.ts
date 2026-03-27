@@ -71,7 +71,7 @@ describe("analyzer behavior", () => {
     };
   }
 
-  it("flips top and bot tower calls for CHAOS perspective", async () => {
+  it("reports correct lane for CHAOS perspective (no flip)", async () => {
     const { analyzeSnapshot } = await import("../src/core/analyzer.js");
     const snapshot = makeSnapshot({
       events: [
@@ -84,8 +84,9 @@ describe("analyzer behavior", () => {
 
     const result = await analyzeSnapshot(snapshot, makeState());
 
-    expect(result.triggers.some((trigger) => String(trigger).includes("top"))).toBe(true);
-    expect(result.triggers.some((trigger) => String(trigger).includes("bot"))).toBe(false);
+    // L2 = bot lane — lanes are map-absolute, no team-based swap
+    expect(result.triggers.some((trigger) => String(trigger).includes("bot"))).toBe(true);
+    expect(result.triggers.some((trigger) => String(trigger).includes("top"))).toBe(false);
   });
 
   it("does not emit map reminder while the player is dead", async () => {
