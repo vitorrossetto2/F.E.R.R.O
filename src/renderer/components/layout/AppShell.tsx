@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { TabId } from "../../App";
 import TabBar from "./TabBar";
+import PoweredByBadge from "./PoweredByBadge";
 
 interface Props {
   activeTab: TabId;
@@ -53,6 +54,8 @@ export default function AppShell({ activeTab, onTabChange, notice, children }: P
           {children}
         </div>
       </main>
+
+      <PoweredByBadge />
     </div>
   );
 }

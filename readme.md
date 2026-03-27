@@ -134,6 +134,10 @@ Por padrão, o app usa `~/.ferroconfig` para:
 - `npm test` - testes com Vitest
 - `npm run typecheck` - validação TypeScript
 
+## Créditos
+
+Desenvolvido com apoio de [ForTech Digital](https://fortechdigital.com.br).
+
 ## Licença
 
 MIT
