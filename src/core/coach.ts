@@ -50,28 +50,23 @@ const SIMPLE_TRIGGERS = new Set(["lembrete de mapa", "ouro parado alto"]);
 function isSimpleTrigger(priority: string | null): boolean {
   if (!priority) return false;
   if (SIMPLE_TRIGGERS.has(priority)) return true;
+  // Time-sensitive alerts — must be immediate, no LLM latency
   if (priority.includes("em 1 minuto")) return true;
   if (priority.includes("em 30 segundos")) return true;
   if (priority.includes("em 10 segundos")) return true;
   if (priority.includes("nasceu agora")) return true;
   if (priority.includes("morreu, janela de")) return true;
-  if (priority.startsWith("inimigo fed:")) return true;
-  if (priority.includes("acelerou a build")) return true;
-  if (priority.includes("powerspike")) return true;
-  if (priority.includes("torre")) return true;
   if (priority.includes("você morreu")) return true;
   if (priority.includes("cuidado com")) return true;
-  if (priority.includes("inibidor")) return true;
   if (priority === "vitória" || priority === "derrota") return true;
-  if (priority.includes("Perdemos torre") || priority.includes("perdemos torre")) return true;
   if (priority === "ult disponível") return true;
   if (priority.startsWith("inimigo ult antes:")) return true;
   if (priority.startsWith("level up chave:")) return true;
   if (priority.startsWith("item fechado:")) return true;
-  if (priority.startsWith("inimigo item:")) return true;
   if (priority.startsWith("inimigo counter")) return true;
-  if (priority.startsWith("gank oportunidade:")) return true;
-  if (priority.startsWith("lane precisa de ajuda:")) return true;
+  // Strategic triggers go to LLM for contextual advice:
+  // torre, inimigo fed, acelerou a build, powerspike, inibidor,
+  // inimigo item, gank oportunidade, lane precisa de ajuda
   return false;
 }
 
@@ -150,7 +145,7 @@ function fallbackMessage(priority: string | null): string {
     if (!name) return "";
     const pronoun = genderPronoun(name);
     const template = pickModePhrase("inimigoFed");
-    return template.replace("{name}", name).replace("{pronoun}", pronoun);
+    return template.replace(/\{name\}/g, name).replace(/\{pronoun\}/g, pronoun);
   }
 
   if (priority.includes("acelerou a build")) {
@@ -158,7 +153,7 @@ function fallbackMessage(priority: string | null): string {
     if (name) {
       const pronoun = genderPronoun(name);
       const template = pickModePhrase("inimigoBuild");
-      return template.replace("{name}", name).replace(/\{pronoun\}/g, pronoun);
+      return template.replace(/\{name\}/g, name).replace(/\{pronoun\}/g, pronoun);
     }
   }
 
@@ -176,7 +171,7 @@ function fallbackMessage(priority: string | null): string {
 
   if (priority.startsWith("cuidado com ")) {
     const name = priority.replace("cuidado com ", "").split(",")[0].trim();
-    return pickModePhrase("morteJogador").replace("{name}", name);
+    return pickModePhrase("morteJogador").replace(/\{name\}/g, name);
   }
 
   if (priority === "ult disponível") {
@@ -185,7 +180,7 @@ function fallbackMessage(priority: string | null): string {
 
   if (priority.startsWith("inimigo ult antes:")) {
     const name = priority.split(":")[1]?.trim();
-    if (name) return pickModePhrase("inimigoUltAntes").replace("{name}", name);
+    if (name) return pickModePhrase("inimigoUltAntes").replace(/\{name\}/g, name);
   }
 
   if (priority.startsWith("level up chave:")) {
@@ -217,7 +212,7 @@ function fallbackMessage(priority: string | null): string {
     if (sepIdx > 0) {
       const name = after.slice(0, sepIdx).trim();
       const item = after.slice(sepIdx + 1).trim();
-      return pickModePhrase("inimigoItemPerigoso").replace("{name}", name).replace("{item}", item);
+      return pickModePhrase("inimigoItemPerigoso").replace(/\{name\}/g, name).replace(/\{item\}/g, item);
     }
   }
 
@@ -348,7 +343,6 @@ export async function decideCoaching(
     };
   }
 
-  const prompt = buildPrompt(snapshot, triggers, priority, strategicContext);
   const client = getClient();
 
   if (!client) {
@@ -357,7 +351,7 @@ export async function decideCoaching(
       message: fallback,
       reason: "llm desabilitada ou nao configurada",
       priority,
-      prompt,
+      prompt: "",
       rawModelMessage: "",
       fallbackUsed: !!fallback,
       llmMs: 0,
@@ -366,6 +360,8 @@ export async function decideCoaching(
       skippedLlm: true
     };
   }
+
+  const prompt = buildPrompt(snapshot, triggers, priority, strategicContext);
 
   let message = "";
   let llmMs = 0;

@@ -192,6 +192,14 @@ function collectObjectiveTriggers(snapshot: GameSnapshot, state: LoopStateShape)
         timeUntil >= window.threshold - (settings.pollIntervalSeconds * 2);
 
       if ((crossedThreshold || firstSeenInsideThreshold) && !state.announcedKeys.has(key)) {
+        // Skip "nasceu agora" if "em 10 segundos" was already announced (redundant)
+        if (window.label === "spawn") {
+          const tenKey = `${objective.name}:${objective.spawnAt}:10`;
+          if (state.announcedKeys.has(tenKey)) {
+            state.announcedKeys.add(key);
+            continue;
+          }
+        }
         state.announcedKeys.add(key);
         triggers.push(window.render(objective.name));
       }
@@ -203,10 +211,10 @@ function collectObjectiveTriggers(snapshot: GameSnapshot, state: LoopStateShape)
 
 function detectLane(turretName: string): string {
   const normalized = (turretName ?? "").toUpperCase();
-  // Riot format: Turret_TOrder_L1_P3 where L0=top, L1=mid, L2=bot
+  // Riot format: Turret_TOrder_L1_P3 where L0=bot, L1=mid, L2=top
   if (normalized.includes("_L1_") || normalized.includes("_MID_") || normalized.endsWith("_MID")) return "mid";
-  if (normalized.includes("_L0_") || normalized.includes("_TOP_") || normalized.includes("_C_TOP") || normalized.endsWith("_TOP")) return "top";
-  if (normalized.includes("_L2_") || normalized.includes("_BOT_") || normalized.includes("_C_BOT") || normalized.endsWith("_BOT")) return "bot";
+  if (normalized.includes("_L2_") || normalized.includes("_TOP_") || normalized.includes("_C_TOP") || normalized.endsWith("_TOP")) return "top";
+  if (normalized.includes("_L0_") || normalized.includes("_BOT_") || normalized.includes("_C_BOT") || normalized.endsWith("_BOT")) return "bot";
   return "side";
 }
 
@@ -567,7 +575,7 @@ export async function analyzeSnapshot(snapshot: GameSnapshot, state: LoopStateSh
     ...collectLevelTriggers(snapshot, state)
   ]);
 
-  if (!snapshot.activePlayerIsDead && snapshot.gameTime - state.lastMapReminderAt >= settings.mapReminderIntervalSeconds) {
+  if (!snapshot.activePlayerIsDead && triggers.length === 0 && snapshot.gameTime - state.lastMapReminderAt >= settings.mapReminderIntervalSeconds) {
     triggers.push("lembrete de mapa");
     state.lastMapReminderAt = snapshot.gameTime;
   }

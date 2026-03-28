@@ -83,9 +83,9 @@ describe("analyzer behavior", () => {
 
     const result = await analyzeSnapshot(snapshot, makeState());
 
-    // L2 = bot lane — lanes are map-absolute, no team-based swap
-    expect(result.triggers.some((trigger) => String(trigger).includes("bot"))).toBe(true);
-    expect(result.triggers.some((trigger) => String(trigger).includes("top"))).toBe(false);
+    // L2 = top lane — lanes are map-absolute (L0=bot, L1=mid, L2=top)
+    expect(result.triggers.some((trigger) => String(trigger).includes("top"))).toBe(true);
+    expect(result.triggers.some((trigger) => String(trigger).includes("bot"))).toBe(false);
   });
 
   it("does not emit map reminder while the player is dead", async () => {

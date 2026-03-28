@@ -418,7 +418,13 @@ export class Engine extends EventEmitter {
         return;
       }
 
-      // Global rate limiter (8s minimum between speaks)
+      // Suppress map reminders if any message was spoken within 15s
+      if (category === "mapa" && gameTime - st.lastSpeakGameTime < 15) {
+        this.log({ type: "msg_skipped", gameTime, message: `Mapa suprimido: mensagem recente há ${Math.round(gameTime - st.lastSpeakGameTime)}s` });
+        return;
+      }
+
+      // Global rate limiter (12s minimum between speaks)
       if (!st.canSpeakGlobal(gameTime)) {
         const prio = CATEGORY_PRIORITIES[category] ?? 0;
         if (prio >= 2 && decision.priority) {

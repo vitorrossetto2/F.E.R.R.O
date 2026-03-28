@@ -18,14 +18,14 @@ describe("LoopState rate limiter", () => {
     const st = new LoopState();
     st.markGlobalSpeak(100);
     expect(st.canSpeakGlobal(105)).toBe(false);
-    expect(st.canSpeakGlobal(107.9)).toBe(false);
+    expect(st.canSpeakGlobal(111.9)).toBe(false);
   });
 
-  it("canSpeakGlobal returns true after 8 seconds", async () => {
+  it("canSpeakGlobal returns true after 12 seconds", async () => {
     const { LoopState } = await import("../src/core/state.js");
     const st = new LoopState();
     st.markGlobalSpeak(100);
-    expect(st.canSpeakGlobal(108)).toBe(true);
+    expect(st.canSpeakGlobal(112)).toBe(true);
   });
 
   it("queueTriggers respects cap of 2, evicting lowest priority", async () => {

@@ -81,7 +81,7 @@ export class LoopState implements LoopStateShape {
   }
 
   canSpeakGlobal(gameTime: number): boolean {
-    return gameTime - this.lastSpeakGameTime >= 8;
+    return gameTime - this.lastSpeakGameTime >= 12;
   }
 
   markGlobalSpeak(gameTime: number): void {
