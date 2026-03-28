@@ -299,4 +299,16 @@ describe("analyzer behavior", () => {
     const result = await analyzeSnapshot(snapshot, state);
     expect(result.triggers.some((t) => t === "ward alerta")).toBe(true);
   });
+
+  it("emits dragon type context when dragon is killed", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const state = makeState();
+    const snapshot = makeSnapshot({
+      events: [
+        { EventName: "DragonKill", KillerName: "TestPlayer", DragonType: "Fire", Stolen: "False" },
+      ],
+    });
+    const result = await analyzeSnapshot(snapshot, state);
+    expect(result.triggers.some((t) => t.includes("dragão tipo: Fire"))).toBe(true);
+  });
 });

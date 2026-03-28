@@ -75,6 +75,7 @@ function isSimpleTrigger(priority: string | null): boolean {
   if (priority === "inibidor inimigo voltou") return true;
   if (priority === "cs alerta") return true;
   if (priority === "ward alerta") return true;
+  if (priority.startsWith("dragão tipo:")) return true;
   return false;
 }
 
@@ -111,6 +112,7 @@ export function detectCategory(priority: string | null): string {
   if (priority.startsWith("soul ")) return "dragonSoul";
   if (priority === "cs alerta") return "csAlerta";
   if (priority === "ward alerta") return "wardAlerta";
+  if (priority.startsWith("dragão tipo:")) return "dragonTipo";
   return "generico";
 }
 
@@ -319,6 +321,20 @@ function fallbackMessage(priority: string | null): string {
 
   if (priority === "ward alerta") {
     return pickModePhrase("wardAlerta");
+  }
+
+  if (priority.startsWith("dragão tipo:")) {
+    const type = priority.split(":")[1]?.trim() ?? "";
+    const hints: Record<string, string> = {
+      Fire: "Bom pro dano do time.",
+      Earth: "Aumenta resistência do time.",
+      Water: "Regeneração extra pro time.",
+      Air: "Velocidade pro time.",
+      Hextech: "Haste pro time.",
+      Chemtech: "Dano e sustain em luta.",
+    };
+    const hint = hints[type] ?? "";
+    return pickModePhrase("dragonTipo").replace(/\{type\}/g, type).replace(/\{hint\}/g, hint);
   }
 
   const sentence = toSentence(priority);

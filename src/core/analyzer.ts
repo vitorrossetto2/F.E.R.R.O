@@ -462,6 +462,13 @@ function collectEventTriggers(
       }
     }
 
+    if (eventName === "DragonKill") {
+      const dragonType = event?.DragonType as string | undefined;
+      if (dragonType && dragonType !== "Elder") {
+        triggers.push(`dragão tipo: ${dragonType}`);
+      }
+    }
+
     if (eventName === "DragonKill" || eventName === "BaronKill") {
       const stolen = event?.Stolen === "True" || event?.Stolen === true;
       if (stolen) {
