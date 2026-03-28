@@ -31,6 +31,9 @@ describe("analyzer behavior", () => {
       lastGameTime: null,
       lastMessageTimes: new Map(),
       pendingTriggers: [],
+      allyDragonKills: 0,
+      enemyDragonKills: 0,
+      lastDragonSoulWarningAt: 0,
     };
   }
 
@@ -191,5 +194,31 @@ describe("analyzer behavior", () => {
     });
     const result = await analyzeSnapshot(snapshot, makeState());
     expect(result.triggers.some((t) => t.includes("inibidor inimigo voltou"))).toBe(true);
+  });
+
+  it("emits dragon soul warning when ally team is 1 away", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const state = makeState();
+    const events = [
+      { EventName: "DragonKill", KillerName: "TestPlayer", DragonType: "Fire", Stolen: "False" },
+      { EventName: "DragonKill", KillerName: "TestPlayer", DragonType: "Earth", Stolen: "False" },
+      { EventName: "DragonKill", KillerName: "TestPlayer", DragonType: "Water", Stolen: "False" },
+    ];
+    const snapshot = makeSnapshot({ events, gameTime: 1200 });
+    const result = await analyzeSnapshot(snapshot, state);
+    expect(result.triggers.some((t) => t.includes("soul aliada"))).toBe(true);
+  });
+
+  it("emits enemy dragon soul warning when enemy is 1 away", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const state = makeState();
+    const events = [
+      { EventName: "DragonKill", KillerName: "EnemyTop", DragonType: "Fire", Stolen: "False" },
+      { EventName: "DragonKill", KillerName: "EnemyTop", DragonType: "Earth", Stolen: "False" },
+      { EventName: "DragonKill", KillerName: "EnemyTop", DragonType: "Water", Stolen: "False" },
+    ];
+    const snapshot = makeSnapshot({ events, gameTime: 1200 });
+    const result = await analyzeSnapshot(snapshot, state);
+    expect(result.triggers.some((t) => t.includes("soul inimiga"))).toBe(true);
   });
 });

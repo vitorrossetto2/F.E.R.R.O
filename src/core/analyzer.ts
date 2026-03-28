@@ -627,6 +627,44 @@ function collectJungleTriggers(
   return triggers;
 }
 
+function collectDragonSoulTriggers(
+  snapshot: GameSnapshot,
+  state: LoopStateShape,
+  playerLookup: Map<string, SnapshotPlayer>
+): string[] {
+  const triggers: string[] = [];
+  const dragonKills = getEventsByName(snapshot, ["DragonKill"]);
+
+  let allyCount = 0;
+  let enemyCount = 0;
+  for (const ev of dragonKills) {
+    const killerName = typeof ev.KillerName === "string" ? ev.KillerName : "";
+    const killerPlayer = playerLookup.get(killerName);
+    const isAlly = killerPlayer && snapshot.alliedPlayers.some((p) => p.summonerName === killerPlayer.summonerName);
+    if (isAlly) allyCount++;
+    else enemyCount++;
+  }
+
+  state.allyDragonKills = allyCount;
+  state.enemyDragonKills = enemyCount;
+
+  const SOUL_THRESHOLD = 4;
+  const allyRemaining = SOUL_THRESHOLD - allyCount;
+  const enemyRemaining = SOUL_THRESHOLD - enemyCount;
+
+  if (allyRemaining >= 1 && allyRemaining <= 2 && snapshot.gameTime - state.lastDragonSoulWarningAt >= 120) {
+    state.lastDragonSoulWarningAt = snapshot.gameTime;
+    triggers.push(`soul aliada: falta ${allyRemaining}`);
+  }
+
+  if (enemyRemaining >= 1 && enemyRemaining <= 2 && snapshot.gameTime - state.lastDragonSoulWarningAt >= 120) {
+    state.lastDragonSoulWarningAt = snapshot.gameTime;
+    triggers.push(`soul inimiga: falta ${enemyRemaining}`);
+  }
+
+  return triggers;
+}
+
 export async function analyzeSnapshot(snapshot: GameSnapshot, state: LoopStateShape): Promise<AnalyzeSnapshotResult> {
   const newEvents = snapshot.events.slice(state.lastSeenEventCount);
   const playerLookup = getPlayerLookup(snapshot);
@@ -637,7 +675,8 @@ export async function analyzeSnapshot(snapshot: GameSnapshot, state: LoopStateSh
     ...collectJungleTriggers(snapshot, state, newEvents, playerLookup),
     ...collectPowerTriggers(strategicContext, state),
     ...collectItemTriggers(strategicContext, state),
-    ...collectLevelTriggers(snapshot, state)
+    ...collectLevelTriggers(snapshot, state),
+    ...collectDragonSoulTriggers(snapshot, state, playerLookup)
   ]);
 
   if (!snapshot.activePlayerIsDead && triggers.length === 0 && snapshot.gameTime - state.lastMapReminderAt >= settings.mapReminderIntervalSeconds) {
