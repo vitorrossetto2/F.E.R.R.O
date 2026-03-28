@@ -101,4 +101,95 @@ describe("analyzer behavior", () => {
 
     expect(result.triggers).not.toContain("lembrete de mapa");
   });
+
+  it("emits ace trigger when Ace event fires for enemy team", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const snapshot = makeSnapshot({
+      activePlayerTeam: "ORDER",
+      events: [
+        { EventName: "Ace", AcingTeam: "ORDER", Acer: "TestPlayer" },
+      ],
+    });
+    const result = await analyzeSnapshot(snapshot, makeState());
+    expect(result.triggers.some((t) => t.includes("ace inimigo"))).toBe(true);
+  });
+
+  it("emits allied ace trigger when own team is aced", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const snapshot = makeSnapshot({
+      activePlayerTeam: "ORDER",
+      events: [
+        { EventName: "Ace", AcingTeam: "CHAOS", Acer: "EnemyPlayer" },
+      ],
+    });
+    const result = await analyzeSnapshot(snapshot, makeState());
+    expect(result.triggers.some((t) => t.includes("ace aliado"))).toBe(true);
+  });
+
+  it("emits multikill trigger for enemy multikill", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const snapshot = makeSnapshot({
+      events: [
+        { EventName: "Multikill", KillerName: "EnemyTop", KillStreak: 2 },
+      ],
+    });
+    const result = await analyzeSnapshot(snapshot, makeState());
+    expect(result.triggers.some((t) => t.includes("multikill inimigo"))).toBe(true);
+  });
+
+  it("emits multikill trigger for allied multikill", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const snapshot = makeSnapshot({
+      events: [
+        { EventName: "Multikill", KillerName: "TestPlayer", KillStreak: 3 },
+      ],
+    });
+    const result = await analyzeSnapshot(snapshot, makeState());
+    expect(result.triggers.some((t) => t.includes("multikill aliado"))).toBe(true);
+  });
+
+  it("emits steal trigger when dragon is stolen by enemy", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const snapshot = makeSnapshot({
+      events: [
+        { EventName: "DragonKill", KillerName: "EnemyTop", Stolen: "True", DragonType: "Fire" },
+      ],
+    });
+    const result = await analyzeSnapshot(snapshot, makeState());
+    expect(result.triggers.some((t) => t.includes("roubaram dragão"))).toBe(true);
+  });
+
+  it("emits steal trigger when baron is stolen by ally", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const snapshot = makeSnapshot({
+      events: [
+        { EventName: "BaronKill", KillerName: "TestPlayer", Stolen: "True" },
+      ],
+    });
+    const result = await analyzeSnapshot(snapshot, makeState());
+    expect(result.triggers.some((t) => t.includes("roubamos barão"))).toBe(true);
+  });
+
+  it("emits first blood trigger for player", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const snapshot = makeSnapshot({
+      events: [
+        { EventName: "FirstBlood", Recipient: "TestPlayer" },
+      ],
+    });
+    const result = await analyzeSnapshot(snapshot, makeState());
+    expect(result.triggers.some((t) => t === "first blood aliado")).toBe(true);
+  });
+
+  it("emits inhib respawned trigger", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const snapshot = makeSnapshot({
+      activePlayerTeam: "ORDER",
+      events: [
+        { EventName: "InhibRespawned", InhibRespawned: "Inhib_TChaos_L1_P1_1931666598_0" },
+      ],
+    });
+    const result = await analyzeSnapshot(snapshot, makeState());
+    expect(result.triggers.some((t) => t.includes("inibidor inimigo voltou"))).toBe(true);
+  });
 });

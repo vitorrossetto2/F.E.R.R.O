@@ -3,6 +3,14 @@ import { ITEM_TAGS, pickModePhrase } from "./constants";
 import { getItemCatalog } from "./ddragon";
 import type { AnalyzeSnapshotResult, GameEvent, GameSnapshot, LoopStateShape, SnapshotPlayer, StrategicContext } from "./types";
 
+function multikillLabel(streak: number): string {
+  if (streak === 2) return "double kill";
+  if (streak === 3) return "triple kill";
+  if (streak === 4) return "quadra kill";
+  if (streak >= 5) return "penta kill";
+  return "multi kill";
+}
+
 const RESPAWN_BY_LEVEL = [
   10, 10, 12, 12, 14, 16, 20, 25, 28, 32.5, 35, 37.5, 40, 42.5, 45, 47.5, 50, 52.5
 ];
@@ -426,6 +434,63 @@ function collectEventTriggers(
         triggers.push("vitória");
       } else {
         triggers.push("derrota");
+      }
+    }
+
+    if (eventName === "Ace") {
+      const acingTeam = event?.AcingTeam as string | undefined;
+      const isEnemyAced = acingTeam === snapshot.activePlayerTeam;
+      if (isEnemyAced) {
+        triggers.push("ace inimigo");
+      } else {
+        triggers.push("ace aliado");
+      }
+    }
+
+    if (eventName === "Multikill") {
+      const streak = Number(event?.KillStreak ?? 2);
+      const killerName = typeof event.KillerName === "string" ? event.KillerName : "";
+      const killerPlayer = playerLookup.get(killerName);
+      const label = multikillLabel(streak);
+      if (killerPlayer) {
+        const isAlly = snapshot.alliedPlayers.some((p) => p.summonerName === killerPlayer.summonerName);
+        if (isAlly) {
+          triggers.push(`multikill aliado: ${killerPlayer.championName}:${label}`);
+        } else {
+          triggers.push(`multikill inimigo: ${killerPlayer.championName}:${label}`);
+        }
+      }
+    }
+
+    if (eventName === "DragonKill" || eventName === "BaronKill") {
+      const stolen = event?.Stolen === "True" || event?.Stolen === true;
+      if (stolen) {
+        const killerName = typeof event.KillerName === "string" ? event.KillerName : "";
+        const killerPlayer = playerLookup.get(killerName);
+        const isAlly = killerPlayer && snapshot.alliedPlayers.some((p) => p.summonerName === killerPlayer.summonerName);
+        const objectiveName = eventName === "DragonKill" ? "dragão" : "barão";
+        if (isAlly) {
+          triggers.push(`roubamos ${objectiveName}`);
+        } else {
+          triggers.push(`roubaram ${objectiveName}`);
+        }
+      }
+    }
+
+    if (eventName === "FirstBlood") {
+      const recipient = event?.Recipient as string | undefined;
+      const isAlly = recipient && (
+        snapshot.alliedPlayers.some((p) => p.summonerName === recipient) ||
+        recipient === snapshot.activePlayerName
+      );
+      triggers.push(isAlly ? "first blood aliado" : "first blood inimigo");
+    }
+
+    if (eventName === "InhibRespawned") {
+      const inhibName = event?.InhibRespawned as string | undefined ?? "";
+      const allied = isAllyTurret(inhibName, snapshot.activePlayerTeam);
+      if (!allied) {
+        triggers.push("inibidor inimigo voltou");
       }
     }
   }
