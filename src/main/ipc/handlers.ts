@@ -274,11 +274,11 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
         activePlayerPosition: "BOTTOM",
         alliedPlayers: [],
         enemyPlayers: [
-          { summonerName: "E1", championName: "Draven", level: 3, kills: 2, deaths: 0, assists: 1, creepScore: 30, currentGold: 1500, items: [], position: "BOTTOM" },
-          { summonerName: "E2", championName: "Leona", level: 3, kills: 0, deaths: 1, assists: 2, creepScore: 10, currentGold: 800, items: [], position: "UTILITY" },
-          { summonerName: "E3", championName: "Zed", level: 4, kills: 3, deaths: 0, assists: 0, creepScore: 45, currentGold: 2000, items: [], position: "MIDDLE" },
-          { summonerName: "E4", championName: "Darius", level: 3, kills: 0, deaths: 0, assists: 0, creepScore: 35, currentGold: 1100, items: [], position: "TOP" },
-          { summonerName: "E5", championName: "Lee Sin", level: 4, kills: 1, deaths: 0, assists: 1, creepScore: 25, currentGold: 1300, items: [], position: "JUNGLE" },
+          { summonerName: "E1", championName: "Draven", level: 3, kills: 2, deaths: 0, assists: 1, creepScore: 30, currentGold: 1500, items: [], position: "BOTTOM", wardScore: 0 },
+          { summonerName: "E2", championName: "Leona", level: 3, kills: 0, deaths: 1, assists: 2, creepScore: 10, currentGold: 800, items: [], position: "UTILITY", wardScore: 0 },
+          { summonerName: "E3", championName: "Zed", level: 4, kills: 3, deaths: 0, assists: 0, creepScore: 45, currentGold: 2000, items: [], position: "MIDDLE", wardScore: 0 },
+          { summonerName: "E4", championName: "Darius", level: 3, kills: 0, deaths: 0, assists: 0, creepScore: 35, currentGold: 1100, items: [], position: "TOP", wardScore: 0 },
+          { summonerName: "E5", championName: "Lee Sin", level: 4, kills: 1, deaths: 0, assists: 1, creepScore: 25, currentGold: 1300, items: [], position: "JUNGLE", wardScore: 0 },
         ],
         events: []
       });

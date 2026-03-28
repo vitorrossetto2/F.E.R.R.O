@@ -311,4 +311,36 @@ describe("analyzer behavior", () => {
     const result = await analyzeSnapshot(snapshot, state);
     expect(result.triggers.some((t) => t.includes("dragão tipo: Fire"))).toBe(true);
   });
+
+  it("handles multiple new events in a single snapshot", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const state = makeState();
+    const snapshot = makeSnapshot({
+      gameTime: 1500,
+      activePlayerTeam: "ORDER",
+      alliedPlayers: [{
+        summonerName: "TestPlayer", championName: "Jax", level: 14,
+        kills: 5, deaths: 3, assists: 2, creepScore: 80, currentGold: 1000,
+        items: [], position: "TOP", wardScore: 3
+      }],
+      events: [
+        { EventName: "DragonKill", KillerName: "TestPlayer", DragonType: "Fire", Stolen: "False" },
+        { EventName: "DragonKill", KillerName: "TestPlayer", DragonType: "Earth", Stolen: "False" },
+        { EventName: "DragonKill", KillerName: "TestPlayer", DragonType: "Water", Stolen: "False" },
+        { EventName: "Multikill", KillerName: "EnemyTop", KillStreak: 3 },
+        { EventName: "Ace", AcingTeam: "CHAOS", Acer: "EnemyTop" },
+      ],
+    });
+    const result = await analyzeSnapshot(snapshot, state);
+    const triggerStr = result.triggers.join(" | ");
+
+    // Should contain ace, multikill, dragon soul, and performance triggers
+    expect(triggerStr).toContain("ace");
+    expect(triggerStr).toContain("multikill");
+    expect(triggerStr).toContain("soul");
+    // CS alert (80 CS at 25min = 3.2/min, very low)
+    expect(result.triggers.some((t) => t === "cs alerta")).toBe(true);
+    // Ward alert (3 wardScore at 25min, expected ~12.5)
+    expect(result.triggers.some((t) => t === "ward alerta")).toBe(true);
+  });
 });
