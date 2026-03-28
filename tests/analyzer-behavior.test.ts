@@ -156,28 +156,6 @@ describe("analyzer behavior", () => {
     expect(result.triggers.some((t) => t.includes("ace aliado"))).toBe(true);
   });
 
-  it("emits multikill trigger for enemy multikill", async () => {
-    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
-    const snapshot = makeSnapshot({
-      events: [
-        { EventName: "Multikill", KillerName: "EnemyTop", KillStreak: 2 },
-      ],
-    });
-    const result = await analyzeSnapshot(snapshot, makeState());
-    expect(result.triggers.some((t) => t.includes("multikill inimigo"))).toBe(true);
-  });
-
-  it("emits multikill trigger for allied multikill", async () => {
-    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
-    const snapshot = makeSnapshot({
-      events: [
-        { EventName: "Multikill", KillerName: "TestPlayer", KillStreak: 3 },
-      ],
-    });
-    const result = await analyzeSnapshot(snapshot, makeState());
-    expect(result.triggers.some((t) => t.includes("multikill aliado"))).toBe(true);
-  });
-
   it("emits steal trigger when dragon is stolen by enemy", async () => {
     const { analyzeSnapshot } = await import("../src/core/analyzer.js");
     const snapshot = makeSnapshot({
@@ -327,16 +305,14 @@ describe("analyzer behavior", () => {
         { EventName: "DragonKill", KillerName: "TestPlayer", DragonType: "Fire", Stolen: "False" },
         { EventName: "DragonKill", KillerName: "TestPlayer", DragonType: "Earth", Stolen: "False" },
         { EventName: "DragonKill", KillerName: "TestPlayer", DragonType: "Water", Stolen: "False" },
-        { EventName: "Multikill", KillerName: "EnemyTop", KillStreak: 3 },
         { EventName: "Ace", AcingTeam: "CHAOS", Acer: "EnemyTop" },
       ],
     });
     const result = await analyzeSnapshot(snapshot, state);
     const triggerStr = result.triggers.join(" | ");
 
-    // Should contain ace, multikill, dragon soul, and performance triggers
+    // Should contain ace, dragon soul, and performance triggers
     expect(triggerStr).toContain("ace");
-    expect(triggerStr).toContain("multikill");
     expect(triggerStr).toContain("soul");
     // CS alert (80 CS at 25min = 3.2/min, very low)
     expect(result.triggers.some((t) => t === "cs alerta")).toBe(true);

@@ -68,7 +68,7 @@ function isSimpleTrigger(priority: string | null): boolean {
   // torre, inimigo fed, acelerou a build, powerspike, inibidor,
   // inimigo item, gank oportunidade, lane precisa de ajuda
   // New events — these are reactive, use heuristic
-  if (priority === "ace inimigo" || priority === "ace aliado") return true;
+  if (priority === "ace inimigo" || priority.startsWith("ace inimigo:") || priority === "ace aliado") return true;
   if (priority.startsWith("multikill ")) return true;
   if (priority.startsWith("roubaram ") || priority.startsWith("roubamos ")) return true;
   if (priority.startsWith("first blood")) return true;
@@ -105,7 +105,7 @@ export function detectCategory(priority: string | null): string {
   if (priority.includes("em 1 minuto") || priority.includes("em 30 segundos") ||
       priority.includes("em 10 segundos") || priority.includes("nasceu agora") ||
       priority.includes("morreu, janela de")) return "objetivo";
-  if (priority === "ace inimigo" || priority === "ace aliado") return "ace";
+  if (priority === "ace aliado" || priority === "ace inimigo" || priority.startsWith("ace inimigo:")) return "ace";
   if (priority.startsWith("multikill ")) return "multikill";
   if (priority.startsWith("roubaram ") || priority.startsWith("roubamos ")) return "objetivoRoubo";
   if (priority.startsWith("first blood")) return "firstBlood";
@@ -261,7 +261,11 @@ function fallbackMessage(priority: string | null): string {
     return pickModePhrase("junglePressao").replace("{lane}", lane);
   }
 
-  if (priority === "ace inimigo") {
+  if (priority === "ace inimigo" || priority.startsWith("ace inimigo:")) {
+    const obj = priority.includes(":") ? priority.split(":")[1]?.trim() : null;
+    if (obj) {
+      return `Ace! Vai pro ${obj} agora.`;
+    }
     return pickModePhrase("aceInimigo");
   }
 

@@ -3,14 +3,6 @@ import { ITEM_TAGS, pickModePhrase } from "./constants";
 import { getItemCatalog } from "./ddragon";
 import type { AnalyzeSnapshotResult, GameEvent, GameSnapshot, LoopStateShape, SnapshotPlayer, StrategicContext } from "./types";
 
-function multikillLabel(streak: number): string {
-  if (streak === 2) return "double kill";
-  if (streak === 3) return "triple kill";
-  if (streak === 4) return "quadra kill";
-  if (streak >= 5) return "penta kill";
-  return "multi kill";
-}
-
 const RESPAWN_BY_LEVEL = [
   10, 10, 12, 12, 14, 16, 20, 25, 28, 32.5, 35, 37.5, 40, 42.5, 45, 47.5, 50, 52.5
 ];
@@ -384,6 +376,28 @@ async function buildStrategicContext(snapshot: GameSnapshot): Promise<StrategicC
   };
 }
 
+function getBestAvailableObjective(snapshot: GameSnapshot): string | null {
+  const gt = snapshot.gameTime;
+
+  // Check baron availability (spawns at 1200s, respawns every 360s)
+  const baronKills = getEventsByName(snapshot, ["BaronKill"]);
+  const baronAvailable = gt >= 1200 && (
+    baronKills.length === 0 ||
+    gt - Number(baronKills[baronKills.length - 1].EventTime ?? 0) >= 360
+  );
+
+  // Check dragon availability (first spawn 300s, respawns every 300s)
+  const dragonKills = getEventsByName(snapshot, ["DragonKill"]);
+  const dragonAvailable = dragonKills.length === 0
+    ? gt >= 300
+    : gt - Number(dragonKills[dragonKills.length - 1].EventTime ?? 0) >= 300;
+
+  // Baron is higher priority if available
+  if (baronAvailable) return "barão";
+  if (dragonAvailable) return "dragão";
+  return null;
+}
+
 function collectEventTriggers(
   snapshot: GameSnapshot,
   state: LoopStateShape,
@@ -449,24 +463,14 @@ function collectEventTriggers(
       const acingTeam = event?.AcingTeam as string | undefined;
       const isEnemyAced = acingTeam === snapshot.activePlayerTeam;
       if (isEnemyAced) {
-        triggers.push("ace inimigo");
+        const bestObj = getBestAvailableObjective(snapshot);
+        if (bestObj) {
+          triggers.push(`ace inimigo: ${bestObj}`);
+        } else {
+          triggers.push("ace inimigo");
+        }
       } else {
         triggers.push("ace aliado");
-      }
-    }
-
-    if (eventName === "Multikill") {
-      const streak = Number(event?.KillStreak ?? 2);
-      const killerName = typeof event.KillerName === "string" ? event.KillerName : "";
-      const killerPlayer = playerLookup.get(killerName);
-      const label = multikillLabel(streak);
-      if (killerPlayer) {
-        const isAlly = snapshot.alliedPlayers.some((p) => p.summonerName === killerPlayer.summonerName);
-        if (isAlly) {
-          triggers.push(`multikill aliado: ${killerPlayer.championName}:${label}`);
-        } else {
-          triggers.push(`multikill inimigo: ${killerPlayer.championName}:${label}`);
-        }
       }
     }
 
