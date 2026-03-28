@@ -67,6 +67,14 @@ function isSimpleTrigger(priority: string | null): boolean {
   // Strategic triggers go to LLM for contextual advice:
   // torre, inimigo fed, acelerou a build, powerspike, inibidor,
   // inimigo item, gank oportunidade, lane precisa de ajuda
+  // New events — these are reactive, use heuristic
+  if (priority === "ace inimigo" || priority === "ace aliado") return true;
+  if (priority.startsWith("multikill ")) return true;
+  if (priority.startsWith("roubaram ") || priority.startsWith("roubamos ")) return true;
+  if (priority.startsWith("first blood")) return true;
+  if (priority === "inibidor inimigo voltou") return true;
+  if (priority === "cs alerta") return true;
+  if (priority === "ward alerta") return true;
   return false;
 }
 
@@ -88,6 +96,7 @@ export function detectCategory(priority: string | null): string {
       priority.startsWith("level up chave:")) return "levelUp";
   if (priority.startsWith("item fechado:")) return "itemFechado";
   if (priority.startsWith("inimigo item:") || priority.startsWith("inimigo counter")) return "inimigoItem";
+  if (priority === "inibidor inimigo voltou") return "inibidorRespawn";
   if (priority.includes("inibidor")) return "inibidor";
   if (priority.startsWith("gank oportunidade:")) return "jungleGank";
   if (priority.startsWith("lane precisa de ajuda:")) return "junglePressao";
@@ -95,6 +104,13 @@ export function detectCategory(priority: string | null): string {
   if (priority.includes("em 1 minuto") || priority.includes("em 30 segundos") ||
       priority.includes("em 10 segundos") || priority.includes("nasceu agora") ||
       priority.includes("morreu, janela de")) return "objetivo";
+  if (priority === "ace inimigo" || priority === "ace aliado") return "ace";
+  if (priority.startsWith("multikill ")) return "multikill";
+  if (priority.startsWith("roubaram ") || priority.startsWith("roubamos ")) return "objetivoRoubo";
+  if (priority.startsWith("first blood")) return "firstBlood";
+  if (priority.startsWith("soul ")) return "dragonSoul";
+  if (priority === "cs alerta") return "csAlerta";
+  if (priority === "ward alerta") return "wardAlerta";
   return "generico";
 }
 
@@ -241,6 +257,68 @@ function fallbackMessage(priority: string | null): string {
   if (priority.startsWith("lane precisa de ajuda:")) {
     const lane = priority.replace("lane precisa de ajuda: ", "").trim();
     return pickModePhrase("junglePressao").replace("{lane}", lane);
+  }
+
+  if (priority === "ace inimigo") {
+    return pickModePhrase("aceInimigo");
+  }
+
+  if (priority === "ace aliado") {
+    return pickModePhrase("aceAliado");
+  }
+
+  if (priority.startsWith("multikill inimigo:")) {
+    const parts = priority.slice("multikill inimigo:".length).trim().split(":");
+    const name = parts[0]?.trim() ?? "";
+    const type = parts[1]?.trim() ?? "multi kill";
+    return pickModePhrase("multikillInimigo").replace(/\{name\}/g, name).replace(/\{type\}/g, type);
+  }
+
+  if (priority.startsWith("multikill aliado:")) {
+    const parts = priority.slice("multikill aliado:".length).trim().split(":");
+    const name = parts[0]?.trim() ?? "";
+    const type = parts[1]?.trim() ?? "multi kill";
+    return pickModePhrase("multikillAliado").replace(/\{name\}/g, name).replace(/\{type\}/g, type);
+  }
+
+  if (priority.startsWith("roubaram ")) {
+    const name = priority.replace("roubaram ", "");
+    return pickModePhrase("objetivoRoubado").replace(/\{name\}/g, name);
+  }
+
+  if (priority.startsWith("roubamos ")) {
+    const name = priority.replace("roubamos ", "");
+    return pickModePhrase("objetivoRoubadoPorNos").replace(/\{name\}/g, name);
+  }
+
+  if (priority === "first blood aliado") {
+    return pickModePhrase("firstBlood");
+  }
+
+  if (priority === "first blood inimigo") {
+    return pickModePhrase("firstBloodInimigo");
+  }
+
+  if (priority === "inibidor inimigo voltou") {
+    return pickModePhrase("inibidorVoltou");
+  }
+
+  if (priority.startsWith("soul aliada:")) {
+    const count = priority.split(":")[1]?.trim()?.replace("falta ", "") ?? "1";
+    return pickModePhrase("dragonSoulProximo").replace(/\{count\}/g, count);
+  }
+
+  if (priority.startsWith("soul inimiga:")) {
+    const count = priority.split(":")[1]?.trim()?.replace("falta ", "") ?? "1";
+    return pickModePhrase("dragonSoulInimigoProximo").replace(/\{count\}/g, count);
+  }
+
+  if (priority === "cs alerta") {
+    return pickModePhrase("csAlerta");
+  }
+
+  if (priority === "ward alerta") {
+    return pickModePhrase("wardAlerta");
   }
 
   const sentence = toSentence(priority);

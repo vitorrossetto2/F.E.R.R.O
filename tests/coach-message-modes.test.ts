@@ -140,6 +140,40 @@ describe("coach message modes", () => {
   });
 });
 
+describe("new event categories", () => {
+  beforeEach(() => { vi.resetModules(); });
+
+  it("detectCategory recognizes all new trigger types", async () => {
+    const { detectCategory } = await import("../src/core/coach.js");
+    expect(detectCategory("ace inimigo")).toBe("ace");
+    expect(detectCategory("ace aliado")).toBe("ace");
+    expect(detectCategory("multikill inimigo: Shyvana:double kill")).toBe("multikill");
+    expect(detectCategory("multikill aliado: Xerath:triple kill")).toBe("multikill");
+    expect(detectCategory("roubaram dragão")).toBe("objetivoRoubo");
+    expect(detectCategory("roubamos barão")).toBe("objetivoRoubo");
+    expect(detectCategory("first blood aliado")).toBe("firstBlood");
+    expect(detectCategory("first blood inimigo")).toBe("firstBlood");
+    expect(detectCategory("inibidor inimigo voltou")).toBe("inibidorRespawn");
+    expect(detectCategory("soul aliada: falta 1")).toBe("dragonSoul");
+    expect(detectCategory("soul inimiga: falta 2")).toBe("dragonSoul");
+    expect(detectCategory("cs alerta")).toBe("csAlerta");
+    expect(detectCategory("ward alerta")).toBe("wardAlerta");
+  });
+
+  it("fallback message for ace inimigo produces non-empty text", async () => {
+    const configMod = await import("../src/core/config.js");
+    const coachMod = await import("../src/core/coach.js");
+    configMod.settings.zaiApiKey = "";
+    configMod.settings.coachMessageMode = "serio";
+    const result = await coachMod.decideCoaching(
+      { activePlayerGold: 0, enemyPlayers: [] },
+      ["ace inimigo"], { objectiveStates: [] }
+    );
+    expect(result.message).toBeTruthy();
+    expect(result.message.length).toBeGreaterThan(5);
+  });
+});
+
 describe("jungle triggers", () => {
   beforeEach(() => { vi.resetModules(); });
 
