@@ -110,7 +110,7 @@ export function detectCategory(priority: string | null): string {
   if (priority.startsWith("multikill ")) return "multikill";
   if (priority.startsWith("roubaram ") || priority.startsWith("roubamos ")) return "objetivoRoubo";
   if (priority.startsWith("first blood")) return "firstBlood";
-  if (priority.startsWith("soul ")) return "dragonSoul";
+  if (priority.startsWith("alma do dragão ")) return "dragonSoul";
   if (priority === "cs alerta") return "csAlerta";
   if (priority === "ward alerta") return "wardAlerta";
   if (priority.startsWith("dragão tipo:")) return "dragonTipo";
@@ -311,12 +311,12 @@ function fallbackMessage(priority: string | null): string {
     return pickModePhrase("inibidorVoltou");
   }
 
-  if (priority.startsWith("soul aliada:")) {
+  if (priority.startsWith("alma do dragão aliada:")) {
     const count = priority.split(":")[1]?.trim()?.replace("falta ", "") ?? "1";
     return pickModePhrase("dragonSoulProximo").replace(/\{count\}/g, count);
   }
 
-  if (priority.startsWith("soul inimiga:")) {
+  if (priority.startsWith("alma do dragão inimiga:")) {
     const count = priority.split(":")[1]?.trim()?.replace("falta ", "") ?? "1";
     return pickModePhrase("dragonSoulInimigoProximo").replace(/\{count\}/g, count);
   }
@@ -331,16 +331,21 @@ function fallbackMessage(priority: string | null): string {
 
   if (priority.startsWith("dragão tipo:")) {
     const type = priority.split(":")[1]?.trim() ?? "";
+    const typeNames: Record<string, string> = {
+      Fire: "fogo", Earth: "terra", Water: "água",
+      Air: "vento", Hextech: "hextec", Chemtech: "químico", Elder: "ancião",
+    };
     const hints: Record<string, string> = {
       Fire: "Bom pro dano do time.",
       Earth: "Aumenta resistência do time.",
       Water: "Regeneração extra pro time.",
       Air: "Velocidade pro time.",
-      Hextech: "Haste pro time.",
-      Chemtech: "Dano e sustain em luta.",
+      Hextech: "Aceleração de habilidade pro time.",
+      Chemtech: "Dano e cura em luta.",
     };
+    const translated = typeNames[type] ?? type;
     const hint = hints[type] ?? "";
-    return pickModePhrase("dragonTipo").replace(/\{type\}/g, type).replace(/\{hint\}/g, hint);
+    return pickModePhrase("dragonTipo").replace(/\{type\}/g, translated).replace(/\{hint\}/g, hint);
   }
 
   if (priority.startsWith("lane ouro desvantagem:")) {

@@ -65,7 +65,7 @@ const SERIO_PHRASES: PhraseSet = {
   ouroParado: [
     "Você está com muito ouro parado. Pensa em voltar pra base.",
     "Muito ouro guardado. Volta pra base e gasta.",
-    "Ouro acumulando. Hora de dar um reset.",
+    "Ouro acumulando. Hora de voltar pra base.",
     "Tá com ouro sobrando. Volta base e fecha item.",
     "Ouro parado demais. Reseta e fortalece."
   ],
@@ -73,7 +73,7 @@ const SERIO_PHRASES: PhraseSet = {
   inimigoFed: [
     "{name} está muito forte. Cuidado com a força {pronoun}.",
     "{name} tá carregando o jogo. Evita lutar contra.",
-    "{name} está fed. Não enfrenta sozinho.",
+    "{name} tá carregando. Não enfrenta sozinho.",
     "{name} tá dominando. Joga em grupo contra {name}.",
     "Cuidado, {name} tá forte. Foca outros alvos primeiro.",
     "Respeita {name} nas lutas. Espera o time pra engajar."
@@ -135,7 +135,7 @@ const SERIO_PHRASES: PhraseSet = {
 
   morteStreak: [
     "Você morreu {count} vezes, joga mais seguro e perto do time.",
-    "Muitas mortes. Reseta a cabeça e joga safe."
+    "Muitas mortes. Reseta a cabeça e joga seguro."
   ],
 
   itemFechado: [
@@ -152,7 +152,7 @@ const SERIO_PHRASES: PhraseSet = {
   ],
 
   inimigoAntiCura: [
-    "Inimigo comprou anti-cura. Sua sustain caiu."
+    "Inimigo comprou anti-cura. Você vai curar menos."
   ],
 
   inimigoArmadura: [
@@ -223,12 +223,12 @@ const SERIO_PHRASES: PhraseSet = {
     "Ace no nosso time. Defende o que puder até voltarem."
   ],
   dragonSoulProximo: [
-    "Falta {count} dragão pra soul. Prioriza o próximo dragão.",
-    "A {count} dragão da soul. Não perde o próximo."
+    "Falta {count} dragão pra alma do dragão. Prioriza o próximo.",
+    "Só falta {count} dragão pra alma. Não perde o próximo."
   ],
   dragonSoulInimigoProximo: [
-    "Inimigo a {count} dragão da soul. Prioridade máxima no dragão.",
-    "Inimigo quase na soul. Briga pelo dragão a todo custo."
+    "Inimigo a {count} dragão da alma. Prioridade máxima no dragão.",
+    "Inimigo quase pegando a alma do dragão. Briga pelo dragão a todo custo."
   ],
   multikillInimigo: [
     "{name} fez {type}. Respeita e não enfrenta sozinho.",
@@ -269,7 +269,7 @@ const SERIO_PHRASES: PhraseSet = {
     "Primeiro abate! Aproveita a vantagem."
   ],
   firstBloodInimigo: [
-    "Inimigo pegou first blood. Joga mais cauteloso.",
+    "Inimigo pegou o primeiro abate. Joga mais cauteloso.",
     "Primeiro sangue pro inimigo. Cuidado no início."
   ],
   laneVantagemOuro: [
@@ -360,7 +360,7 @@ const MEME_PHRASES: PhraseSet = {
   ],
 
   morteStreak: [
-    "Você morreu {count} vezes. Fecha a torneira e joga safe.",
+    "Você morreu {count} vezes. Fecha a torneira e joga seguro.",
     "Já deu de morrer. Respira e cola no time."
   ],
 
@@ -447,19 +447,19 @@ const MEME_PHRASES: PhraseSet = {
     "Ace no nosso time. Segura a onda e reza."
   ],
   dragonSoulProximo: [
-    "Falta {count} dragão pra soul. Não é hora de farmar golems.",
-    "A {count} dragão da soul. Se liga no dragão."
+    "Falta {count} dragão pra alma. Não é hora de farmar golems.",
+    "Só falta {count} dragão pra alma. Se liga no dragão."
   ],
   dragonSoulInimigoProximo: [
-    "Inimigo quase na soul. Se perder esse dragão, bom jogo.",
-    "Inimigo a {count} dragão da soul. Hora de contestar ou chorar."
+    "Inimigo quase pegando a alma do dragão. Se perder esse, bom jogo.",
+    "Inimigo a {count} dragão da alma. Hora de brigar ou chorar."
   ],
   multikillInimigo: [
     "{name} fez {type}. Tá colecionando abate.",
     "{name} pegou {type}. Não vira a próxima vítima."
   ],
   multikillAliado: [
-    "{name} fez {type}. Esse aí tá on fire.",
+    "{name} fez {type}. Esse aí tá voando.",
     "{name} tá destruindo com {type}. Cola nele."
   ],
   objetivoRoubado: [
@@ -493,7 +493,7 @@ const MEME_PHRASES: PhraseSet = {
     "Primeiro abate! Agora segura a onda."
   ],
   firstBloodInimigo: [
-    "Inimigo pegou first blood. Relaxa, tem jogo ainda.",
+    "Inimigo pegou o primeiro abate. Relaxa, tem jogo ainda.",
     "Primeiro sangue pro inimigo. Segue o baile."
   ],
   laneVantagemOuro: [
@@ -602,7 +602,7 @@ const PUTO_PHRASES: PhraseSet = {
   ],
 
   inimigoAntiCura: [
-    "Compraram anti-cura. Sua sustain foi pro caralho."
+    "Compraram anti-cura. Você vai curar porra nenhuma."
   ],
 
   inimigoArmadura: [
@@ -671,12 +671,12 @@ const PUTO_PHRASES: PhraseSet = {
     "Ace no nosso time. Não força nada e espera."
   ],
   dragonSoulProximo: [
-    "Falta {count} dragão pra soul. Para de ignorar o dragão.",
-    "A {count} da soul. Prioriza essa merda."
+    "Falta {count} dragão pra alma. Para de ignorar o dragão.",
+    "Só falta {count} dragão pra alma. Prioriza essa merda."
   ],
   dragonSoulInimigoProximo: [
-    "Inimigo quase na soul. Se perder esse dragão, fodeu.",
-    "Inimigo a {count} da soul. Briga pelo dragão ou perde o jogo."
+    "Inimigo quase pegando a alma do dragão. Se perder esse, fodeu.",
+    "Inimigo a {count} da alma. Briga pelo dragão ou perde o jogo."
   ],
   multikillInimigo: [
     "{name} fez {type}. Para de alimentar essa merda.",
@@ -717,7 +717,7 @@ const PUTO_PHRASES: PhraseSet = {
     "Primeiro abate! Usa essa vantagem direito, porra."
   ],
   firstBloodInimigo: [
-    "Inimigo pegou first blood. Não surta, joga seguro.",
+    "Inimigo pegou o primeiro abate. Não surta, joga seguro.",
     "Primeiro sangue pro inimigo. Para de forçar e joga."
   ],
   laneVantagemOuro: [

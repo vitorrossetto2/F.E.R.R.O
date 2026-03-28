@@ -49,7 +49,7 @@ function triggerUrgencyScore(trigger: string): number {
   if (trigger.includes("roubaram") || trigger.includes("roubamos")) return 1;
   if (trigger.includes("multikill")) return 2;
   if (trigger.includes("first blood")) return 3;
-  if (trigger.includes("soul")) return 4;
+  if (trigger.includes("alma do dragão")) return 4;
   if (trigger.includes("inibidor inimigo voltou")) return 6;
   if (trigger === "cs alerta" || trigger === "ward alerta") return 10;
   if (trigger.startsWith("dragão tipo:")) return 6;
@@ -674,12 +674,12 @@ function collectDragonSoulTriggers(
 
   if (allyRemaining >= 1 && allyRemaining <= 2 && snapshot.gameTime - state.lastDragonSoulWarningAt >= 120) {
     state.lastDragonSoulWarningAt = snapshot.gameTime;
-    triggers.push(`soul aliada: falta ${allyRemaining}`);
+    triggers.push(`alma do dragão aliada: falta ${allyRemaining}`);
   }
 
   if (enemyRemaining >= 1 && enemyRemaining <= 2 && snapshot.gameTime - state.lastDragonSoulWarningAt >= 120) {
     state.lastDragonSoulWarningAt = snapshot.gameTime;
-    triggers.push(`soul inimiga: falta ${enemyRemaining}`);
+    triggers.push(`alma do dragão inimiga: falta ${enemyRemaining}`);
   }
 
   return triggers;

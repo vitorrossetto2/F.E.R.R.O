@@ -47,7 +47,7 @@ describe("coach message modes", () => {
       { objectiveStates: [] }
     );
 
-    expect(result.message).toBe("Compraram anti-cura. Sua sustain foi pro caralho.");
+    expect(result.message).toBe("Compraram anti-cura. Você vai curar porra nenhuma.");
     expect(result.skippedLlm).toBe(true);
   });
 
@@ -154,8 +154,8 @@ describe("new event categories", () => {
     expect(detectCategory("first blood aliado")).toBe("firstBlood");
     expect(detectCategory("first blood inimigo")).toBe("firstBlood");
     expect(detectCategory("inibidor inimigo voltou")).toBe("inibidorRespawn");
-    expect(detectCategory("soul aliada: falta 1")).toBe("dragonSoul");
-    expect(detectCategory("soul inimiga: falta 2")).toBe("dragonSoul");
+    expect(detectCategory("alma do dragão aliada: falta 1")).toBe("dragonSoul");
+    expect(detectCategory("alma do dragão inimiga: falta 2")).toBe("dragonSoul");
     expect(detectCategory("cs alerta")).toBe("csAlerta");
     expect(detectCategory("ward alerta")).toBe("wardAlerta");
   });

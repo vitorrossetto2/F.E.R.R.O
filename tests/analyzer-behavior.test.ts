@@ -212,7 +212,7 @@ describe("analyzer behavior", () => {
     ];
     const snapshot = makeSnapshot({ events, gameTime: 1200 });
     const result = await analyzeSnapshot(snapshot, state);
-    expect(result.triggers.some((t) => t.includes("soul aliada"))).toBe(true);
+    expect(result.triggers.some((t) => t.includes("alma do dragão aliada"))).toBe(true);
   });
 
   it("emits enemy dragon soul warning when enemy is 1 away", async () => {
@@ -225,7 +225,7 @@ describe("analyzer behavior", () => {
     ];
     const snapshot = makeSnapshot({ events, gameTime: 1200 });
     const result = await analyzeSnapshot(snapshot, state);
-    expect(result.triggers.some((t) => t.includes("soul inimiga"))).toBe(true);
+    expect(result.triggers.some((t) => t.includes("alma do dragão inimiga"))).toBe(true);
   });
 
   it("emits CS alert when CS/min is below threshold after 10 minutes", async () => {
@@ -314,7 +314,7 @@ describe("analyzer behavior", () => {
 
     // Should contain ace, dragon soul, and performance triggers
     expect(triggerStr).toContain("ace");
-    expect(triggerStr).toContain("soul");
+    expect(triggerStr).toContain("alma do dragão");
     // CS alert (80 CS at 25min = 3.2/min, very low)
     expect(result.triggers.some((t) => t === "cs alerta")).toBe(true);
     // Ward alert (3 wardScore at 25min, expected ~12.5)
