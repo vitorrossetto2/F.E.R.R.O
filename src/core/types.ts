@@ -197,6 +197,13 @@ export interface LoopStateShape {
   pendingTriggers: string[];
   lastSpeakGameTime: number;
   lastGroupMessageTimes: Map<string, number>;
+  allyDragonKills: number;
+  enemyDragonKills: number;
+  lastDragonSoulWarningAt: number;
+  lastCsCheckAt: number;
+  lastCsValue: number;
+  lastWardScoreCheckAt: number;
+  lastWardScore: number;
   queueTriggers(triggers: string[]): void;
   drainPendingTriggers(): string[];
   canRepeatMessage(messageKey: string, gameTime: number, cooldownSeconds: number): boolean;

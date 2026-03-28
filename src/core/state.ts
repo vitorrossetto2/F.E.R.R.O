@@ -23,6 +23,13 @@ export class LoopState implements LoopStateShape {
   pendingTriggers: string[] = [];
   lastSpeakGameTime = 0;
   lastGroupMessageTimes = new Map<string, number>();
+  allyDragonKills = 0;
+  enemyDragonKills = 0;
+  lastDragonSoulWarningAt = 0;
+  lastCsCheckAt = 0;
+  lastCsValue = 0;
+  lastWardScoreCheckAt = 0;
+  lastWardScore = 0;
 
   queueTriggers(triggers: string[]): void {
     for (const trigger of triggers) {
@@ -121,6 +128,13 @@ export class LoopState implements LoopStateShape {
     this.pendingTriggers = [];
     this.lastSpeakGameTime = 0;
     this.lastGroupMessageTimes = new Map();
+    this.allyDragonKills = 0;
+    this.enemyDragonKills = 0;
+    this.lastDragonSoulWarningAt = 0;
+    this.lastCsCheckAt = 0;
+    this.lastCsValue = 0;
+    this.lastWardScoreCheckAt = 0;
+    this.lastWardScore = 0;
   }
 
   detectGameReset(currentGameTime: number): boolean {
