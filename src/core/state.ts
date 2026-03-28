@@ -70,6 +70,15 @@ export class LoopState implements LoopStateShape {
     if (trigger.includes("inibidor")) return "inibidor";
     if (trigger.startsWith("gank oportunidade:")) return "jungleGank";
     if (trigger.startsWith("lane precisa de ajuda:")) return "junglePressao";
+    if (trigger === "ace inimigo" || trigger === "ace aliado") return "ace";
+    if (trigger.startsWith("multikill ")) return "multikill";
+    if (trigger.startsWith("roubaram ") || trigger.startsWith("roubamos ")) return "objetivoRoubo";
+    if (trigger.startsWith("first blood")) return "firstBlood";
+    if (trigger === "inibidor inimigo voltou") return "inibidorRespawn";
+    if (trigger.startsWith("soul ")) return "dragonSoul";
+    if (trigger === "cs alerta") return "csAlerta";
+    if (trigger === "ward alerta") return "wardAlerta";
+    if (trigger.startsWith("dragão tipo:")) return "dragonTipo";
     return "generico";
   }
 

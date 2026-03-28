@@ -53,6 +53,14 @@ function triggerUrgencyScore(trigger: string): number {
   if (trigger.includes("powerspike")) return 5;
   if (trigger.includes("acelerou a build")) return 6;
   if (trigger.includes("torre")) return 7;
+  if (trigger.includes("ace")) return 0;
+  if (trigger.includes("roubaram") || trigger.includes("roubamos")) return 1;
+  if (trigger.includes("multikill")) return 2;
+  if (trigger.includes("first blood")) return 3;
+  if (trigger.includes("soul")) return 4;
+  if (trigger.includes("inibidor inimigo voltou")) return 6;
+  if (trigger === "cs alerta" || trigger === "ward alerta") return 10;
+  if (trigger.startsWith("dragão tipo:")) return 6;
   if (trigger === "lembrete de mapa") return 10;
   return 8;
 }
