@@ -214,9 +214,9 @@ const SERIO_PHRASES: PhraseSet = {
     "Ajuda o {lane} antes de perder mais."
   ],
   aceInimigo: [
-    "Ace no time inimigo. Aproveita pra objetivos agora.",
-    "Ace inimigo. Barão, torre ou dragão, escolhe e vai.",
-    "Todos mortos. Janela aberta pra pressionar o mapa."
+    "Ace! Força um objetivo agora.",
+    "Ace! Barão, torre ou dragão, escolhe e vai.",
+    "Ace! Todos mortos, pressiona o mapa agora."
   ],
   aceAliado: [
     "Nosso time caiu. Joga seguro e espera o respawn.",
@@ -228,7 +228,7 @@ const SERIO_PHRASES: PhraseSet = {
   ],
   dragonSoulInimigoProximo: [
     "Inimigo a {count} dragão da soul. Prioridade máxima no dragão.",
-    "Inimigo quase na soul. Contesta o dragão a todo custo."
+    "Inimigo quase na soul. Briga pelo dragão a todo custo."
   ],
   multikillInimigo: [
     "{name} fez {type}. Respeita e não enfrenta sozinho.",
@@ -251,22 +251,22 @@ const SERIO_PHRASES: PhraseSet = {
     "Inibidor respawnou. Precisa empurrar de novo."
   ],
   csAlerta: [
-    "CS tá abaixo da média. Foca em farmar entre as lutas.",
-    "Farming fraco. Pega os minions quando não tiver fight."
+    "Você matou poucos minions. Foca em farmar entre as lutas.",
+    "Farm tá fraco. Pega as tropas quando não tiver luta."
   ],
   dragonTipo: [
-    "Próximo dragão é {type}. {hint}",
+    "Dragão de {type} pro time. {hint}",
   ],
   summonerSpellAlerta: [
     "{name} tem {spell}. {hint}",
   ],
   wardAlerta: [
     "Tá wardando pouco. Coloca wards pra ter visão.",
-    "Ward score baixo. Lembra de usar as wards."
+    "Pouca visão no mapa. Lembra de usar as wards."
   ],
   firstBlood: [
-    "First blood. Bom começo.",
-    "Primeiro sangue. Aproveita a vantagem."
+    "Primeiro sangue! Bom começo, mantém a pressão.",
+    "Primeiro abate! Aproveita a vantagem."
   ],
   firstBloodInimigo: [
     "Inimigo pegou first blood. Joga mais cauteloso.",
@@ -431,8 +431,8 @@ const MEME_PHRASES: PhraseSet = {
     "{lane} tá caindo. Alivia antes de virar meme."
   ],
   aceInimigo: [
-    "Ace! O time inteiro foi de base. Hora de fazer compras no mapa deles.",
-    "Mataram geral. Aproveita antes que alguém respawne."
+    "Ace! Hora de fazer compras no mapa deles.",
+    "Ace! Aproveita antes que alguém respawne."
   ],
   aceAliado: [
     "Nosso time virou cinzas. Hora de fingir que é split push.",
@@ -467,11 +467,11 @@ const MEME_PHRASES: PhraseSet = {
     "Inibidor respawnou. A pressão acabou, bora empurrar de novo."
   ],
   csAlerta: [
-    "CS tá fraco. Os minions não morrem sozinhos.",
-    "Farming abaixo. Pega uns minions entre as aventuras."
+    "Os minions não morrem sozinhos. Mata as tropas.",
+    "Farm tá fraco. Pega uns minions entre as aventuras."
   ],
   dragonTipo: [
-    "Próximo dragão é {type}. {hint}",
+    "Dragão de {type} pro time. {hint}",
   ],
   summonerSpellAlerta: [
     "{name} tem {spell}. {hint}",
@@ -481,8 +481,8 @@ const MEME_PHRASES: PhraseSet = {
     "Visão tá cega. Usa as wards antes de virar meme."
   ],
   firstBlood: [
-    "First blood. Bom começo, não entrega agora.",
-    "Primeiro sangue. Agora não faz merda."
+    "Primeiro sangue! Bom começo, não entrega agora.",
+    "Primeiro abate! Agora segura a onda."
   ],
   firstBloodInimigo: [
     "Inimigo pegou first blood. Relaxa, tem jogo ainda.",
@@ -647,8 +647,8 @@ const PUTO_PHRASES: PhraseSet = {
     "Vai pro {lane} antes de perder tudo."
   ],
   aceInimigo: [
-    "Ace! Eles morreram todos. Vai pro objetivo agora, porra.",
-    "Mataram geral. Se não pegar nada agora, desinstala."
+    "Ace! Vai pro objetivo agora, porra.",
+    "Ace! Se não pegar nada agora, desinstala."
   ],
   aceAliado: [
     "Nosso time morreu inteiro. Segura a porra da base.",
@@ -660,7 +660,7 @@ const PUTO_PHRASES: PhraseSet = {
   ],
   dragonSoulInimigoProximo: [
     "Inimigo quase na soul. Se perder esse dragão, fodeu.",
-    "Inimigo a {count} da soul. Contesta ou perde o jogo."
+    "Inimigo a {count} da soul. Briga pelo dragão ou perde o jogo."
   ],
   multikillInimigo: [
     "{name} fez {type}. Para de alimentar essa merda.",
@@ -679,15 +679,15 @@ const PUTO_PHRASES: PhraseSet = {
     "{name} roubado. Agora usa essa vantagem direito."
   ],
   inibidorVoltou: [
-    "Inibidor voltou. A pressão acabou, empurra de novo.",
-    "Inibidor respawnou. Para de enrolar e empurra."
+    "Inibidor voltou. Perdemos a pressão, vai empurrar de novo.",
+    "Inibidor respawnou, porra. Para de enrolar e empurra."
   ],
   csAlerta: [
-    "CS tá uma merda. Mata os minions, porra.",
-    "Farming horrível. Pega CS entre os fights."
+    "Farm tá uma merda. Mata os minions, porra.",
+    "Tá farmando mal demais. Pega as tropas entre as lutas."
   ],
   dragonTipo: [
-    "Próximo dragão é {type}. {hint}",
+    "Dragão de {type} pro time. {hint}",
   ],
   summonerSpellAlerta: [
     "{name} tem {spell}. {hint}",
@@ -697,8 +697,8 @@ const PUTO_PHRASES: PhraseSet = {
     "Visão zero. Usa as wards antes de morrer de bobeira."
   ],
   firstBlood: [
-    "First blood. Bom começo, agora não estraga.",
-    "Primeiro sangue. Usa a vantagem direito."
+    "Primeiro sangue! Bom começo, agora não estraga.",
+    "Primeiro abate! Usa essa vantagem direito, porra."
   ],
   firstBloodInimigo: [
     "Inimigo pegou first blood. Não surta, joga seguro.",
