@@ -30,6 +30,7 @@ export class LoopState implements LoopStateShape {
   lastCsValue = 0;
   lastWardScoreCheckAt = 0;
   lastWardScore = 0;
+  lastLaneGoldCheckAt = 0;
 
   queueTriggers(triggers: string[]): void {
     for (const trigger of triggers) {
@@ -79,6 +80,7 @@ export class LoopState implements LoopStateShape {
     if (trigger === "cs alerta") return "csAlerta";
     if (trigger === "ward alerta") return "wardAlerta";
     if (trigger.startsWith("dragão tipo:")) return "dragonTipo";
+    if (trigger.startsWith("lane ouro")) return "laneOuro";
     return "generico";
   }
 
@@ -144,6 +146,7 @@ export class LoopState implements LoopStateShape {
     this.lastCsValue = 0;
     this.lastWardScoreCheckAt = 0;
     this.lastWardScore = 0;
+    this.lastLaneGoldCheckAt = 0;
   }
 
   detectGameReset(currentGameTime: number): boolean {

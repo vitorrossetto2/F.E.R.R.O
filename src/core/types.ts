@@ -205,6 +205,7 @@ export interface LoopStateShape {
   lastCsValue: number;
   lastWardScoreCheckAt: number;
   lastWardScore: number;
+  lastLaneGoldCheckAt: number;
   queueTriggers(triggers: string[]): void;
   drainPendingTriggers(): string[];
   canRepeatMessage(messageKey: string, gameTime: number, cooldownSeconds: number): boolean;

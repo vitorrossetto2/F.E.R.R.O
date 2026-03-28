@@ -54,6 +54,7 @@ function triggerUrgencyScore(trigger: string): number {
   if (trigger === "cs alerta" || trigger === "ward alerta") return 10;
   if (trigger.startsWith("dragão tipo:")) return 6;
   if (trigger === "lembrete de mapa") return 10;
+  if (trigger.startsWith("lane ouro")) return 9;
   return 8;
 }
 
@@ -720,6 +721,35 @@ function collectPerformanceTriggers(snapshot: GameSnapshot, state: LoopStateShap
   return triggers;
 }
 
+function collectLaneGoldTriggers(snapshot: GameSnapshot, state: LoopStateShape): string[] {
+  const triggers: string[] = [];
+  if (snapshot.gameTime < 600 || snapshot.gameTime - state.lastLaneGoldCheckAt < 120) return triggers;
+  if (snapshot.activePlayerPosition === "JUNGLE" || snapshot.activePlayerPosition === "UNKNOWN") return triggers;
+
+  const activePlayer = snapshot.alliedPlayers.find((p) => p.summonerName === snapshot.activePlayerName);
+  if (!activePlayer) return triggers;
+
+  const laneOpponent = snapshot.enemyPlayers.find((p) => p.position === snapshot.activePlayerPosition);
+  if (!laneOpponent) return triggers;
+
+  const csDiff = activePlayer.creepScore - laneOpponent.creepScore;
+  const estimatedGoldDiff = csDiff * 20;
+
+  if (estimatedGoldDiff <= -400) {
+    state.lastLaneGoldCheckAt = snapshot.gameTime;
+    const rounded = Math.round(Math.abs(estimatedGoldDiff) / 100) * 100;
+    triggers.push(`lane ouro desvantagem: ${laneOpponent.championName}:${rounded}`);
+  } else if (estimatedGoldDiff >= 400) {
+    state.lastLaneGoldCheckAt = snapshot.gameTime;
+    const rounded = Math.round(estimatedGoldDiff / 100) * 100;
+    triggers.push(`lane ouro vantagem: ${laneOpponent.championName}:${rounded}`);
+  } else {
+    state.lastLaneGoldCheckAt = snapshot.gameTime;
+  }
+
+  return triggers;
+}
+
 export async function analyzeSnapshot(snapshot: GameSnapshot, state: LoopStateShape): Promise<AnalyzeSnapshotResult> {
   const newEvents = snapshot.events.slice(state.lastSeenEventCount);
   const playerLookup = getPlayerLookup(snapshot);
@@ -732,7 +762,8 @@ export async function analyzeSnapshot(snapshot: GameSnapshot, state: LoopStateSh
     ...collectItemTriggers(strategicContext, state),
     ...collectLevelTriggers(snapshot, state),
     ...collectDragonSoulTriggers(snapshot, state, playerLookup),
-    ...collectPerformanceTriggers(snapshot, state)
+    ...collectPerformanceTriggers(snapshot, state),
+    ...collectLaneGoldTriggers(snapshot, state)
   ]);
 
   if (!snapshot.activePlayerIsDead && triggers.length === 0 && snapshot.gameTime - state.lastMapReminderAt >= settings.mapReminderIntervalSeconds) {

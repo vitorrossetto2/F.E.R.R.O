@@ -76,6 +76,7 @@ function isSimpleTrigger(priority: string | null): boolean {
   if (priority === "cs alerta") return true;
   if (priority === "ward alerta") return true;
   if (priority.startsWith("dragão tipo:")) return true;
+  if (priority.startsWith("lane ouro")) return true;
   return false;
 }
 
@@ -113,6 +114,7 @@ export function detectCategory(priority: string | null): string {
   if (priority === "cs alerta") return "csAlerta";
   if (priority === "ward alerta") return "wardAlerta";
   if (priority.startsWith("dragão tipo:")) return "dragonTipo";
+  if (priority.startsWith("lane ouro")) return "laneOuro";
   return "generico";
 }
 
@@ -339,6 +341,20 @@ function fallbackMessage(priority: string | null): string {
     };
     const hint = hints[type] ?? "";
     return pickModePhrase("dragonTipo").replace(/\{type\}/g, type).replace(/\{hint\}/g, hint);
+  }
+
+  if (priority.startsWith("lane ouro desvantagem:")) {
+    const parts = priority.slice("lane ouro desvantagem:".length).trim().split(":");
+    const opponent = parts[0]?.trim() ?? "";
+    const gold = parts[1]?.trim() ?? "";
+    return pickModePhrase("laneVantagemOuro").replace(/\{opponent\}/g, opponent).replace(/\{gold\}/g, gold);
+  }
+
+  if (priority.startsWith("lane ouro vantagem:")) {
+    const parts = priority.slice("lane ouro vantagem:".length).trim().split(":");
+    const opponent = parts[0]?.trim() ?? "";
+    const gold = parts[1]?.trim() ?? "";
+    return pickModePhrase("laneDesvantagemOuro").replace(/\{opponent\}/g, opponent).replace(/\{gold\}/g, gold);
   }
 
   const sentence = toSentence(priority);

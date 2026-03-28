@@ -38,6 +38,7 @@ describe("analyzer behavior", () => {
       lastCsValue: 0,
       lastWardScoreCheckAt: 0,
       lastWardScore: 0,
+      lastLaneGoldCheckAt: 0,
       openingGreetingDone: false,
       lastSpeakGameTime: 0,
       lastGroupMessageTimes: new Map(),
@@ -318,5 +319,26 @@ describe("analyzer behavior", () => {
     expect(result.triggers.some((t) => t === "cs alerta")).toBe(true);
     // Ward alert (3 wardScore at 25min, expected ~12.5)
     expect(result.triggers.some((t) => t === "ward alerta")).toBe(true);
+  });
+
+  it("emits lane gold disadvantage trigger when opponent has more CS", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const state = makeState();
+    const snapshot = makeSnapshot({
+      gameTime: 900,
+      activePlayerPosition: "TOP",
+      alliedPlayers: [{
+        summonerName: "TestPlayer", championName: "Jax", level: 11,
+        kills: 1, deaths: 2, assists: 0, creepScore: 60, currentGold: 500,
+        items: [], position: "TOP", wardScore: 5
+      }],
+      enemyPlayers: [{
+        summonerName: "EnemyTop", championName: "Volibear", level: 12,
+        kills: 3, deaths: 1, assists: 0, creepScore: 90, currentGold: 0,
+        items: [], position: "TOP", wardScore: 0
+      }],
+    });
+    const result = await analyzeSnapshot(snapshot, state);
+    expect(result.triggers.some((t) => t.includes("lane ouro desvantagem") && t.includes("Volibear"))).toBe(true);
   });
 });

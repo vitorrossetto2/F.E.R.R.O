@@ -271,6 +271,14 @@ const SERIO_PHRASES: PhraseSet = {
   firstBloodInimigo: [
     "Inimigo pegou first blood. Joga mais cauteloso.",
     "Primeiro sangue pro inimigo. Cuidado no início."
+  ],
+  laneVantagemOuro: [
+    "{opponent} tá com {gold} de ouro a mais que você. Cuidado no confronto direto.",
+    "Teu oponente {opponent} tá na frente em ouro. Evita trocar sem vantagem."
+  ],
+  laneDesvantagemOuro: [
+    "Você tá com vantagem de ouro contra {opponent}. Aproveita pra pressionar.",
+    "Você tá na frente contra {opponent}. Força troca quando puder."
   ]
 };
 
@@ -487,6 +495,14 @@ const MEME_PHRASES: PhraseSet = {
   firstBloodInimigo: [
     "Inimigo pegou first blood. Relaxa, tem jogo ainda.",
     "Primeiro sangue pro inimigo. Segue o baile."
+  ],
+  laneVantagemOuro: [
+    "{opponent} tá mais rico que você. Não peita o cara com essa carteira.",
+    "Teu oponente {opponent} tá com vantagem. Farmeia antes de brigar."
+  ],
+  laneDesvantagemOuro: [
+    "Você tá mais rico que {opponent}. Hora de cobrar aluguel.",
+    "Vantagem de ouro contra {opponent}. Mete pressão."
   ]
 };
 
@@ -703,6 +719,14 @@ const PUTO_PHRASES: PhraseSet = {
   firstBloodInimigo: [
     "Inimigo pegou first blood. Não surta, joga seguro.",
     "Primeiro sangue pro inimigo. Para de forçar e joga."
+  ],
+  laneVantagemOuro: [
+    "{opponent} tá com mais ouro que você. Para de perder minion, porra.",
+    "Teu oponente {opponent} tá na frente. Joga seguro até empatar."
+  ],
+  laneDesvantagemOuro: [
+    "Você tá com vantagem contra {opponent}. Agora usa essa merda direito.",
+    "Tá na frente contra {opponent}. Mete pressão e não desperdiça."
   ]
 };
 
@@ -853,6 +877,7 @@ export const CATEGORY_COOLDOWNS: Record<string, number> = {
   summonerSpell: 300,
   wardAlerta: 300,
   firstBlood: 0,
+  laneOuro: 120,
 };
 
 export const FEMALE_CHAMPIONS = new Set([
@@ -900,6 +925,7 @@ export const CATEGORY_PRIORITIES: Record<string, number> = {
   summonerSpell: 0,
   wardAlerta: 0,
   firstBlood: 1,
+  laneOuro: 0,
 };
 
 export const COOLDOWN_GROUPS: Record<string, string> = {
