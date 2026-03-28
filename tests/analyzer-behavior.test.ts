@@ -34,6 +34,23 @@ describe("analyzer behavior", () => {
       allyDragonKills: 0,
       enemyDragonKills: 0,
       lastDragonSoulWarningAt: 0,
+      lastCsCheckAt: 0,
+      lastCsValue: 0,
+      lastWardScoreCheckAt: 0,
+      lastWardScore: 0,
+      openingGreetingDone: false,
+      lastSpeakGameTime: 0,
+      lastGroupMessageTimes: new Map(),
+      queueTriggers: () => {},
+      drainPendingTriggers: () => [],
+      canRepeatMessage: () => true,
+      markMessageSpoken: () => {},
+      canSpeakGlobal: () => true,
+      markGlobalSpeak: () => {},
+      canRepeatGroup: () => true,
+      markGroupSpoken: () => {},
+      reset: () => {},
+      detectGameReset: () => false,
     };
   }
 
@@ -47,6 +64,8 @@ describe("analyzer behavior", () => {
       activePlayerTeam: "CHAOS",
       activePlayerKda: "3/2/1",
       activePlayerIsDead: false,
+      activePlayerPosition: "TOP",
+      activePlayerRespawnTimer: 0,
       alliedPlayers: [
         { summonerName: "TestPlayer",
           championName: "Jax",
@@ -54,7 +73,11 @@ describe("analyzer behavior", () => {
           kills: 3,
           deaths: 2,
           assists: 1,
+          creepScore: 80,
+          currentGold: 1000,
           items: [],
+          position: "TOP",
+          wardScore: 5,
         },
       ],
       enemyPlayers: [
@@ -65,7 +88,11 @@ describe("analyzer behavior", () => {
           kills: 2,
           deaths: 4,
           assists: 0,
+          creepScore: 60,
+          currentGold: 800,
           items: [],
+          position: "TOP",
+          wardScore: 3,
         },
       ],
       events: [],
@@ -220,5 +247,56 @@ describe("analyzer behavior", () => {
     const snapshot = makeSnapshot({ events, gameTime: 1200 });
     const result = await analyzeSnapshot(snapshot, state);
     expect(result.triggers.some((t) => t.includes("soul inimiga"))).toBe(true);
+  });
+
+  it("emits CS alert when CS/min is below threshold after 10 minutes", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const state = makeState();
+    state.lastCsCheckAt = 0;
+    state.lastCsValue = 0;
+    const snapshot = makeSnapshot({
+      gameTime: 900,
+      alliedPlayers: [{
+        summonerName: "TestPlayer", championName: "Jax", level: 11,
+        kills: 3, deaths: 2, assists: 1, creepScore: 50, currentGold: 1000,
+        items: [], position: "TOP", wardScore: 5
+      }],
+      activePlayerPosition: "TOP",
+    });
+    const result = await analyzeSnapshot(snapshot, state);
+    expect(result.triggers.some((t) => t === "cs alerta")).toBe(true);
+  });
+
+  it("does not emit CS alert for junglers", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const state = makeState();
+    const snapshot = makeSnapshot({
+      gameTime: 900,
+      alliedPlayers: [{
+        summonerName: "TestPlayer", championName: "Jax", level: 11,
+        kills: 3, deaths: 2, assists: 1, creepScore: 30, currentGold: 1000,
+        items: [], position: "JUNGLE", wardScore: 5
+      }],
+      activePlayerPosition: "JUNGLE",
+    });
+    const result = await analyzeSnapshot(snapshot, state);
+    expect(result.triggers.some((t) => t === "cs alerta")).toBe(false);
+  });
+
+  it("emits ward alert when ward score is low after 15 minutes", async () => {
+    const { analyzeSnapshot } = await import("../src/core/analyzer.js");
+    const state = makeState();
+    state.lastWardScoreCheckAt = 0;
+    state.lastWardScore = 0;
+    const snapshot = makeSnapshot({
+      gameTime: 1200,
+      alliedPlayers: [{
+        summonerName: "TestPlayer", championName: "Jax", level: 14,
+        kills: 3, deaths: 2, assists: 1, creepScore: 120, currentGold: 1000,
+        items: [], position: "TOP", wardScore: 3
+      }],
+    });
+    const result = await analyzeSnapshot(snapshot, state);
+    expect(result.triggers.some((t) => t === "ward alerta")).toBe(true);
   });
 });

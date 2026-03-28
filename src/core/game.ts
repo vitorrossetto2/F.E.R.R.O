@@ -30,7 +30,8 @@ function compactPlayer(player: any): SnapshotPlayer {
         name: item?.displayName ?? ""
       }))
       .filter((item: CompactItem) => item.name.length > 0),
-    position: player?.position ?? "UNKNOWN"
+    position: player?.position ?? "UNKNOWN",
+    wardScore: Number(scores.wardScore ?? 0)
   };
 }
 

@@ -54,6 +54,7 @@ export interface SnapshotPlayer {
   currentGold: number;
   items: CompactItem[];
   position: string;
+  wardScore: number;
 }
 
 export interface GameEvent {

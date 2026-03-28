@@ -665,6 +665,42 @@ function collectDragonSoulTriggers(
   return triggers;
 }
 
+function collectPerformanceTriggers(snapshot: GameSnapshot, state: LoopStateShape): string[] {
+  const triggers: string[] = [];
+  const activePlayer = snapshot.alliedPlayers.find((p) => p.summonerName === snapshot.activePlayerName);
+  if (!activePlayer) return triggers;
+
+  // CS/min check — only for laners, after 10 minutes, every 5 minutes
+  if (
+    snapshot.activePlayerPosition !== "JUNGLE" &&
+    snapshot.activePlayerPosition !== "UNKNOWN" &&
+    snapshot.gameTime >= 600 &&
+    snapshot.gameTime - state.lastCsCheckAt >= 300
+  ) {
+    const csPerMin = activePlayer.creepScore / (snapshot.gameTime / 60);
+    if (csPerMin < 5.5) {
+      state.lastCsCheckAt = snapshot.gameTime;
+      triggers.push("cs alerta");
+    } else {
+      state.lastCsCheckAt = snapshot.gameTime;
+    }
+  }
+
+  // Ward score check — after 15 minutes, every 5 minutes
+  if (snapshot.gameTime >= 900 && snapshot.gameTime - state.lastWardScoreCheckAt >= 300) {
+    const wardScore = activePlayer.wardScore;
+    const expectedMinWards = snapshot.gameTime / 120;
+    if (wardScore < expectedMinWards) {
+      state.lastWardScoreCheckAt = snapshot.gameTime;
+      triggers.push("ward alerta");
+    } else {
+      state.lastWardScoreCheckAt = snapshot.gameTime;
+    }
+  }
+
+  return triggers;
+}
+
 export async function analyzeSnapshot(snapshot: GameSnapshot, state: LoopStateShape): Promise<AnalyzeSnapshotResult> {
   const newEvents = snapshot.events.slice(state.lastSeenEventCount);
   const playerLookup = getPlayerLookup(snapshot);
@@ -676,7 +712,8 @@ export async function analyzeSnapshot(snapshot: GameSnapshot, state: LoopStateSh
     ...collectPowerTriggers(strategicContext, state),
     ...collectItemTriggers(strategicContext, state),
     ...collectLevelTriggers(snapshot, state),
-    ...collectDragonSoulTriggers(snapshot, state, playerLookup)
+    ...collectDragonSoulTriggers(snapshot, state, playerLookup),
+    ...collectPerformanceTriggers(snapshot, state)
   ]);
 
   if (!snapshot.activePlayerIsDead && triggers.length === 0 && snapshot.gameTime - state.lastMapReminderAt >= settings.mapReminderIntervalSeconds) {
