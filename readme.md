@@ -16,6 +16,18 @@
 
 ---
 
+## Como baixar
+
+1. Clique no link abaixo para baixar o executável portátil (não precisa instalar):
+
+   **[F.E.R.R.O v1.0.1 — Windows (.exe)](https://github.com/fortechdigital/F.E.R.R.O/releases/download/v1.0.1/F.E.R.R.O.1.0.1.exe)**
+
+2. Execute o `.exe` e pronto — o app abre direto.
+
+> Veja todas as versões na [página de releases](https://github.com/fortechdigital/F.E.R.R.O/releases).
+
+---
+
 ## Como funciona
 
 O F.E.R.R.O roda como app desktop (Electron) e se conecta à partida em andamento:
