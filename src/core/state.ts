@@ -1,5 +1,6 @@
 import type { LoopStateShape } from "./types";
 import { CATEGORY_PRIORITIES, COOLDOWN_GROUPS, GROUP_COOLDOWN_SECONDS } from "./constants";
+import { resetJungleTrackingState } from "./jungle-tracker";
 
 export class LoopState implements LoopStateShape {
   lastCoachingAt = 0;
@@ -154,6 +155,7 @@ export class LoopState implements LoopStateShape {
     this.lastWardScore = 0;
     this.lastLaneGoldCheckAt = 0;
     this.processedEventIds = new Set();
+    resetJungleTrackingState();
   }
 
   detectGameReset(currentGameTime: number): boolean {
