@@ -33,7 +33,9 @@ describe("analyzer behavior", () => {
       pendingTriggers: [],
       allyDragonKills: 0,
       enemyDragonKills: 0,
-      lastDragonSoulWarningAt: 0,
+      lastAllyDragonSoulWarningAt: 0,
+      lastEnemyDragonSoulWarningAt: 0,
+      processedEventIds: new Set(),
       lastCsCheckAt: 0,
       lastCsValue: 0,
       lastWardScoreCheckAt: 0,
@@ -288,7 +290,7 @@ describe("analyzer behavior", () => {
       ],
     });
     const result = await analyzeSnapshot(snapshot, state);
-    expect(result.triggers.some((t) => t.includes("dragão tipo: Fire"))).toBe(true);
+    expect(result.triggers.some((t) => t.includes("dragão tipo aliado: Fire"))).toBe(true);
   });
 
   it("handles multiple new events in a single snapshot", async () => {

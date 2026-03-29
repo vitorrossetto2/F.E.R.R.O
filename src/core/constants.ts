@@ -257,6 +257,10 @@ const SERIO_PHRASES: PhraseSet = {
   dragonTipo: [
     "Dragão de {type} pro time. {hint}",
   ],
+  dragonTipoInimigo: [
+    "Inimigo pegou dragão de {type}. {hint}",
+    "Dragão de {type} pro inimigo. Fica atento à contagem.",
+  ],
   summonerSpellAlerta: [
     "{name} tem {spell}. {hint}",
   ],
@@ -480,6 +484,10 @@ const MEME_PHRASES: PhraseSet = {
   ],
   dragonTipo: [
     "Dragão de {type} pro time. {hint}",
+  ],
+  dragonTipoInimigo: [
+    "Inimigo pegou dragão de {type}. Não deixa acumular.",
+    "Dragão de {type} pro inimigo. Se liga na contagem.",
   ],
   summonerSpellAlerta: [
     "{name} tem {spell}. {hint}",
@@ -705,6 +713,10 @@ const PUTO_PHRASES: PhraseSet = {
   dragonTipo: [
     "Dragão de {type} pro time. {hint}",
   ],
+  dragonTipoInimigo: [
+    "Inimigo pegou dragão de {type}. Para de ignorar o dragão.",
+    "Dragão de {type} pro inimigo. Acorda pra contagem, porra.",
+  ],
   summonerSpellAlerta: [
     "{name} tem {spell}. {hint}",
   ],
@@ -874,6 +886,7 @@ export const CATEGORY_COOLDOWNS: Record<string, number> = {
   inibidorRespawn: 60,
   csAlerta: 300,
   dragonTipo: 120,
+  dragonTipoInimigo: 120,
   summonerSpell: 300,
   wardAlerta: 300,
   firstBlood: 0,
@@ -922,6 +935,7 @@ export const CATEGORY_PRIORITIES: Record<string, number> = {
   inibidorRespawn: 1,
   csAlerta: 0,
   dragonTipo: 1,
+  dragonTipoInimigo: 2,
   summonerSpell: 0,
   wardAlerta: 0,
   firstBlood: 1,

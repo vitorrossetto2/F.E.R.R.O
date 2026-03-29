@@ -200,12 +200,14 @@ export interface LoopStateShape {
   lastGroupMessageTimes: Map<string, number>;
   allyDragonKills: number;
   enemyDragonKills: number;
-  lastDragonSoulWarningAt: number;
+  lastAllyDragonSoulWarningAt: number;
+  lastEnemyDragonSoulWarningAt: number;
   lastCsCheckAt: number;
   lastCsValue: number;
   lastWardScoreCheckAt: number;
   lastWardScore: number;
   lastLaneGoldCheckAt: number;
+  processedEventIds: Set<number>;
   queueTriggers(triggers: string[]): void;
   drainPendingTriggers(): string[];
   canRepeatMessage(messageKey: string, gameTime: number, cooldownSeconds: number): boolean;

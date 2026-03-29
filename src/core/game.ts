@@ -11,12 +11,17 @@ const liveClient = axios.create({
   httpsAgent: new https.Agent({ rejectUnauthorized: false })
 });
 
+function stripRiotTag(name: string): string {
+  const idx = name.indexOf("#");
+  return idx > 0 ? name.slice(0, idx) : name;
+}
+
 function compactPlayer(player: any): SnapshotPlayer {
   const scores = player?.scores ?? {};
   const items = Array.isArray(player?.items) ? player.items : [];
 
   return {
-    summonerName: player?.summonerName ?? "",
+    summonerName: player?.riotIdGameName ?? stripRiotTag(player?.summonerName ?? ""),
     championName: player?.championName ?? "Unknown",
     level: Number(player?.level ?? 0),
     kills: Number(scores.kills ?? 0),
@@ -48,7 +53,7 @@ export async function getSnapshot(
     }
 
     const activePlayer = allGameData.activePlayer ?? {};
-    const activePlayerName = activePlayer.summonerName ?? "";
+    const activePlayerName = stripRiotTag(activePlayer.summonerName ?? "");
     const allPlayers = Array.isArray(allGameData.allPlayers) ? allGameData.allPlayers : [];
     const currentPlayer =
       allPlayers.find((player: any) => player?.summonerName === activePlayerName) ?? {};

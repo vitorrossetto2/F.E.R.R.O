@@ -16,6 +16,7 @@ import type {
   SpeakResult,
   StrategicContext,
 } from "../../core/types";
+import { sortTriggersByUrgency } from "../../core/analyzer";
 
 const OPENING_MATCHUP_TARGET_SECONDS = 50;
 const OPENING_MATCHUP_MAX_SECONDS = 120;
@@ -320,7 +321,7 @@ export class Engine extends EventEmitter {
     // Analyze
     const { triggers: newTriggers, strategicContext } = await c.analyzeSnapshot(snapshot, st);
     const pending = st.drainPendingTriggers();
-    const triggers = [...new Set([...pending, ...newTriggers])];
+    const triggers = sortTriggersByUrgency([...new Set([...pending, ...newTriggers])]);
     const dueForCoaching = gameTime - (st.lastCoachingAt || 0) >= c.settings.coachingIntervalSeconds;
 
     // Log snapshot to system log

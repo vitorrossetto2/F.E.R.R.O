@@ -85,6 +85,7 @@ vi.mock("../src/core/analyzer.js", () => ({
     triggers: [],
     strategicContext: { objectiveStates: [] },
   })),
+  sortTriggersByUrgency: vi.fn((triggers: string[]) => triggers),
 }));
 
 vi.mock("../src/core/coach.js", () => ({

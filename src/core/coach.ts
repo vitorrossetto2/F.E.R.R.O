@@ -64,8 +64,9 @@ function isSimpleTrigger(priority: string | null): boolean {
   if (priority.startsWith("level up chave:")) return true;
   if (priority.startsWith("item fechado:")) return true;
   if (priority.startsWith("inimigo counter")) return true;
+  if (priority.startsWith("inimigo fed:")) return true;
   // Strategic triggers go to LLM for contextual advice:
-  // torre, inimigo fed, acelerou a build, powerspike, inibidor,
+  // torre, acelerou a build, powerspike, inibidor,
   // inimigo item, gank oportunidade, lane precisa de ajuda
   // New events — these are reactive, use heuristic
   if (priority === "ace inimigo" || priority.startsWith("ace inimigo:") || priority === "ace aliado") return true;
@@ -75,7 +76,7 @@ function isSimpleTrigger(priority: string | null): boolean {
   if (priority === "inibidor inimigo voltou") return true;
   if (priority === "cs alerta") return true;
   if (priority === "ward alerta") return true;
-  if (priority.startsWith("dragão tipo:")) return true;
+  if (priority.startsWith("dragão tipo ")) return true;
   if (priority.startsWith("lane ouro")) return true;
   return false;
 }
@@ -113,7 +114,8 @@ export function detectCategory(priority: string | null): string {
   if (priority.startsWith("alma do dragão ")) return "dragonSoul";
   if (priority === "cs alerta") return "csAlerta";
   if (priority === "ward alerta") return "wardAlerta";
-  if (priority.startsWith("dragão tipo:")) return "dragonTipo";
+  if (priority.startsWith("dragão tipo aliado:")) return "dragonTipo";
+  if (priority.startsWith("dragão tipo inimigo:")) return "dragonTipoInimigo";
   if (priority.startsWith("lane ouro")) return "laneOuro";
   return "generico";
 }
@@ -329,13 +331,14 @@ function fallbackMessage(priority: string | null): string {
     return pickModePhrase("wardAlerta");
   }
 
-  if (priority.startsWith("dragão tipo:")) {
+  if (priority.startsWith("dragão tipo aliado:") || priority.startsWith("dragão tipo inimigo:")) {
+    const isAlly = priority.startsWith("dragão tipo aliado:");
     const type = priority.split(":")[1]?.trim() ?? "";
     const typeNames: Record<string, string> = {
       Fire: "fogo", Earth: "terra", Water: "água",
       Air: "vento", Hextech: "hextec", Chemtech: "químico", Elder: "ancião",
     };
-    const hints: Record<string, string> = {
+    const allyHints: Record<string, string> = {
       Fire: "Bom pro dano do time.",
       Earth: "Aumenta resistência do time.",
       Water: "Regeneração extra pro time.",
@@ -343,9 +346,18 @@ function fallbackMessage(priority: string | null): string {
       Hextech: "Aceleração de habilidade pro time.",
       Chemtech: "Dano e cura em luta.",
     };
+    const enemyHints: Record<string, string> = {
+      Fire: "Inimigo com mais dano agora.",
+      Earth: "Inimigo mais resistente agora.",
+      Water: "Inimigo com regeneração extra.",
+      Air: "Inimigo mais rápido agora.",
+      Hextech: "Inimigo com mais aceleração de habilidade.",
+      Chemtech: "Inimigo com dano e cura extra em luta.",
+    };
     const translated = typeNames[type] ?? type;
-    const hint = hints[type] ?? "";
-    return pickModePhrase("dragonTipo").replace(/\{type\}/g, translated).replace(/\{hint\}/g, hint);
+    const hint = isAlly ? (allyHints[type] ?? "") : (enemyHints[type] ?? "");
+    const phraseKey = isAlly ? "dragonTipo" : "dragonTipoInimigo";
+    return pickModePhrase(phraseKey).replace(/\{type\}/g, translated).replace(/\{hint\}/g, hint);
   }
 
   if (priority.startsWith("lane ouro desvantagem:")) {

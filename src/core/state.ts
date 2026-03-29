@@ -25,12 +25,14 @@ export class LoopState implements LoopStateShape {
   lastGroupMessageTimes = new Map<string, number>();
   allyDragonKills = 0;
   enemyDragonKills = 0;
-  lastDragonSoulWarningAt = 0;
+  lastAllyDragonSoulWarningAt = 0;
+  lastEnemyDragonSoulWarningAt = 0;
   lastCsCheckAt = 0;
   lastCsValue = 0;
   lastWardScoreCheckAt = 0;
   lastWardScore = 0;
   lastLaneGoldCheckAt = 0;
+  processedEventIds = new Set<number>();
 
   queueTriggers(triggers: string[]): void {
     for (const trigger of triggers) {
@@ -79,7 +81,8 @@ export class LoopState implements LoopStateShape {
     if (trigger.startsWith("alma do dragão ")) return "dragonSoul";
     if (trigger === "cs alerta") return "csAlerta";
     if (trigger === "ward alerta") return "wardAlerta";
-    if (trigger.startsWith("dragão tipo:")) return "dragonTipo";
+    if (trigger.startsWith("dragão tipo aliado:")) return "dragonTipo";
+    if (trigger.startsWith("dragão tipo inimigo:")) return "dragonTipoInimigo";
     if (trigger.startsWith("lane ouro")) return "laneOuro";
     return "generico";
   }
@@ -141,12 +144,14 @@ export class LoopState implements LoopStateShape {
     this.lastGroupMessageTimes = new Map();
     this.allyDragonKills = 0;
     this.enemyDragonKills = 0;
-    this.lastDragonSoulWarningAt = 0;
+    this.lastAllyDragonSoulWarningAt = 0;
+    this.lastEnemyDragonSoulWarningAt = 0;
     this.lastCsCheckAt = 0;
     this.lastCsValue = 0;
     this.lastWardScoreCheckAt = 0;
     this.lastWardScore = 0;
     this.lastLaneGoldCheckAt = 0;
+    this.processedEventIds = new Set();
   }
 
   detectGameReset(currentGameTime: number): boolean {

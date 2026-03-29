@@ -52,13 +52,13 @@ function triggerUrgencyScore(trigger: string): number {
   if (trigger.includes("alma do dragão")) return 4;
   if (trigger.includes("inibidor inimigo voltou")) return 6;
   if (trigger === "cs alerta" || trigger === "ward alerta") return 10;
-  if (trigger.startsWith("dragão tipo:")) return 6;
+  if (trigger.startsWith("dragão tipo ")) return 6;
   if (trigger === "lembrete de mapa") return 10;
   if (trigger.startsWith("lane ouro")) return 9;
   return 8;
 }
 
-function sortTriggersByUrgency(triggers: string[]): string[] {
+export function sortTriggersByUrgency(triggers: string[]): string[] {
   return [...triggers].sort((a, b) => triggerUrgencyScore(a) - triggerUrgencyScore(b));
 }
 
@@ -141,11 +141,24 @@ function getGrubsTimer(snapshot: GameSnapshot): number | null {
   }
 
   const grubKills = getEventsByName(snapshot, ["HordeKill", "VoidGrubKill"]);
-  if (grubKills.length > 0) {
+  if (grubKills.length === 0) {
+    return settings.grubsFirstSpawnSeconds;
+  }
+
+  // All grubs cleared (6 = 2 waves of 3)
+  if (grubKills.length >= 6) {
     return null;
   }
 
-  return settings.grubsFirstSpawnSeconds;
+  // After first wave, estimate next wave respawn
+  const lastKill = grubKills[grubKills.length - 1];
+  const respawnAt = Number(lastKill.EventTime ?? 0) + 120;
+
+  if (respawnAt >= settings.grubsDespawnSeconds) {
+    return null;
+  }
+
+  return respawnAt;
 }
 
 function getHeraldTimer(snapshot: GameSnapshot): number | null {
@@ -187,8 +200,9 @@ function collectObjectiveTriggers(snapshot: GameSnapshot, state: LoopStateShape)
     const previousTimeUntil =
       previousGameTime === null ? null : objective.spawnAt - previousGameTime;
 
+    const roundedSpawnAt = Math.round(objective.spawnAt);
     for (const window of getObjectiveThresholds()) {
-      const key = `${objective.name}:${objective.spawnAt}:${window.label}`;
+      const key = `${objective.name}:${roundedSpawnAt}:${window.label}`;
 
       const crossedThreshold =
         previousTimeUntil !== null &&
@@ -225,6 +239,15 @@ function detectLane(turretName: string): string {
   if (normalized.includes("_L2_") || normalized.includes("_TOP_") || normalized.includes("_C_TOP") || normalized.endsWith("_TOP")) return "top";
   if (normalized.includes("_L0_") || normalized.includes("_BOT_") || normalized.includes("_C_BOT") || normalized.endsWith("_BOT")) return "bot";
   return "side";
+}
+
+function detectTier(turretName: string): string {
+  const normalized = (turretName ?? "").toUpperCase();
+  if (normalized.includes("_C_") || normalized.includes("NEXUS")) return "nexus";
+  if (normalized.includes("_P3")) return "T1";
+  if (normalized.includes("_P2")) return "T2";
+  if (normalized.includes("_P1")) return "T3";
+  return "";
 }
 
 function isAllyTurret(turretName: string, playerTeam: string): boolean {
@@ -408,6 +431,10 @@ function collectEventTriggers(
   const triggers: string[] = [];
 
   for (const event of newEvents) {
+    const eventId = event?.EventID;
+    if (typeof eventId === "number" && state.processedEventIds.has(eventId)) continue;
+    if (typeof eventId === "number") state.processedEventIds.add(eventId);
+
     const eventName = event?.EventName;
 
     if (eventName === "ChampionKill") {
@@ -434,8 +461,11 @@ function collectEventTriggers(
     if (eventName === "TurretKilled") {
       const turretName = event?.TurretKilled ?? "";
       const lane = detectLane(turretName);
+      const tier = detectTier(turretName);
       const allied = isAllyTurret(turretName, snapshot.activePlayerTeam);
-      triggers.push(turretRotationHint(lane, snapshot, allied));
+      const hint = turretRotationHint(lane, snapshot, allied);
+      const tierLabel = tier ? `[${tier}] ` : "";
+      triggers.push(`${tierLabel}${hint}`);
       if (allied && snapshot.activePlayerPosition === "JUNGLE" && lane !== "unknown") {
         triggers.push(`lane precisa de ajuda: ${lane}`);
       }
@@ -478,7 +508,14 @@ function collectEventTriggers(
     if (eventName === "DragonKill") {
       const dragonType = event?.DragonType as string | undefined;
       if (dragonType && dragonType !== "Elder") {
-        triggers.push(`dragão tipo: ${dragonType}`);
+        const killerName = typeof event.KillerName === "string" ? event.KillerName : "";
+        const killerPlayer = playerLookup.get(killerName);
+        const isAlly = killerPlayer && snapshot.alliedPlayers.some((p) => p.summonerName === killerPlayer.summonerName);
+        if (isAlly) {
+          triggers.push(`dragão tipo aliado: ${dragonType}`);
+        } else {
+          triggers.push(`dragão tipo inimigo: ${dragonType}`);
+        }
       }
     }
 
@@ -534,11 +571,11 @@ function collectLevelTriggers(snapshot: GameSnapshot, state: LoopStateShape): st
 
   // Detect enemy laner hitting 6 before us
   if (state.lastActiveLevel < 6 && currentLevel < 6) {
-    const enemyHit6 = snapshot.enemyPlayers.find(
-      (p) => p.level >= 6 && (state.lastEnemyLaneLevel < 6)
+    const laneOpponent = snapshot.enemyPlayers.find(
+      (p) => p.position === snapshot.activePlayerPosition
     );
-    if (enemyHit6) {
-      triggers.push(`inimigo ult antes: ${enemyHit6.championName}`);
+    if (laneOpponent && laneOpponent.level >= 6 && state.lastEnemyLaneLevel < 6) {
+      triggers.push(`inimigo ult antes: ${laneOpponent.championName}`);
       state.lastEnemyLaneLevel = 6;
     }
   }
@@ -653,7 +690,8 @@ function collectDragonSoulTriggers(
   playerLookup: Map<string, SnapshotPlayer>
 ): string[] {
   const triggers: string[] = [];
-  const dragonKills = getEventsByName(snapshot, ["DragonKill"]);
+  const dragonKills = getEventsByName(snapshot, ["DragonKill"])
+    .filter((ev) => ev.DragonType !== "Elder");
 
   let allyCount = 0;
   let enemyCount = 0;
@@ -672,13 +710,13 @@ function collectDragonSoulTriggers(
   const allyRemaining = SOUL_THRESHOLD - allyCount;
   const enemyRemaining = SOUL_THRESHOLD - enemyCount;
 
-  if (allyRemaining >= 1 && allyRemaining <= 2 && snapshot.gameTime - state.lastDragonSoulWarningAt >= 120) {
-    state.lastDragonSoulWarningAt = snapshot.gameTime;
+  if (allyRemaining >= 1 && allyRemaining <= 2 && snapshot.gameTime - state.lastAllyDragonSoulWarningAt >= 120) {
+    state.lastAllyDragonSoulWarningAt = snapshot.gameTime;
     triggers.push(`alma do dragão aliada: falta ${allyRemaining}`);
   }
 
-  if (enemyRemaining >= 1 && enemyRemaining <= 2 && snapshot.gameTime - state.lastDragonSoulWarningAt >= 120) {
-    state.lastDragonSoulWarningAt = snapshot.gameTime;
+  if (enemyRemaining >= 1 && enemyRemaining <= 2 && snapshot.gameTime - state.lastEnemyDragonSoulWarningAt >= 120) {
+    state.lastEnemyDragonSoulWarningAt = snapshot.gameTime;
     triggers.push(`alma do dragão inimiga: falta ${enemyRemaining}`);
   }
 
