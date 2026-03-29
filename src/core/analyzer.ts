@@ -1,7 +1,10 @@
 import { settings } from "./config";
 import { ITEM_TAGS, pickModePhrase } from "./constants";
 import { getItemCatalog } from "./ddragon";
+import { collectJungleTimingTriggers, loadJungleProfiles } from "./jungle-tracker";
 import type { AnalyzeSnapshotResult, GameEvent, GameSnapshot, LoopStateShape, SnapshotPlayer, StrategicContext } from "./types";
+
+const jungleProfiles = loadJungleProfiles();
 
 const RESPAWN_BY_LEVEL = [
   10, 10, 12, 12, 14, 16, 20, 25, 28, 32.5, 35, 37.5, 40, 42.5, 45, 47.5, 50, 52.5
@@ -796,6 +799,7 @@ export async function analyzeSnapshot(snapshot: GameSnapshot, state: LoopStateSh
     ...collectObjectiveTriggers(snapshot, state),
     ...collectEventTriggers(snapshot, state, newEvents, playerLookup),
     ...collectJungleTriggers(snapshot, state, newEvents, playerLookup),
+    ...collectJungleTimingTriggers(snapshot, newEvents, playerLookup, jungleProfiles),
     ...collectPowerTriggers(strategicContext, state),
     ...collectItemTriggers(strategicContext, state),
     ...collectLevelTriggers(snapshot, state),
