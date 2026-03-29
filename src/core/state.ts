@@ -74,6 +74,7 @@ export class LoopState implements LoopStateShape {
     if (trigger.includes("inibidor")) return "inibidor";
     if (trigger.startsWith("gank oportunidade:")) return "jungleGank";
     if (trigger.startsWith("lane precisa de ajuda:")) return "junglePressao";
+    if (trigger.startsWith("gank timing:")) return "jungleTiming";
     if (trigger === "ace inimigo" || trigger === "ace aliado") return "ace";
     if (trigger.startsWith("multikill ")) return "multikill";
     if (trigger.startsWith("roubaram ") || trigger.startsWith("roubamos ")) return "objetivoRoubo";

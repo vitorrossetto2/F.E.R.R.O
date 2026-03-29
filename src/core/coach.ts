@@ -104,6 +104,7 @@ export function detectCategory(priority: string | null): string {
   if (priority.includes("inibidor")) return "inibidor";
   if (priority.startsWith("gank oportunidade:")) return "jungleGank";
   if (priority.startsWith("lane precisa de ajuda:")) return "junglePressao";
+  if (priority.startsWith("gank timing:")) return "jungleTiming";
   if (priority === "vitória" || priority === "derrota") return "fimDeJogo";
   if (priority.includes("em 1 minuto") || priority.includes("em 30 segundos") ||
       priority.includes("em 10 segundos") || priority.includes("nasceu agora")) return "objetivo";
@@ -268,6 +269,29 @@ function fallbackMessage(priority: string | null): string {
   if (priority.startsWith("lane precisa de ajuda:")) {
     const lane = priority.replace("lane precisa de ajuda: ", "").trim();
     return pickModePhrase("junglePressao").replace("{lane}", lane);
+  }
+
+  if (priority.startsWith("gank timing:")) {
+    const content = priority.replace("gank timing: ", "");
+    const laneMatch = content.match(/(top|mid|bot|jungle)/i);
+    const lane = laneMatch ? laneMatch[1].toLowerCase() : "lane";
+
+    let phraseKey: string;
+    if (content.includes("está limpando a selva") || content.includes("aproveita para pressionar")) {
+      phraseKey = "jungleTimingOfensivo";
+    } else if (content.includes("segunda rotação") && content.includes("pressionar")) {
+      phraseKey = "jungleTimingOfensivo";
+    } else if (content.includes("segunda rotação")) {
+      phraseKey = "jungleTimingSegundaRotacao";
+    } else if (content.includes("morreu") && content.includes("aproveita")) {
+      phraseKey = "jungleTimingMorteOfensivo";
+    } else if (content.includes("morreu")) {
+      phraseKey = "jungleTimingMorte";
+    } else {
+      phraseKey = "jungleTimingDefensivo";
+    }
+
+    return pickModePhrase(phraseKey).replace("{lane}", lane);
   }
 
   if (priority === "ace inimigo" || priority.startsWith("ace inimigo:")) {

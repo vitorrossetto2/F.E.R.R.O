@@ -222,6 +222,28 @@ const SERIO_PHRASES: PhraseSet = {
     "Time precisa de presença no {lane}.",
     "Ajuda o {lane} antes de perder mais."
   ],
+  jungleTimingDefensivo: [
+    "Cuidado, caçador inimigo pode atacar {lane} a qualquer momento.",
+    "Atenção no {lane}. Caçador inimigo pode aparecer.",
+    "Respeita o {lane}. Janela de ataque do caçador.",
+  ],
+  jungleTimingOfensivo: [
+    "Caçador inimigo está limpando a selva. Janela para atacar {lane}.",
+    "Caçador inimigo ocupado. Aproveita para pressionar {lane}.",
+    "Selva inimiga sendo limpa. Vai no {lane} agora.",
+  ],
+  jungleTimingSegundaRotacao: [
+    "Segunda rotação do caçador. Cuidado no {lane}.",
+    "Caçador inimigo pode voltar. Respeita o {lane}.",
+  ],
+  jungleTimingMorte: [
+    "Caçador inimigo morreu. Quando voltar, provável ataque no {lane}.",
+    "Caçador inimigo caiu. Fique atento no {lane} quando ele voltar.",
+  ],
+  jungleTimingMorteOfensivo: [
+    "Caçador inimigo morreu. Aproveita para atacar {lane}.",
+    "Caçador inimigo caiu. Vai pressionar {lane} agora.",
+  ],
   aceInimigo: [
     "Ace! Força um objetivo agora.",
     "Ace! Barão, torre ou dragão, escolhe e vai.",
@@ -457,6 +479,24 @@ const MEME_PHRASES: PhraseSet = {
     "Time precisa de você no {lane}. Bora.",
     "{lane} tá caindo. Alivia antes de virar meme."
   ],
+  jungleTimingDefensivo: [
+    "O caçador tá vindo. Ward o {lane} e reza.",
+    "Alerta de caçador no {lane}. Hora de fingir que sabe jogar seguro.",
+  ],
+  jungleTimingOfensivo: [
+    "Caçador inimigo limpando selva. Vai no {lane} antes que ele acorde.",
+    "Inimigo tá matando bicho. Aproveita e vai pro {lane}.",
+  ],
+  jungleTimingSegundaRotacao: [
+    "Segunda volta do caçador. {lane} vai sofrer de novo.",
+    "Caçador voltando. {lane} é o alvo provável.",
+  ],
+  jungleTimingMorte: [
+    "Caçador morreu. Quando voltar, vai querer vingança no {lane}.",
+  ],
+  jungleTimingMorteOfensivo: [
+    "Caçador morreu. Hora de fazer a festa no {lane}.",
+  ],
   aceInimigo: [
     "Ace! Hora de fazer compras no mapa deles.",
     "Ace! Aproveita antes que alguém respawne."
@@ -691,6 +731,23 @@ const PUTO_PHRASES: PhraseSet = {
     "{lane} tá sofrendo. Alivia essa merda.",
     "Vai pro {lane} antes de perder tudo."
   ],
+  jungleTimingDefensivo: [
+    "Caçador inimigo vem aí. Se morrer no {lane} a culpa é sua.",
+    "Atenção no {lane}. Caçador pode aparecer e te destruir.",
+  ],
+  jungleTimingOfensivo: [
+    "Caçador inimigo limpando selva. Vai pro {lane} e faz algo útil.",
+    "Inimigo tá na selva. Para de farmar e ataca {lane}.",
+  ],
+  jungleTimingSegundaRotacao: [
+    "Segunda rotação. Se não wardou {lane}, merece morrer.",
+  ],
+  jungleTimingMorte: [
+    "Caçador morreu. Quando voltar vai querer sangue no {lane}.",
+  ],
+  jungleTimingMorteOfensivo: [
+    "Caçador morreu. Vai pro {lane} antes dele voltar.",
+  ],
   aceInimigo: [
     "Ace! Vai pro objetivo agora, porra.",
     "Ace! Se não pegar nada agora, desinstala."
@@ -900,6 +957,7 @@ export const CATEGORY_COOLDOWNS: Record<string, number> = {
   fimDeJogo: 0,
   jungleGank: 60,
   junglePressao: 90,
+  jungleTiming: 45,
   generico: 30,
   ace: 0,
   dragonSoul: 120,
@@ -948,6 +1006,7 @@ export const CATEGORY_PRIORITIES: Record<string, number> = {
   morteJogador: 1,
   jungleGank: 1,
   junglePressao: 1,
+  jungleTiming: 2,
   mapa: 0,
   ouroParado: 0,
   generico: 0,
