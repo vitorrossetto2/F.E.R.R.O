@@ -56,7 +56,10 @@ export async function getSnapshot(
     const activePlayerName = stripRiotTag(activePlayer.summonerName ?? "");
     const allPlayers = Array.isArray(allGameData.allPlayers) ? allGameData.allPlayers : [];
     const currentPlayer =
-      allPlayers.find((player: any) => player?.summonerName === activePlayerName) ?? {};
+      allPlayers.find((player: any) => {
+        const name = player?.riotIdGameName ?? stripRiotTag(player?.summonerName ?? "");
+        return name === activePlayerName;
+      }) ?? {};
     const currentTeam = currentPlayer.team;
     const events = Array.isArray(allGameData?.events?.Events) ? allGameData.events.Events : [];
     const currentScores = currentPlayer.scores ?? {};
