@@ -107,7 +107,7 @@ const SERIO_PHRASES: PhraseSet = {
   ],
 
   torreBotBarao: [
-    "Caiu torre inimiga no bot, segura wave e pensa no setup de barão."
+    "Caiu torre inimiga no bot, segura as tropas e se posiciona pro barão."
   ],
 
   torrePerdidaGenerica: [
@@ -305,7 +305,7 @@ const MEME_PHRASES: PhraseSet = {
   inimigoFed: [
     "{name} virou chefão. Não vira conteúdo pra ele não.",
     "{name} tá gigante. Se respeita e não peita sozinho.",
-    "{name} tá solando geral. Não entrega highlight de graça.",
+    "{name} tá solando geral. Não vira conteúdo de graça.",
     "{name} tá imprimindo ouro. Não vai na onda sozinho.",
     "Respeita {name}. Esse aí tá jogando outro jogo.",
     "{name} virou problema do time inteiro. Não tenta resolver sozinho."
@@ -334,7 +334,7 @@ const MEME_PHRASES: PhraseSet = {
   ],
 
   torreBotBarao: [
-    "Caiu torre inimiga no bot. Segura a wave e chama o barão pro rolê."
+    "Caiu torre inimiga no bot. Segura as tropas e chama o barão pro rolê."
   ],
 
   torrePerdidaGenerica: [
@@ -425,14 +425,14 @@ const MEME_PHRASES: PhraseSet = {
   ],
 
   jungleGank: [
-    "{lane} tá pedindo visita. Faz o delivery.",
+    "{lane} tá pedindo visita. Faz uma visita.",
     "Oportunidade no {lane}. Vai antes que alguém roube.",
     "{lane} aberto feito porta de mercado. Aproveita.",
     "Tem emboscada fácil no {lane}. Não ignora.",
     "{lane} vulnerável. Hora de aparecer."
   ],
   junglePressao: [
-    "{lane} tá apanhando. Dá um help.",
+    "{lane} tá apanhando. Vai lá ajudar.",
     "Seus aliados no {lane} tão sofrendo. Passa lá.",
     "{lane} precisa de ajuda. Para de farmar e vai.",
     "Time precisa de você no {lane}. Bora.",
@@ -443,7 +443,7 @@ const MEME_PHRASES: PhraseSet = {
     "Ace! Aproveita antes que alguém respawne."
   ],
   aceAliado: [
-    "Nosso time virou cinzas. Hora de fingir que é split push.",
+    "Nosso time virou cinzas. Hora de fingir que tá fazendo algo útil.",
     "Ace no nosso time. Segura a onda e reza."
   ],
   dragonSoulProximo: [
