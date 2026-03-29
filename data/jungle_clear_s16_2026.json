@@ -1,0 +1,4663 @@
+{
+  "source_file": "Jungle Clear Compilation S16_2026 - Jungle clear S16_2026.pdf",
+  "title": "Season 16/2026 Jungle Clear Compilation",
+  "document_notes": {
+    "spreadsheet_not_complete": true,
+    "old_clears_from_season_15_are_in_sheet_2": true,
+    "clears_are_demonstrations_not_the_only_viable_paths": true,
+    "search_tip": "Use Ctrl+F to search for any champion.",
+    "sort_tip": "Select the entire sheet, use sort range, then select the category to sort by.",
+    "details_tip": "Runes are often found in the video. More details and alternative versions may be in the notes/details field or video description/comments."
+  },
+  "sections": {
+    "meta_junglers": {
+      "description": "Meta jungler clears.",
+      "count": 189,
+      "entries": [
+        {
+          "page": 1,
+          "champion": "Aatrox",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:54",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=DaIlrj-Jcx0",
+          "player": "Zen'Kih",
+          "notes": "QEQ, AD/AD/HPS"
+        },
+        {
+          "page": 1,
+          "champion": "Aatrox",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:48",
+          "path": "Raptors->Krugs->Red->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=D7ac4bOavJQ",
+          "player": "MikeBEASTon",
+          "notes": "QEQ, AD/AD/HPS"
+        },
+        {
+          "page": 1,
+          "champion": "Aatrox",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:39",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=Iyno0bhlYzo",
+          "player": "MikeBEASTon",
+          "notes": "QEQ, AD/AD/HPS"
+        },
+        {
+          "page": 1,
+          "champion": "Aatrox",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:41",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=A9dVgqxG59A",
+          "player": "MikeBEASTon",
+          "notes": "QEQ, AD/AD/HPS"
+        },
+        {
+          "page": 1,
+          "champion": "Aatrox",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:44",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=yw2XyvTWUf4",
+          "player": "MikeBEASTon",
+          "notes": "QEQ, AD/AD/HPS"
+        },
+        {
+          "page": 1,
+          "champion": "Ambessa",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:30",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=j3BgtrKIbiQ&t=100s",
+          "player": "Zen'Kih",
+          "notes": "QEW, AH/AD/HPS. 2 smite HPF ver."
+        },
+        {
+          "page": 1,
+          "champion": "Ambessa",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:41",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=Y4qaxqOXDl8",
+          "player": "Pando",
+          "notes": "QEW, AH/AD"
+        },
+        {
+          "page": 1,
+          "champion": "Amumu",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:53",
+          "path": "Raptors->Krugs->Red->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=6kxNHNdxgGs&t=225",
+          "player": "adam",
+          "notes": "WQE, AS/AP/HPF, amp tome buy"
+        },
+        {
+          "page": 1,
+          "champion": "Amumu",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:48",
+          "path": "Wolves->Gromp->Blue->Raptors->Krugs->Red",
+          "path_steps": [
+            "Wolves",
+            "Gromp",
+            "Blue",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=6kxNHNdxgGs&t=350",
+          "player": "adam",
+          "notes": "WQE, AS/AP/HPF"
+        },
+        {
+          "page": 1,
+          "champion": "Amumu",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:44",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=nk3AvHUe6-Y",
+          "player": "adam",
+          "notes": "WEQ, AS/AP. HPF ver."
+        },
+        {
+          "page": 1,
+          "champion": "Amumu",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:52",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=yEf8M6zl4wo",
+          "player": "adam",
+          "notes": "WEQ, AS/AP, HPF ver."
+        },
+        {
+          "page": 1,
+          "champion": "Bel'Veth",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:38",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=y4u1RbuE3Zg",
+          "player": "Zen'Kih",
+          "notes": "AD/AD/HPF"
+        },
+        {
+          "page": 1,
+          "champion": "Bel'Veth",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=GQUatW1i5WA",
+          "player": "Zen'Kih",
+          "notes": "AD/AD/HPF"
+        },
+        {
+          "page": 1,
+          "champion": "Brand",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:46",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=BhqdWtwA3RI",
+          "player": "Fell",
+          "notes": "AH/AP"
+        },
+        {
+          "page": 1,
+          "champion": "Brand",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:35",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=mkkm_tT4c5c",
+          "player": "Zen'Kih",
+          "notes": "AH/AP"
+        },
+        {
+          "page": 1,
+          "champion": "Brand",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:46",
+          "path": "Raptors->Krugs->Red->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=NRpE5sKAxhA",
+          "player": "Gondlink",
+          "notes": "AH/AP"
+        },
+        {
+          "page": 1,
+          "champion": "Brand",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:34",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=QUJh36Rrz9o",
+          "player": "Zen'Kih",
+          "notes": "AH/AP"
+        },
+        {
+          "page": 1,
+          "champion": "Brand",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:39",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=2Y7tYSQBPRE",
+          "player": "Fell",
+          "notes": "AH/AP"
+        },
+        {
+          "page": 1,
+          "champion": "Briar",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:45",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=_gBBekgnIBs",
+          "player": "Appetite",
+          "notes": "AD/AD/HPF"
+        },
+        {
+          "page": 1,
+          "champion": "Briar",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=N7BOQWhjOxw",
+          "player": "MikeBEASTon",
+          "notes": "AD/AD/HPS, Alac"
+        },
+        {
+          "page": 1,
+          "champion": "Briar",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:36",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=7tYr5JKxop8",
+          "player": "Appetite",
+          "notes": "AD/AD/HPF, Alac"
+        },
+        {
+          "page": 1,
+          "champion": "Briar",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=NKAb_yYvVnI",
+          "player": "MikeBEASTon",
+          "notes": "AD/AD/HPS, Alac.  HPF 2 smite ver."
+        },
+        {
+          "page": 1,
+          "champion": "Briar",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:46",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=nkuXg0wxcIw",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, Alac"
+        },
+        {
+          "page": 1,
+          "champion": "Cho'Gath",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:39",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=u2kcAuOKNhM",
+          "player": "Zen'Kih",
+          "notes": "AS/MS/T&SR"
+        },
+        {
+          "page": 1,
+          "champion": "Cho'Gath",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:51",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=Wcoi8dPurEQ",
+          "player": "Fell",
+          "notes": "AH/MS/HPS"
+        },
+        {
+          "page": 1,
+          "champion": "Cho'Gath",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:49",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=nNOMYYVkZJ8",
+          "player": "Fell",
+          "notes": "AH/MS/HPS"
+        },
+        {
+          "page": 1,
+          "champion": "Darius",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:28",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=eOddZoDe0GA",
+          "player": "Zen'Kih",
+          "notes": "AD/AD"
+        },
+        {
+          "page": 1,
+          "champion": "Darius",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:33",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=iRR837YK9bM",
+          "player": "Zen'Kih",
+          "notes": "AD/AD"
+        },
+        {
+          "page": 1,
+          "champion": "Diana",
+          "patch": "26.01PBE",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Wolves->Blue->Gromp->Recall->Raptors->Red->Krugs",
+          "path_steps": [
+            "Wolves",
+            "Blue",
+            "Gromp",
+            "Recall",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=P2HIFe4nUE0",
+          "player": "Rocket",
+          "notes": "QWE, ABSF, AS/AP"
+        },
+        {
+          "page": 1,
+          "champion": "Diana",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=bbk3s8OSd4s&t=112s",
+          "player": "bart1n",
+          "notes": "QWE, AP/AP"
+        },
+        {
+          "page": 1,
+          "champion": "Diana",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:38",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=XsOG03mq7BQ",
+          "player": "MikeBEASTon",
+          "notes": "QWE, AS/AP"
+        },
+        {
+          "page": 1,
+          "champion": "Diana",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:43",
+          "path": "Wolves->Gromp->Blue->Raptors->Red->Krugs",
+          "path_steps": [
+            "Wolves",
+            "Gromp",
+            "Blue",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=bbk3s8OSd4s&t=680s",
+          "player": "bart1n",
+          "notes": "QWE, AP/AP"
+        },
+        {
+          "page": 1,
+          "champion": "Diana",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:53",
+          "path": "Wolves->Gromp->Blue->Raptors->Krugs->Red",
+          "path_steps": [
+            "Wolves",
+            "Gromp",
+            "Blue",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=bbk3s8OSd4s&t=790s",
+          "player": "bart1n",
+          "notes": "QWE, AP/AP"
+        },
+        {
+          "page": 1,
+          "champion": "Diana",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:39",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=KK36MSSxVFI",
+          "player": "MikeBEASTon",
+          "notes": "QWE, AS/AP"
+        },
+        {
+          "page": 1,
+          "champion": "Diana",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:34",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=Lx5hZlVH4RU",
+          "player": "MikeBEASTon",
+          "notes": "QEW, AS/AP"
+        },
+        {
+          "page": 1,
+          "champion": "Diana",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:40",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=I4PQCTeBrCQ",
+          "player": "MikeBEASTon",
+          "notes": "QWE, AS/AP"
+        },
+        {
+          "page": 1,
+          "champion": "Dr. Mundo",
+          "patch": "26.01PBE",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:50",
+          "path": "Wolves->Blue->Gromp->Raptors->Krugs->Red",
+          "path_steps": [
+            "Wolves",
+            "Blue",
+            "Gromp",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=YBrMZ2eEOpA",
+          "player": "Rocket",
+          "notes": "QEQ, AS/HPS/HPS"
+        },
+        {
+          "page": 1,
+          "champion": "Dr. Mundo",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:30",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=WECD3m1POUE",
+          "player": "Veno",
+          "notes": "QEQ, AS/HPS/HPS"
+        },
+        {
+          "page": 1,
+          "champion": "Dr. Mundo",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:24",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=U1yTkOK5GmQ",
+          "player": "Veno",
+          "notes": "QEQ, AS/HPS/HPS"
+        },
+        {
+          "page": 1,
+          "champion": "Ekko",
+          "patch": "26.10",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:42",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=s3u0STDS8_w",
+          "player": "MikeBEASTon",
+          "notes": "QWE, AP/AP/HPS"
+        },
+        {
+          "page": 1,
+          "champion": "Ekko",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:46",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=0WEUdEZ9-3A",
+          "player": "Zen'Kih",
+          "notes": "QWE, AP/AP"
+        },
+        {
+          "page": 1,
+          "champion": "Ekko",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:45",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=fkHxsdZOTqM",
+          "player": "MikeBEASTon",
+          "notes": "QWE, AP/AP/HPS"
+        },
+        {
+          "page": 1,
+          "champion": "Ekko",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:36",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=hgg_m_Y8ebc",
+          "player": "MikeBEASTon",
+          "notes": "QWE, AP/AP/HPS"
+        },
+        {
+          "page": 1,
+          "champion": "Elise",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:34",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=4-wC0doddqA",
+          "player": "Zen'Kih",
+          "notes": "QWE, AP/AP/HPF."
+        },
+        {
+          "page": 1,
+          "champion": "Elise",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:42",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=zj6EYlvPe0w",
+          "player": "CampEater66",
+          "notes": "WQQ, AP/AP/HPF."
+        },
+        {
+          "page": 1,
+          "champion": "Evelynn",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:43",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=UHn0NYeuysU",
+          "player": "Veno",
+          "notes": "QEW, ABSF"
+        },
+        {
+          "page": 1,
+          "champion": "Evelynn",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:34",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=kbXTIiz1lFk",
+          "player": "Veno",
+          "notes": "QEQ, ABSF"
+        },
+        {
+          "page": 1,
+          "champion": "Evelynn",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:45",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=QtMf2a7RutE",
+          "player": "Veno",
+          "notes": "QEQ, ABSF"
+        },
+        {
+          "page": 1,
+          "champion": "Fiddlesticks",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:26",
+          "path": "Raptors->Krugs->Red->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=Bgn5NSxAHfE",
+          "player": "ioprocessing",
+          "notes": "WEW, AP/AP/HPF, redside ABSF ver."
+        },
+        {
+          "page": 1,
+          "champion": "Fiddlesticks",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:28",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=moFTBW9CCV8",
+          "player": "ioprocessing",
+          "notes": "WEW, AP/AP/HPF"
+        },
+        {
+          "page": 1,
+          "champion": "Fizz",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:35",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=OgEFGMUs39s",
+          "player": "Zen'Kih",
+          "notes": "WQE, AP/AP"
+        },
+        {
+          "page": 1,
+          "champion": "Gragas",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:43",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=ByGQx0Dg1fU",
+          "player": "Gondlink",
+          "notes": "AP/AP/HPF. HPS ver."
+        },
+        {
+          "page": 1,
+          "champion": "Gragas",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:53",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=-4j0Z_8mlps",
+          "player": "Zen'Kih",
+          "notes": "AP/AP, QWE"
+        },
+        {
+          "page": 1,
+          "champion": "Graves",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:44",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=J5rcXme0uQU",
+          "player": "Zen'Kih",
+          "notes": "AS/AD, EQQ"
+        },
+        {
+          "page": 1,
+          "champion": "Graves",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:42",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=M802hXMd738",
+          "player": "Zen'Kih",
+          "notes": "AS/AD, EQQ"
+        },
+        {
+          "page": 2,
+          "champion": "Graves",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:35",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=SP-zCLHfoIg",
+          "player": "Malu",
+          "notes": "AS/AD, EQQ"
+        },
+        {
+          "page": 2,
+          "champion": "Gwen",
+          "patch": "26.01PBE",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:49",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=0UaPqILhOvY",
+          "player": "Gondlink",
+          "notes": "AP/AP"
+        },
+        {
+          "page": 2,
+          "champion": "Gwen",
+          "patch": "26.01PBE",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:48",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=TFHkN12xLmc",
+          "player": "Rocket",
+          "notes": "AP/AP"
+        },
+        {
+          "page": 2,
+          "champion": "Gwen",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=vOdoRx-ff4g",
+          "player": "Zen'Kih",
+          "notes": "AS/AP"
+        },
+        {
+          "page": 2,
+          "champion": "Gwen",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:49",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.bilibili.com/video/BV1nh6eBhEB4",
+          "player": "Zen'Kih",
+          "notes": "AS/AP"
+        },
+        {
+          "page": 2,
+          "champion": "Gwen",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:48",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=OikclnJrZ7E",
+          "player": "Gondlink",
+          "notes": "AS/AP"
+        },
+        {
+          "page": 2,
+          "champion": "Hecarim",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:31",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=zA7YX5BjCfU",
+          "player": "Zen'Kih",
+          "notes": "AD/AD"
+        },
+        {
+          "page": 2,
+          "champion": "Hecarim",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:41",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=IETaq7e_w08",
+          "player": "Zen'Kih",
+          "notes": "AD/AD"
+        },
+        {
+          "page": 2,
+          "champion": "Ivern",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:08",
+          "path": "Gromp->Blue->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Gromp",
+            "Blue",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=_UWupYI_8M0",
+          "player": "MikeBEASTon",
+          "notes": "AH/MS/HPS, Requires cosmic."
+        },
+        {
+          "page": 2,
+          "champion": "Ivern",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:18",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=2Aob_IocXYg",
+          "player": "MikeBEASTon",
+          "notes": "AH/MS/HPS, Requires cosmic"
+        },
+        {
+          "page": 2,
+          "champion": "Jarvan IV",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:41",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=hlae0E8nT_w",
+          "player": "Pando",
+          "notes": "AS/AD, EQW"
+        },
+        {
+          "page": 2,
+          "champion": "Jarvan IV",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:37",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=NsWN1BrEKIs",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, EQW"
+        },
+        {
+          "page": 2,
+          "champion": "Jayce",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:50",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=Ha0T2vj5tRA",
+          "player": "buonani",
+          "notes": "AD/AD/HPF, WQQ"
+        },
+        {
+          "page": 2,
+          "champion": "Jayce",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:45",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.bilibili.com/video/BV19eZUBiEGY",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, WQE"
+        },
+        {
+          "page": 2,
+          "champion": "Jayce",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:55",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=wkZfq5JNR0Y",
+          "player": "buonani",
+          "notes": "AD/AD/HPF, WQQ"
+        },
+        {
+          "page": 2,
+          "champion": "Jayce",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:54",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=_EEUUsT7f7k",
+          "player": "buonani",
+          "notes": "AD/AD/HPF, WQQ"
+        },
+        {
+          "page": 2,
+          "champion": "Jax",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:49",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=guy7HtRuuEc",
+          "player": "Zen'Kih",
+          "notes": "AS/AD, WEQ"
+        },
+        {
+          "page": 2,
+          "champion": "Jax",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:52",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=LDoLXte9X98",
+          "player": "MikeBEASTon",
+          "notes": "AS/AD, WEQ"
+        },
+        {
+          "page": 2,
+          "champion": "Karthus",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:23",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=JeG_tBo9CR0",
+          "player": "Karhus",
+          "notes": "AP/AP/HPF"
+        },
+        {
+          "page": 2,
+          "champion": "Karthus",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:29",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=BGquifU8Oq0",
+          "player": "Zen'Kih",
+          "notes": "AP/AP"
+        },
+        {
+          "page": 2,
+          "champion": "Kayn",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:33",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=VmqiH523mik",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, QWE. QWQ HPF ver."
+        },
+        {
+          "page": 2,
+          "champion": "Kayn",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:43",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=-LWzv18c6Gc",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, QEQ"
+        },
+        {
+          "page": 2,
+          "champion": "Kha'Zix",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:50",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=lbDiUKF5nr0",
+          "player": "Pando",
+          "notes": "AD/AD"
+        },
+        {
+          "page": 2,
+          "champion": "Kha'Zix",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:35",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.bilibili.com/video/BV1UycczNEAX/",
+          "player": "GodK馄饨螳螂",
+          "notes": "AD/AD/HPF, ABSF. HPS ver。"
+        },
+        {
+          "page": 2,
+          "champion": "Kha'Zix",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:40",
+          "path": "Raptors->Red->Krugs->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.bilibili.com/video/BV1M2c5zgE6S/",
+          "player": "GodK馄饨螳螂",
+          "notes": "AD/AD/HPF, ABSF."
+        },
+        {
+          "page": 2,
+          "champion": "Kindred",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:46",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=6B1iGq9Zt3M",
+          "player": "Just a Teddy",
+          "notes": "AS/AD/HPF"
+        },
+        {
+          "page": 2,
+          "champion": "Kindred",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=-lPQBuLoLHI",
+          "player": "Zen'Kih",
+          "notes": "AS/AD/HPF"
+        },
+        {
+          "page": 2,
+          "champion": "Kindred",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:43",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.bilibili.com/video/BV1HjcZzDEAQ/",
+          "player": "真的珏珏子",
+          "notes": "AS/AD/HPF, skip all Raptors"
+        },
+        {
+          "page": 2,
+          "champion": "Lee Sin",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:45",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=ZnCB_-IAe-0",
+          "player": "Pando",
+          "notes": "AD/AD"
+        },
+        {
+          "page": 2,
+          "champion": "Lee Sin",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:44",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=NBv7jaxeadQ",
+          "player": "Zen'Kih",
+          "notes": "AD/AD/HPS.  AS/AD/HPF ver."
+        },
+        {
+          "page": 2,
+          "champion": "Lee Sin",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:39",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=CFSzbyI8Kus",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, 2 smite AS ver. 2 smite HPF ver."
+        },
+        {
+          "page": 2,
+          "champion": "Lee Sin",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:33",
+          "path": "Raptors->Krugs->Red->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=yZFWWsnnG2g",
+          "player": "MikeBEASTon",
+          "notes": "AD/AD/HPF.  AS/AD/HPF vers."
+        },
+        {
+          "page": 2,
+          "champion": "Lillia",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:33",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.bilibili.com/video/BV1Pqi4BzEqd/",
+          "player": "小周莉莉娅",
+          "notes": "AH/AP"
+        },
+        {
+          "page": 2,
+          "champion": "Lillia",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:40",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=uziHBe5F3Ww",
+          "player": "Zen'Kih",
+          "notes": "AP/AP"
+        },
+        {
+          "page": 2,
+          "champion": "Lillia",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=GnA8KgdCdrk",
+          "player": "ioprocessing",
+          "notes": "AP/AP"
+        },
+        {
+          "page": 2,
+          "champion": "Lillia",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:48",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=mZzWA-Iu7sY",
+          "player": "Alenayc",
+          "notes": "AP/AP/HPF"
+        },
+        {
+          "page": 2,
+          "champion": "Lillia",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:48",
+          "path": "Wolves->Gromp->Blue->Raptors->Krugs->Red",
+          "path_steps": [
+            "Wolves",
+            "Gromp",
+            "Blue",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=-qQgoP2Mxns",
+          "player": "Sherlup",
+          "notes": "AP/AP"
+        },
+        {
+          "page": 2,
+          "champion": "Malphite",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:44",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=NqXAOvetOCw",
+          "player": "Pando",
+          "notes": "AS/HPS/HPS, WEW"
+        },
+        {
+          "page": 2,
+          "champion": "Malphite",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=qS8FLV5pCnc",
+          "player": "Pando",
+          "notes": "AS/HPS/HPS, WEW"
+        },
+        {
+          "page": 2,
+          "champion": "Maokai",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:41",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=A1aWfsVchhU",
+          "player": "Fell",
+          "notes": "AH/AP, QEQ"
+        },
+        {
+          "page": 2,
+          "champion": "Maokai",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:36",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=-Gsyvxovo6g",
+          "player": "Zen'Kih",
+          "notes": "AH/AP, QEQ"
+        },
+        {
+          "page": 2,
+          "champion": "Maokai",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:48",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=TmnLu4IShmo",
+          "player": "Fell",
+          "notes": "AH/AP, QEQ"
+        },
+        {
+          "page": 2,
+          "champion": "Maokai",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:49",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=Tr9nY9Luvtg",
+          "player": "Fell",
+          "notes": "AH/AP, QEQ"
+        },
+        {
+          "page": 2,
+          "champion": "Master Yi",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:41",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=vbKf8Rh7mjM",
+          "player": "Zen'Kih",
+          "notes": "QEQ"
+        },
+        {
+          "page": 2,
+          "champion": "Master Yi",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:44",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=adQHI7UBUTU",
+          "player": "milt",
+          "notes": "QEQ, AS/AD. QEW ver."
+        },
+        {
+          "page": 2,
+          "champion": "Master Yi",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:51",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=Qw5fNt-8I7g",
+          "player": "milt",
+          "notes": "QEQ, AS/AD"
+        },
+        {
+          "page": 2,
+          "champion": "Master Yi",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:46",
+          "path": "Wolves->Gromp->Blue->Raptors->Krugs->Red",
+          "path_steps": [
+            "Wolves",
+            "Gromp",
+            "Blue",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=W0i4lnDDlZ8",
+          "player": "milt",
+          "notes": "QEQ, AS/AD"
+        },
+        {
+          "page": 2,
+          "champion": "Master Yi",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:52",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=Gt3nQ_8za2M",
+          "player": "milt",
+          "notes": "QEQ, AS/AD"
+        },
+        {
+          "page": 2,
+          "champion": "Mordekaiser",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:41",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=f6X3M_ZgeP4",
+          "player": "Pando",
+          "notes": "QEW, AP/AP"
+        },
+        {
+          "page": 2,
+          "champion": "Mordekaiser",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:30",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=oY82uDsgd5o",
+          "player": "Pando",
+          "notes": "QEW, AP/AP"
+        },
+        {
+          "page": 2,
+          "champion": "Morgana",
+          "patch": "26.01PBE",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:36",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=iH2txw7azkI",
+          "player": "Rocket",
+          "notes": "AP/AP"
+        },
+        {
+          "page": 2,
+          "champion": "Morgana",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:36",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=F6fv-jcGdgo",
+          "player": "Appetite",
+          "notes": "AP/AP/HPS, Abs Focus."
+        },
+        {
+          "page": 2,
+          "champion": "Morgana",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:36",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=lly-NG5inIU",
+          "player": "Appetite",
+          "notes": "AP/AP/HPF, ABSF"
+        },
+        {
+          "page": 2,
+          "champion": "Naafiri",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:49",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=mIa9h5UNHxQ",
+          "player": "Zen'Kih",
+          "notes": "AS/AD, QEW"
+        },
+        {
+          "page": 2,
+          "champion": "Naafiri",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=94bUMBW01DI",
+          "player": "Pando",
+          "notes": "AS/AD/HPF, QEW"
+        },
+        {
+          "page": 2,
+          "champion": "Nidalee",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:41",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=dbnOzhjacIk",
+          "player": "Zen'Kih",
+          "notes": "AS/AP/HPF, QEW"
+        },
+        {
+          "page": 3,
+          "champion": "Nidalee",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:26",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=gJv3x1lcQyk",
+          "player": "Lokane",
+          "notes": "AS/AP/HPF, QEW."
+        },
+        {
+          "page": 3,
+          "champion": "Nocturne",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:33",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=iIhXsNRVS78",
+          "player": "Zen'Kih",
+          "notes": "AS/AD, QWQ"
+        },
+        {
+          "page": 3,
+          "champion": "Nocturne",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:41",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=Wpj5_Uiv4tw",
+          "player": "Zen'Kih",
+          "notes": "AS/AD, QWQ"
+        },
+        {
+          "page": 3,
+          "champion": "Nocturne",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:40",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=kadQwb1HJ7A",
+          "player": "Zen'Kih",
+          "notes": "AS/AD, QWQ"
+        },
+        {
+          "page": 3,
+          "champion": "Nocturne",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=WLk6yUVzkUQ",
+          "player": "adam",
+          "notes": "AS/AD, QWQ"
+        },
+        {
+          "page": 3,
+          "champion": "Nunu & Willump",
+          "patch": "26.01PBE",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:54",
+          "path": "Raptors->Red->Krugs->Recall->Blue->Gromp->Wolves",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Blue",
+            "Gromp",
+            "Wolves"
+          ],
+          "link": "https://www.youtube.com/watch?v=G4zJOoT7Il0",
+          "player": "Rocket",
+          "notes": "AS/AP"
+        },
+        {
+          "page": 3,
+          "champion": "Nunu & Willump",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:53",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=teB97FZtyEo",
+          "player": "MikeBEASTon",
+          "notes": "AH/AP/HPS"
+        },
+        {
+          "page": 3,
+          "champion": "Nunu & Willump",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:43",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=d9CScquraCM",
+          "player": "keauphie",
+          "notes": "AH/AP/HPS"
+        },
+        {
+          "page": 3,
+          "champion": "Olaf",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:24",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=Uw_CyDReJHY",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, EQQ"
+        },
+        {
+          "page": 3,
+          "champion": "Olaf",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:37",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=M3xTaZdZLbo",
+          "player": "Fell",
+          "notes": "AD/AD, QEQ"
+        },
+        {
+          "page": 3,
+          "champion": "Olaf",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:31",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=zATVOxUWyy0",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, EQQ"
+        },
+        {
+          "page": 3,
+          "champion": "Qiyana",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:40",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=nmNZHTTj9DA",
+          "player": "Zen'Kih",
+          "notes": "AD/AD/HPF, QWQ"
+        },
+        {
+          "page": 3,
+          "champion": "Pantheon",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:41",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=WrstV_WQC70",
+          "player": "Veno",
+          "notes": "AD/AD/HPF, QWQ"
+        },
+        {
+          "page": 3,
+          "champion": "Pantheon",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=fkm8TDP_jbY",
+          "player": "Veno",
+          "notes": "AD/AD, QWQ"
+        },
+        {
+          "page": 3,
+          "champion": "Rammus",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:51",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=aUoGZm_MVSk",
+          "player": "Zen'Kih",
+          "notes": "AS/HPS/HPS, WQE"
+        },
+        {
+          "page": 3,
+          "champion": "Rek'Sai",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:48",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=poedrDCnGsw",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, QEW."
+        },
+        {
+          "page": 3,
+          "champion": "Rek'Sai",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:43",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=poedrDCnGsw&t=120s",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, QEW. AS/AD/HPF 2 smite ver."
+        },
+        {
+          "page": 3,
+          "champion": "Rek'Sai",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:49",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=poedrDCnGsw&t=240s",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, QWE. AS/AD/HPF 2 smite ver."
+        },
+        {
+          "page": 3,
+          "champion": "Rek'Sai",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:46",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=poedrDCnGsw&t=360s",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, QWE"
+        },
+        {
+          "page": 3,
+          "champion": "Rek'Sai",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:51",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=poedrDCnGsw&t=480s",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, QWE. AS/AD/HPF 2 smite ver."
+        },
+        {
+          "page": 3,
+          "champion": "Rengar",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:48",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=tDQviycx5UU",
+          "player": "BACKSTAB",
+          "notes": "AS/AD"
+        },
+        {
+          "page": 3,
+          "champion": "Rengar",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:44",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.bilibili.com/video/BV1C1cbzMEAN/",
+          "player": "Zen'Kih",
+          "notes": "AS/AD"
+        },
+        {
+          "page": 3,
+          "champion": "Rengar",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:45",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=n__sl2vrPIw",
+          "player": "Fell",
+          "notes": "AS/AD"
+        },
+        {
+          "page": 3,
+          "champion": "Rengar",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:52",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=C0cba-lJilU",
+          "player": "Fell",
+          "notes": "AS/AD, WQE, Ward."
+        },
+        {
+          "page": 3,
+          "champion": "Riven",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:36",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=OV2pvSrkwW8",
+          "player": "Appetite",
+          "notes": "AD/AD"
+        },
+        {
+          "page": 3,
+          "champion": "Sejuani",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:37",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=lGca8sQyc1c",
+          "player": "Zen'Kih",
+          "notes": "AS/HPS/HPS, EWQ"
+        },
+        {
+          "page": 3,
+          "champion": "Shaco",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:25",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=7x6_NR8VSgo",
+          "player": "iBronto",
+          "notes": "AS/AD, WQW"
+        },
+        {
+          "page": 3,
+          "champion": "Shaco",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:25",
+          "path": "Raptors->Red->Krugs->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=rksDPj2dP8E",
+          "player": "iBronto",
+          "notes": "AS/AD, WQW"
+        },
+        {
+          "page": 3,
+          "champion": "Shaco",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:25",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=sIjdjn9Pwrs",
+          "player": "iBronto",
+          "notes": "AS/AD, WQW"
+        },
+        {
+          "page": 3,
+          "champion": "Shyvana",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:40",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=dAEPI-H42OM&t=220s",
+          "player": "bart1n",
+          "notes": "AS/AD, QEW"
+        },
+        {
+          "page": 3,
+          "champion": "Shyvana",
+          "patch": "26.06b",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:32",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=m83YXgp3W5k",
+          "player": "MikeBEASTon",
+          "notes": "AS/AD, QEW"
+        },
+        {
+          "page": 3,
+          "champion": "Shyvana",
+          "patch": "26.06b",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:38",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=0gc1ieztxr0",
+          "player": "MikeBEASTon",
+          "notes": "AS/AD, QEW"
+        },
+        {
+          "page": 3,
+          "champion": "Shyvana",
+          "patch": "26.06b",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:40",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=qi3eLrxKs-8",
+          "player": "Zen'Kih",
+          "notes": "AS/AD, QEW"
+        },
+        {
+          "page": 3,
+          "champion": "Skarner",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:36",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=sWQm1xcMiss",
+          "player": "Ali Top G",
+          "notes": "AH/HPS/HPS"
+        },
+        {
+          "page": 3,
+          "champion": "Skarner",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:41",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=o80whcbUNc8",
+          "player": "Ali Top G",
+          "notes": "AH/HPS/HPS"
+        },
+        {
+          "page": 3,
+          "champion": "Skarner",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:50",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=Bwir_QLVjv0",
+          "player": "Fell",
+          "notes": "AH/HPS/HPS"
+        },
+        {
+          "page": 3,
+          "champion": "Skarner",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:46",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=i1gb0DQDy10",
+          "player": "Zen'Kih",
+          "notes": "AH/HPS/HPS"
+        },
+        {
+          "page": 3,
+          "champion": "Sylas",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:56",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=lss9BqPD3SA",
+          "player": "MikeBEASTon",
+          "notes": "AP/AP/HPS.  Q start HPF ver."
+        },
+        {
+          "page": 3,
+          "champion": "Sylas",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:53",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=nuVU4CW5EiY",
+          "player": "Fell",
+          "notes": "AP/AP, EQW"
+        },
+        {
+          "page": 3,
+          "champion": "Taliyah",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:36",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=UFwIn1TQnGQ",
+          "player": "1Zeus",
+          "notes": "AP/AP/HPF, QEQ"
+        },
+        {
+          "page": 3,
+          "champion": "Talon",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:37",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=FZsOEgGt79I",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, QWW"
+        },
+        {
+          "page": 3,
+          "champion": "Talon",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:41",
+          "path": "Raptor->Red->Krugs->Recall->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Raptor",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=azOxVKar9MU",
+          "player": "MineCuber",
+          "notes": "AD/AD, WQE"
+        },
+        {
+          "page": 3,
+          "champion": "Talon",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Raptors->Red->Krugs->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=Ml4_Uyik12w",
+          "player": "Fell",
+          "notes": "AD/AD, WQE"
+        },
+        {
+          "page": 3,
+          "champion": "Talon",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:53",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=QMqCmGZ0GM8",
+          "player": "Fell",
+          "notes": "AD/AD, QWE"
+        },
+        {
+          "page": 3,
+          "champion": "Teemo",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:51",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=0jyRqUrQ8CU",
+          "player": "Zen'Kih",
+          "notes": "AS/AP"
+        },
+        {
+          "page": 3,
+          "champion": "Trundle",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:37",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=mY58qiR6diQ",
+          "player": "Zen'Kih",
+          "notes": "AS/AD, QWE"
+        },
+        {
+          "page": 3,
+          "champion": "Udyr",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:36",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=knOYP2VU5nI",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, qrw"
+        },
+        {
+          "page": 3,
+          "champion": "Udyr",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:38",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=78ZNw3Lfy24",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, QRW"
+        },
+        {
+          "page": 3,
+          "champion": "Vi",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:40",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=VaDyQUiFIKg",
+          "player": "MikeBEASTon",
+          "notes": "AS/AD/HPS"
+        },
+        {
+          "page": 3,
+          "champion": "Vi",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:45",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=pJMHtLbl0ck",
+          "player": "MikeBEASTon",
+          "notes": "AS/AD/HPS"
+        },
+        {
+          "page": 3,
+          "champion": "Vi",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:48",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=nCmTD8IgaW0",
+          "player": "MikeBEASTon",
+          "notes": "AS/AD/HPS"
+        },
+        {
+          "page": 3,
+          "champion": "Vi",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:54",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=fAxLFMdib7s",
+          "player": "Zen'Kih",
+          "notes": "AS/AD"
+        },
+        {
+          "page": 3,
+          "champion": "Viego",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:37",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=mnsNY6TGuIU",
+          "player": "Zen'Kih",
+          "notes": "AS/AD"
+        },
+        {
+          "page": 3,
+          "champion": "Viego",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:34",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=rhp3prlH9JY",
+          "player": "Zen'Kih",
+          "notes": "AS/AD"
+        },
+        {
+          "page": 3,
+          "champion": "Volibear",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:34",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=UoARTA-rNLU",
+          "player": "MikeBEASTon",
+          "notes": "AS/AD/HPS, EWQ"
+        },
+        {
+          "page": 3,
+          "champion": "Volibear",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:42",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=3dGUHtpQu8A",
+          "player": "adam",
+          "notes": "AS/AD. EWQ"
+        },
+        {
+          "page": 4,
+          "champion": "Volibear",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:43",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=-PvfsFfJRBc",
+          "player": "adam",
+          "notes": "AS/AD, WEQ"
+        },
+        {
+          "page": 4,
+          "champion": "Volibear",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:48",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=MrtlTLIN8aU",
+          "player": "adam",
+          "notes": "AS/AD, EWQ"
+        },
+        {
+          "page": 4,
+          "champion": "Volibear",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:52",
+          "path": "Raptors->Krugs->Red->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=ScGUhuNLL78",
+          "player": "adam",
+          "notes": "AS/AD, EWQ, DS buy"
+        },
+        {
+          "page": 4,
+          "champion": "Warwick",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:48",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=a7wPbYGTqAQ",
+          "player": "MikeBEASTon",
+          "notes": "AS/AD/HPS, QWE"
+        },
+        {
+          "page": 4,
+          "champion": "Warwick",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:53",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=YcdAUZCSgKQ",
+          "player": "MikeBEASTon",
+          "notes": "AS/AD/HPS, QWE. QWW ver."
+        },
+        {
+          "page": 4,
+          "champion": "Wukong",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:40",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=zZOw6Xv8MN4",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, EQW"
+        },
+        {
+          "page": 4,
+          "champion": "Wukong",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:49",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=_AfwFIqPwAI",
+          "player": "MikeBEASTon",
+          "notes": "AS/AD, EQW"
+        },
+        {
+          "page": 4,
+          "champion": "Wukong",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:51",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=Mb5Z05CGfHg",
+          "player": "Zen'Kih",
+          "notes": "AS/AD, EQW"
+        },
+        {
+          "page": 4,
+          "champion": "Xin Zhao",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:52",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=ILUCFwwrvn8",
+          "player": "MikeBEASTon",
+          "notes": "AS/AD/HPS, WEQ"
+        },
+        {
+          "page": 4,
+          "champion": "Xin Zhao",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:55",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.bilibili.com/video/BV1N5foBjEFk/",
+          "player": "Zen'Kih",
+          "notes": "AS/AD, WEQ"
+        },
+        {
+          "page": 4,
+          "champion": "Xin Zhao",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=qp6WjE-WITc",
+          "player": "Zen'Kih",
+          "notes": "AS/AD, EWQ"
+        },
+        {
+          "page": 4,
+          "champion": "Zaahen",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:53",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=E0LGq2Wi_2k",
+          "player": "Zen'Kih",
+          "notes": "AD/AD"
+        },
+        {
+          "page": 4,
+          "champion": "Zaahen",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:48",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=UuSKmlqih_w",
+          "player": "MikeBEASTon",
+          "notes": "AS/AD/HPS"
+        },
+        {
+          "page": 4,
+          "champion": "Zaahen",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:41",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=5kNiVcc9tNo",
+          "player": "MikeBEASTon",
+          "notes": "AS/AD/HPS"
+        },
+        {
+          "page": 4,
+          "champion": "Zaahen",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:53",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=uCLVEv97bQM",
+          "player": "MikeBEASTon",
+          "notes": "AS/AD/HPS"
+        },
+        {
+          "page": 4,
+          "champion": "Zac",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=IdK7Igfx0uk",
+          "player": "Erknaite",
+          "notes": "AH/HPS/HPF"
+        },
+        {
+          "page": 4,
+          "champion": "Zac",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:43",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=iNxG5xFk6k0",
+          "player": "Veno",
+          "notes": "WQE, AH/AP"
+        },
+        {
+          "page": 4,
+          "champion": "Zed",
+          "patch": "26.03b",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:30",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=dyZ2S-n7YKc",
+          "player": "MikeBEASTon",
+          "notes": "QEQ, AD/AD/HPS"
+        },
+        {
+          "page": 4,
+          "champion": "Zyra",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:15",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=7uSYVWOIuy0",
+          "player": "seppo",
+          "notes": "QWE, AH/AP/HPF. AP/AP/HPF ver."
+        },
+        {
+          "page": 4,
+          "champion": "Zyra",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:25",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=-NtcLPm6dZc",
+          "player": "個人的JGフルクリア",
+          "notes": "QWE, AH/AP"
+        },
+        {
+          "page": 4,
+          "champion": "Zyra",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:10",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=8du5Q7a9sYo",
+          "player": "y-y",
+          "notes": "QWE, AP/AP/HPF. red team ver."
+        },
+        {
+          "page": 4,
+          "champion": "Zyra",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:20",
+          "path": "Wolves->Gromp->Blue->Raptors->Krugs->Red",
+          "path_steps": [
+            "Wolves",
+            "Gromp",
+            "Blue",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=eo2W8RNbr2s",
+          "player": "個人的JGフルクリア",
+          "notes": "QWE, AH/AP. AP/AP/HPF ver."
+        }
+      ]
+    },
+    "off_meta_junglers": {
+      "description": "See them once/twice a season, unpopular picks that have their uses.",
+      "count": 31,
+      "entries": [
+        {
+          "page": 4,
+          "champion": "Aurelion Sol",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:47",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=nIUcARBUTdY",
+          "player": "個人的JGフルクリア",
+          "notes": "AP/AP"
+        },
+        {
+          "page": 4,
+          "champion": "Camille",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:49",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://x.com/lolshapeshift/status/2025805316584034545",
+          "player": "Shapeshift",
+          "notes": "AD/AD/HPF, QEW"
+        },
+        {
+          "page": 4,
+          "champion": "Camille",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:52",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=qO6XuhD8Qjo",
+          "player": "Zen'Kih",
+          "notes": "AD/AD, QEW"
+        },
+        {
+          "page": 4,
+          "champion": "Ezreal",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:38",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=FGCNQBtStCo",
+          "player": "Zen'Kih",
+          "notes": "AD/AD"
+        },
+        {
+          "page": 4,
+          "champion": "Kayle",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:47",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=2Ml_LO3oUbM",
+          "player": "個人的JGフルクリア",
+          "notes": "AS/AD"
+        },
+        {
+          "page": 4,
+          "champion": "Lucian",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:49",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.bilibili.com/video/BV1gBPkzwEB7",
+          "player": "Zen'Kih",
+          "notes": "QWE, AD/AD/HPF, ABSF."
+        },
+        {
+          "page": 4,
+          "champion": "Nasus",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 2,
+          "time": "03:09",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=fi5w5AjhmBU",
+          "player": "MikeBEASTon",
+          "notes": "QEQ, AH/MS/TSR"
+        },
+        {
+          "page": 4,
+          "champion": "Nasus",
+          "patch": "26.03",
+          "camps": 7,
+          "smites": 2,
+          "time": "03:30",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Scuttle->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Scuttle",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=zJMVbNK-C_c",
+          "player": "Pando",
+          "notes": "QEQ, AH/MS/TSR.  Smited scuttle"
+        },
+        {
+          "page": 4,
+          "champion": "Nasus",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "03:14",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=-olwy6duQcQ",
+          "player": "Zen'Kih",
+          "notes": "QEQ, AH/MS/TSR"
+        },
+        {
+          "page": 4,
+          "champion": "Nasus",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 1,
+          "time": "03:11",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.bilibili.com/video/BV1yTwtzuEKK/",
+          "player": "Zen'Kih",
+          "notes": "QEQ, AH/MS/TSR"
+        },
+        {
+          "page": 4,
+          "champion": "Nautilus",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:38",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=CUPHO16s5w8",
+          "player": "St L",
+          "notes": "AH/AP/HPF"
+        },
+        {
+          "page": 4,
+          "champion": "Nautilus",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:36",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=s6BOg-JyAxI",
+          "player": "St L",
+          "notes": "AH/AP/HPF"
+        },
+        {
+          "page": 4,
+          "champion": "Nautilus",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:45",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=byBmMrc7STY",
+          "player": "Appetite",
+          "notes": "AS/AP/HPF, ABSF"
+        },
+        {
+          "page": 4,
+          "champion": "Ornn",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:41",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=Dqah6k4UPN4",
+          "player": "NunyuhBusiness",
+          "notes": "AH/HPS/HPS"
+        },
+        {
+          "page": 4,
+          "champion": "Ornn",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:46",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=l7Wu-8IYt1s",
+          "player": "NunyuhBusiness",
+          "notes": "AH/HPS/HPS"
+        },
+        {
+          "page": 4,
+          "champion": "Rumble",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:42",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.bilibili.com/video/BV1oGAzztEgf",
+          "player": "Zen'Kih",
+          "notes": "AH/AP"
+        },
+        {
+          "page": 4,
+          "champion": "Shen",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:47",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=1ScWyMXYigg",
+          "player": "MikeBEASTon",
+          "notes": "AH/HPS/HPS"
+        },
+        {
+          "page": 4,
+          "champion": "Shen",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:37",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=mDE-x8vcFxI",
+          "player": "Zen'Kih",
+          "notes": "AH/HPS/HPS"
+        },
+        {
+          "page": 4,
+          "champion": "Sion",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:51",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=VoR5HBDGtAE",
+          "player": "Fell",
+          "notes": "WQQ, AH/AD."
+        },
+        {
+          "page": 4,
+          "champion": "Sion",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:34",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=DnUDXq2V_44",
+          "player": "Zen'Kih",
+          "notes": "WQQ, AD/AD. AH/AD ver."
+        },
+        {
+          "page": 4,
+          "champion": "Tryndamere",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:40",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=_z4PZaA8NHc",
+          "player": "Zen'Kih",
+          "notes": "AS/AD. Alt ver."
+        },
+        {
+          "page": 4,
+          "champion": "Tryndamere",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:44",
+          "path": "Blue->Gromp->Wolves->Raptors->Krugs->Red",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Krugs",
+            "Red"
+          ],
+          "link": "https://www.youtube.com/watch?v=B72M-1J8zoM&t=205s",
+          "player": "Bart1n",
+          "notes": "AS/AD"
+        },
+        {
+          "page": 4,
+          "champion": "Tryndamere",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:45",
+          "path": "Red->Krugs->Raptors->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=B72M-1J8zoM&t=320s",
+          "player": "Bart1n",
+          "notes": "AS/AD"
+        },
+        {
+          "page": 4,
+          "champion": "Tryndamere",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:48",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=B72M-1J8zoM&t=430s",
+          "player": "Bart1n",
+          "notes": "AS/AD"
+        },
+        {
+          "page": 4,
+          "champion": "Tryndamere",
+          "patch": "26.04",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:48",
+          "path": "Raptors->Red->Krugs->Recall->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Red",
+            "Krugs",
+            "Recall",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=B72M-1J8zoM&t=550s",
+          "player": "Bart1n",
+          "notes": "AS/AD"
+        },
+        {
+          "page": 4,
+          "champion": "Twitch",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:51",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=CcZz9-fdLbc",
+          "player": "Circle3",
+          "notes": "AD/AD/HPF, ABSF."
+        },
+        {
+          "page": 4,
+          "champion": "Twitch",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:51",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=_RaSReusAXU",
+          "player": "Circle3",
+          "notes": "AD/AD/HPF, ABSF."
+        },
+        {
+          "page": 4,
+          "champion": "Vayne",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:43",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=bryzBVguOcA",
+          "player": "MikeBEASTon",
+          "notes": "AS/AD/HPS"
+        },
+        {
+          "page": 4,
+          "champion": "Yasuo",
+          "patch": "26.01",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:50",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=wlj4aZFr24k",
+          "player": "Zen'Kih",
+          "notes": "AS/AD"
+        },
+        {
+          "page": 4,
+          "champion": "Yone",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:56",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.youtube.com/watch?v=1zmJBUbeP2c",
+          "player": "Zen'Kih",
+          "notes": "AS/AD"
+        },
+        {
+          "page": 5,
+          "champion": "Zeri",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 1,
+          "time": "02:49",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=ib5Y1Q65M1U",
+          "player": "個人的JGフルクリア",
+          "notes": "AS/AD, QWW"
+        }
+      ]
+    },
+    "non_meta_junglers": {
+      "description": "Proceed with extreme caution.",
+      "count": 7,
+      "entries": [
+        {
+          "page": 5,
+          "champion": "Akali",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:53",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=cCEolpybNwc",
+          "player": "Zen'Kih",
+          "notes": "EQQ, AD/AD"
+        },
+        {
+          "page": 5,
+          "champion": "Ahri",
+          "patch": "26.02",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:54",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=5XBhVGv75F8",
+          "player": "Zen'Kih",
+          "notes": "QWQ, AS/AP"
+        },
+        {
+          "page": 5,
+          "champion": "Alistar",
+          "patch": "26.03",
+          "camps": 6,
+          "smites": 2,
+          "time": "03:18",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=eMMiMocL9V8",
+          "player": "Zen'Kih",
+          "notes": "EQW, AS/AP"
+        },
+        {
+          "page": 5,
+          "champion": "Katarina",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:59",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.youtube.com/watch?v=TOhAZjYtMdw",
+          "player": "Zen'Kih",
+          "notes": "QEW, AS/AP"
+        },
+        {
+          "page": 5,
+          "champion": "Yuumi",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 2,
+          "time": "03:12",
+          "path": "Blue->Gromp->Wolves->Raptors->Red->Krugs",
+          "path_steps": [
+            "Blue",
+            "Gromp",
+            "Wolves",
+            "Raptors",
+            "Red",
+            "Krugs"
+          ],
+          "link": "https://www.youtube.com/watch?v=ahDpl0tyqLA",
+          "player": "Zen'Kih",
+          "notes": "QEQ, AS/AP"
+        },
+        {
+          "page": 5,
+          "champion": "Zoe",
+          "patch": "26.05",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:56",
+          "path": "Red->Krugs->Raptors->Wolves->Blue->Gromp",
+          "path_steps": [
+            "Red",
+            "Krugs",
+            "Raptors",
+            "Wolves",
+            "Blue",
+            "Gromp"
+          ],
+          "link": "https://www.bilibili.com/video/BV1i5QZBSEMc",
+          "player": "Zen'Kih",
+          "notes": "QEQ, AP/AP"
+        },
+        {
+          "page": 5,
+          "champion": "Zoe",
+          "patch": "26.06",
+          "camps": 6,
+          "smites": 2,
+          "time": "02:57",
+          "path": "Raptors->Krugs->Red->Wolves->Gromp->Blue",
+          "path_steps": [
+            "Raptors",
+            "Krugs",
+            "Red",
+            "Wolves",
+            "Gromp",
+            "Blue"
+          ],
+          "link": "https://www.bilibili.com/video/BV1xdQfB6EJu",
+          "player": "0o一米阳光o0",
+          "notes": "QEQ, AP/AP"
+        }
+      ]
+    },
+    "outdated_clears": {
+      "description": "Old clears that don't have a newer version yet.",
+      "count": 0,
+      "entries": []
+    },
+    "helpful_resources": {
+      "count": 3,
+      "entries": [
+        {
+          "title": "Basic Kiting Guide",
+          "link": "https://www.youtube.com/watch?v=QgVA3RXS504",
+          "author": "Phylaris"
+        },
+        {
+          "title": "Advanced Kiting Guide",
+          "link": "https://www.youtube.com/watch?v=UoYQ8WIdzeE",
+          "author": "Phylaris"
+        },
+        {
+          "title": "Nidalee raptor clear guide",
+          "link": "https://striped-vulcanodon-c27.notion.site/Nidalee-clearing-guide-Raptor-Start-19bb5ae6dcaf8063b12af2a8ac2ca250",
+          "author": "lolkane"
+        }
+      ]
+    },
+    "appendix": {
+      "AD": "Attack Damage. Rune shard Row 1/2 Option 1.",
+      "AP": "Ability Power. Rune shard Row 1/2 Option 1.",
+      "AS": "Attack Speed. Rune shard Row 1 Option 2.",
+      "AH": "Ability Haste. Rune shard Row 1 Option 3.",
+      "MS": "Movement Speed. Rune shard Row 2 Option 2.",
+      "T&SR": "Tenacity and Slow Resist. Rune shard Row 3 Option 2.",
+      "HPF": "Flat Health, 65 health. Rune shard Row 3 Option 1.",
+      "HPS": "Scaling Health, 10-180 health. Rune shard Row 3 Option 3.",
+      "Fleet": "Fleet Footwork rune. Precision tree. Row 1 Option 3.",
+      "Alac": "Legend: Alacrity rune. Precision tree. Row 3 Option 1.",
+      "Haste": "Legend: Haste rune. Precision tree. Row 3 Option 2.",
+      "Nimbus": "Nimbus Cloak rune. Sorcery tree. Row 2 Option 3.",
+      "ABSF": "Absolute Focus rune. Sorcery tree. Row 3 Option 3.",
+      "Biscuit": "Biscuit Delivery rune. Inspiration tree. Row 3 Option 3.",
+      "Cosmic": "Cosmic Insight rune. Inspiration tree. Row 4 Option 1.",
+      "DS": "Dark Seal item.",
+      "LS": "Long Sword item.",
+      "AT": "Amplifying Tome item."
+    }
+  },
+  "summary": {
+    "total_clear_entries": 227,
+    "meta_junglers": 189,
+    "off_meta_junglers": 31,
+    "non_meta_junglers": 7,
+    "outdated_clears": 0,
+    "helpful_resources": 3,
+    "appendix_terms": 18
+  }
+}
