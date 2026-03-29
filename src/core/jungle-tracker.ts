@@ -114,6 +114,7 @@ const WALK_TIME_SECONDS = 20;
 const BASE_RETURN_SECONDS = 40;
 const MAX_TRACKING_TIME = 600;
 const CAMP_SPAWN_TIME = 90;
+const ESTIMATED_RESPAWN_SECONDS = 30;
 
 let trackingState: JungleTrackingState = {
   enemyJunglerName: null,
@@ -202,6 +203,16 @@ export function collectJungleTimingTriggers(
         deathAlertFired = true;
       }
     }
+  }
+
+  // Reset death alert after estimated respawn time
+  if (
+    trackingState.deathGankAlerted &&
+    trackingState.lastKnownDeadTime !== null &&
+    snapshot.gameTime >= trackingState.lastKnownDeadTime + ESTIMATED_RESPAWN_SECONDS
+  ) {
+    trackingState.deathGankAlerted = false;
+    trackingState.lastKnownDeadTime = null;
   }
 
   if (deathAlertFired) {

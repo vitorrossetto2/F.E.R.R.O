@@ -385,10 +385,8 @@ describe("analyzer behavior", () => {
 
     const result = await analyzeSnapshot(snapshot, makeState());
 
-    // Amumu should be in the jungle clear JSON — if present, timing trigger fires
-    // If Amumu is not in JSON, no trigger (which is also valid)
-    const hasTimingTrigger = result.triggers.some((t: string) => t.includes("gank timing:"));
-    const hasNoJungler = !result.triggers.some((t: string) => t.includes("gank timing:"));
-    expect(hasTimingTrigger || hasNoJungler).toBe(true);
+    // Amumu is in the jungle clear JSON — timing trigger should fire at gameTime 200
+    expect(result.triggers.some((t: string) => t.includes("gank timing:"))).toBe(true);
+    expect(result.triggers.some((t: string) => t.includes("caçador inimigo pode atacar"))).toBe(true);
   });
 });
