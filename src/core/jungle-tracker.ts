@@ -1,5 +1,6 @@
 import { readFileSync } from "fs";
 import { join } from "path";
+import type { GameEvent, GameSnapshot, SnapshotPlayer } from "./types";
 
 export interface JungleProfile {
   championName: string;
@@ -98,4 +99,87 @@ export function loadJungleProfiles(): Map<string, JungleProfile> {
   }
 
   return profiles;
+}
+
+interface JungleTrackingState {
+  enemyJunglerName: string | null;
+  profile: JungleProfile | null;
+  firstClearAlerted: boolean;
+}
+
+const WALK_TIME_SECONDS = 20;
+const MAX_TRACKING_TIME = 600;
+const CAMP_SPAWN_TIME = 90;
+
+let trackingState: JungleTrackingState = {
+  enemyJunglerName: null,
+  profile: null,
+  firstClearAlerted: false,
+};
+
+export function resetJungleTrackingState(): void {
+  trackingState = {
+    enemyJunglerName: null,
+    profile: null,
+    firstClearAlerted: false,
+  };
+}
+
+function inferTargetLane(
+  startSide: "red" | "blue",
+  activePosition: string,
+  isJungler: boolean
+): string {
+  if (isJungler) {
+    return startSide === "red" ? "bot" : "top";
+  }
+
+  if (startSide === "red") {
+    return activePosition === "TOP" || activePosition === "MIDDLE" ? "top" : "mid";
+  }
+  return activePosition === "BOTTOM" || activePosition === "UTILITY" ? "bot" : "mid";
+}
+
+export function collectJungleTimingTriggers(
+  snapshot: GameSnapshot,
+  newEvents: GameEvent[],
+  playerLookup: Map<string, SnapshotPlayer>,
+  profiles: Map<string, JungleProfile>
+): string[] {
+  if (snapshot.gameTime < CAMP_SPAWN_TIME || snapshot.gameTime > MAX_TRACKING_TIME) {
+    return [];
+  }
+
+  if (!trackingState.enemyJunglerName) {
+    const enemyJungler = snapshot.enemyPlayers.find((p) => p.position === "JUNGLE");
+    if (!enemyJungler) return [];
+    trackingState.enemyJunglerName = enemyJungler.championName;
+    trackingState.profile = profiles.get(enemyJungler.championName) ?? null;
+  }
+
+  const { profile } = trackingState;
+  if (!profile) return [];
+
+  const triggers: string[] = [];
+  const isJungler = snapshot.activePlayerPosition === "JUNGLE";
+  const lane = inferTargetLane(profile.mostCommonStartSide, snapshot.activePlayerPosition, isJungler);
+
+  const firstGankTime = profile.fastestClearTime + WALK_TIME_SECONDS;
+
+  // First clear alerts
+  if (!trackingState.firstClearAlerted) {
+    if (isJungler) {
+      if (snapshot.gameTime >= CAMP_SPAWN_TIME && snapshot.gameTime < firstGankTime) {
+        triggers.push(`gank timing: caçador inimigo está limpando a selva, janela para atacar ${lane}`);
+        trackingState.firstClearAlerted = true;
+      }
+    } else {
+      if (snapshot.gameTime >= firstGankTime) {
+        triggers.push(`gank timing: caçador inimigo pode atacar ${lane} a qualquer momento`);
+        trackingState.firstClearAlerted = true;
+      }
+    }
+  }
+
+  return triggers;
 }

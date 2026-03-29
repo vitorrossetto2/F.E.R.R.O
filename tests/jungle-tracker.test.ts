@@ -87,4 +87,173 @@ describe("jungle-tracker", () => {
       expect(profiles.size).toBe(0);
     });
   });
+
+  function makeSnapshot(overrides: Record<string, unknown> = {}) {
+    return {
+      gameTime: 200,
+      activePlayerName: "TestPlayer",
+      activePlayerChampion: "Jax",
+      activePlayerLevel: 3,
+      activePlayerGold: 1000,
+      activePlayerTeam: "CHAOS",
+      activePlayerKda: "0/0/0",
+      activePlayerIsDead: false,
+      activePlayerPosition: "TOP",
+      activePlayerRespawnTimer: 0,
+      alliedPlayers: [
+        {
+          summonerName: "TestPlayer",
+          championName: "Jax",
+          level: 3,
+          kills: 0,
+          deaths: 0,
+          assists: 0,
+          creepScore: 30,
+          currentGold: 1000,
+          items: [],
+          position: "TOP",
+          wardScore: 0,
+        },
+      ],
+      enemyPlayers: [
+        {
+          summonerName: "EnemyJg",
+          championName: "Shaco",
+          level: 3,
+          kills: 0,
+          deaths: 0,
+          assists: 0,
+          creepScore: 20,
+          currentGold: 800,
+          items: [],
+          position: "JUNGLE",
+          wardScore: 0,
+        },
+      ],
+      events: [],
+      ...overrides,
+    };
+  }
+
+  function makePlayerLookup(snapshot: ReturnType<typeof makeSnapshot>) {
+    const lookup = new Map();
+    for (const p of [...snapshot.alliedPlayers, ...snapshot.enemyPlayers]) {
+      lookup.set(p.summonerName, p);
+    }
+    return lookup;
+  }
+
+  describe("collectJungleTimingTriggers", () => {
+    it("emits defensive alert for laner when first clear window is reached", async () => {
+      vi.doMock("fs", () => ({
+        readFileSync: () => JSON.stringify(MOCK_JSON),
+      }));
+
+      const { loadJungleProfiles, collectJungleTimingTriggers } = await import(
+        "../src/core/jungle-tracker.js"
+      );
+      const profiles = loadJungleProfiles();
+      // Shaco fastest clear = 159s + 20s walk = 179s. gameTime = 200 > 179 → trigger
+      const snapshot = makeSnapshot({ gameTime: 200 });
+
+      const triggers = collectJungleTimingTriggers(snapshot, [], makePlayerLookup(snapshot), profiles);
+
+      expect(triggers.length).toBe(1);
+      expect(triggers[0]).toContain("gank timing:");
+      expect(triggers[0]).toContain("caçador inimigo pode atacar");
+      // Shaco most common start = red → gank top/mid. Player is TOP → alert top
+      expect(triggers[0]).toContain("top");
+    });
+
+    it("emits offensive alert for jungler during enemy first clear", async () => {
+      vi.doMock("fs", () => ({
+        readFileSync: () => JSON.stringify(MOCK_JSON),
+      }));
+
+      const { loadJungleProfiles, collectJungleTimingTriggers } = await import(
+        "../src/core/jungle-tracker.js"
+      );
+      const profiles = loadJungleProfiles();
+      // gameTime = 100 → within first clear (90 < 100 < 179) → offensive alert
+      const snapshot = makeSnapshot({
+        gameTime: 100,
+        activePlayerPosition: "JUNGLE",
+      });
+
+      const triggers = collectJungleTimingTriggers(snapshot, [], makePlayerLookup(snapshot), profiles);
+
+      expect(triggers.length).toBe(1);
+      expect(triggers[0]).toContain("caçador inimigo está limpando a selva");
+      // Shaco starts red → jungler should attack opposite side → bot
+      expect(triggers[0]).toContain("bot");
+    });
+
+    it("does not alert before camps spawn (< 90s)", async () => {
+      vi.doMock("fs", () => ({
+        readFileSync: () => JSON.stringify(MOCK_JSON),
+      }));
+
+      const { loadJungleProfiles, collectJungleTimingTriggers } = await import(
+        "../src/core/jungle-tracker.js"
+      );
+      const profiles = loadJungleProfiles();
+      const snapshot = makeSnapshot({ gameTime: 60 });
+
+      const triggers = collectJungleTimingTriggers(snapshot, [], makePlayerLookup(snapshot), profiles);
+
+      expect(triggers).toEqual([]);
+    });
+
+    it("does not repeat first clear alert", async () => {
+      vi.doMock("fs", () => ({
+        readFileSync: () => JSON.stringify(MOCK_JSON),
+      }));
+
+      const { loadJungleProfiles, collectJungleTimingTriggers } = await import(
+        "../src/core/jungle-tracker.js"
+      );
+      const profiles = loadJungleProfiles();
+      const snapshot = makeSnapshot({ gameTime: 200 });
+      const lookup = makePlayerLookup(snapshot);
+
+      const first = collectJungleTimingTriggers(snapshot, [], lookup, profiles);
+      expect(first.length).toBe(1);
+
+      const second = collectJungleTimingTriggers(snapshot, [], lookup, profiles);
+      expect(second).toEqual([]);
+    });
+
+    it("returns nothing when enemy jungler is not in profiles", async () => {
+      vi.doMock("fs", () => ({
+        readFileSync: () => JSON.stringify(MOCK_JSON),
+      }));
+
+      const { loadJungleProfiles, collectJungleTimingTriggers } = await import(
+        "../src/core/jungle-tracker.js"
+      );
+      const profiles = loadJungleProfiles();
+      const snapshot = makeSnapshot({
+        gameTime: 200,
+        enemyPlayers: [
+          {
+            summonerName: "EnemyJg",
+            championName: "UnknownChamp",
+            level: 3,
+            kills: 0,
+            deaths: 0,
+            assists: 0,
+            creepScore: 20,
+            currentGold: 800,
+            items: [],
+            position: "JUNGLE",
+            wardScore: 0,
+          },
+        ],
+      });
+
+      const triggers = collectJungleTimingTriggers(snapshot, [], makePlayerLookup(snapshot), profiles);
+
+      expect(triggers).toEqual([]);
+    });
+  });
 });
