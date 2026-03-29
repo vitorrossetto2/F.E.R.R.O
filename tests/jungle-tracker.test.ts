@@ -255,5 +255,156 @@ describe("jungle-tracker", () => {
 
       expect(triggers).toEqual([]);
     });
+
+    it("emits second rotation alert for laner", async () => {
+      vi.doMock("fs", () => ({
+        readFileSync: () => JSON.stringify(MOCK_JSON),
+      }));
+
+      const { loadJungleProfiles, collectJungleTimingTriggers } = await import(
+        "../src/core/jungle-tracker.js"
+      );
+      const profiles = loadJungleProfiles();
+      // Shaco clear = 159s. Second rotation = (159*2)+40 = 358s
+      const snapshot1 = makeSnapshot({ gameTime: 200 });
+      const lookup = makePlayerLookup(snapshot1);
+
+      // Consume first alert
+      collectJungleTimingTriggers(snapshot1, [], lookup, profiles);
+
+      // Trigger second rotation
+      const snapshot2 = makeSnapshot({ gameTime: 360 });
+      const triggers = collectJungleTimingTriggers(snapshot2, [], makePlayerLookup(snapshot2), profiles);
+
+      expect(triggers.length).toBe(1);
+      expect(triggers[0]).toContain("segunda rotação do caçador");
+    });
+
+    it("emits second rotation offensive alert for jungler", async () => {
+      vi.doMock("fs", () => ({
+        readFileSync: () => JSON.stringify(MOCK_JSON),
+      }));
+
+      const { loadJungleProfiles, collectJungleTimingTriggers } = await import(
+        "../src/core/jungle-tracker.js"
+      );
+      const profiles = loadJungleProfiles();
+      // Shaco clear = 159s. Jungler offensive window = 159+40=199 to (159*2)+40=358
+      const snapshot1 = makeSnapshot({ gameTime: 100, activePlayerPosition: "JUNGLE" });
+      const lookup = makePlayerLookup(snapshot1);
+
+      // Consume first alert
+      collectJungleTimingTriggers(snapshot1, [], lookup, profiles);
+
+      const snapshot2 = makeSnapshot({ gameTime: 210, activePlayerPosition: "JUNGLE" });
+      const triggers = collectJungleTimingTriggers(snapshot2, [], makePlayerLookup(snapshot2), profiles);
+
+      expect(triggers.length).toBe(1);
+      expect(triggers[0]).toContain("segunda rotação");
+      expect(triggers[0]).toContain("pressionar");
+    });
+
+    it("emits post-death alert when enemy jungler dies", async () => {
+      vi.doMock("fs", () => ({
+        readFileSync: () => JSON.stringify(MOCK_JSON),
+      }));
+
+      const { loadJungleProfiles, collectJungleTimingTriggers } = await import(
+        "../src/core/jungle-tracker.js"
+      );
+      const profiles = loadJungleProfiles();
+      // First, advance past first clear to consume that alert
+      const snapshot1 = makeSnapshot({ gameTime: 200 });
+      collectJungleTimingTriggers(snapshot1, [], makePlayerLookup(snapshot1), profiles);
+
+      // Now simulate jungler death event
+      const deathEvent = {
+        EventName: "ChampionKill",
+        EventID: 5,
+        EventTime: 300,
+        KillerName: "TestPlayer",
+        VictimName: "EnemyJg",
+      };
+      const snapshot2 = makeSnapshot({ gameTime: 300 });
+      const triggers = collectJungleTimingTriggers(
+        snapshot2,
+        [deathEvent],
+        makePlayerLookup(snapshot2),
+        profiles
+      );
+
+      expect(triggers.length).toBe(1);
+      expect(triggers[0]).toContain("caçador inimigo morreu");
+    });
+
+    it("emits offensive post-death alert for jungler player", async () => {
+      vi.doMock("fs", () => ({
+        readFileSync: () => JSON.stringify(MOCK_JSON),
+      }));
+
+      const { loadJungleProfiles, collectJungleTimingTriggers } = await import(
+        "../src/core/jungle-tracker.js"
+      );
+      const profiles = loadJungleProfiles();
+      const snapshot1 = makeSnapshot({ gameTime: 100, activePlayerPosition: "JUNGLE" });
+      collectJungleTimingTriggers(snapshot1, [], makePlayerLookup(snapshot1), profiles);
+
+      const deathEvent = {
+        EventName: "ChampionKill",
+        EventID: 5,
+        EventTime: 300,
+        KillerName: "TestPlayer",
+        VictimName: "EnemyJg",
+      };
+      const snapshot2 = makeSnapshot({ gameTime: 300, activePlayerPosition: "JUNGLE" });
+      const triggers = collectJungleTimingTriggers(
+        snapshot2,
+        [deathEvent],
+        makePlayerLookup(snapshot2),
+        profiles
+      );
+
+      expect(triggers.length).toBe(1);
+      expect(triggers[0]).toContain("aproveita para atacar");
+    });
+
+    it("does not emit alerts after 10 minutes", async () => {
+      vi.doMock("fs", () => ({
+        readFileSync: () => JSON.stringify(MOCK_JSON),
+      }));
+
+      const { loadJungleProfiles, collectJungleTimingTriggers } = await import(
+        "../src/core/jungle-tracker.js"
+      );
+      const profiles = loadJungleProfiles();
+      const snapshot = makeSnapshot({ gameTime: 650 });
+
+      const triggers = collectJungleTimingTriggers(snapshot, [], makePlayerLookup(snapshot), profiles);
+
+      expect(triggers).toEqual([]);
+    });
+
+    it("resets state between games via resetJungleTrackingState", async () => {
+      vi.doMock("fs", () => ({
+        readFileSync: () => JSON.stringify(MOCK_JSON),
+      }));
+
+      const { loadJungleProfiles, collectJungleTimingTriggers, resetJungleTrackingState } =
+        await import("../src/core/jungle-tracker.js");
+      const profiles = loadJungleProfiles();
+      const snapshot = makeSnapshot({ gameTime: 200 });
+      const lookup = makePlayerLookup(snapshot);
+
+      // Consume first alert
+      const first = collectJungleTimingTriggers(snapshot, [], lookup, profiles);
+      expect(first.length).toBe(1);
+
+      // Reset
+      resetJungleTrackingState();
+
+      // Should trigger again
+      const afterReset = collectJungleTimingTriggers(snapshot, [], lookup, profiles);
+      expect(afterReset.length).toBe(1);
+    });
   });
 });

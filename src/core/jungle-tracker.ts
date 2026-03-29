@@ -105,9 +105,13 @@ interface JungleTrackingState {
   enemyJunglerName: string | null;
   profile: JungleProfile | null;
   firstClearAlerted: boolean;
+  secondClearAlerted: boolean;
+  lastKnownDeadTime: number | null;
+  deathGankAlerted: boolean;
 }
 
 const WALK_TIME_SECONDS = 20;
+const BASE_RETURN_SECONDS = 40;
 const MAX_TRACKING_TIME = 600;
 const CAMP_SPAWN_TIME = 90;
 
@@ -115,6 +119,9 @@ let trackingState: JungleTrackingState = {
   enemyJunglerName: null,
   profile: null,
   firstClearAlerted: false,
+  secondClearAlerted: false,
+  lastKnownDeadTime: null,
+  deathGankAlerted: false,
 };
 
 export function resetJungleTrackingState(): void {
@@ -122,6 +129,9 @@ export function resetJungleTrackingState(): void {
     enemyJunglerName: null,
     profile: null,
     firstClearAlerted: false,
+    secondClearAlerted: false,
+    lastKnownDeadTime: null,
+    deathGankAlerted: false,
   };
 }
 
@@ -166,6 +176,38 @@ export function collectJungleTimingTriggers(
 
   const firstGankTime = profile.fastestClearTime + WALK_TIME_SECONDS;
 
+  // Post-death alerts (processed first — take priority over rotation alerts)
+  let deathAlertFired = false;
+  for (const event of newEvents) {
+    if (event?.EventName !== "ChampionKill") continue;
+    if (typeof event.VictimName !== "string") continue;
+
+    const victim = playerLookup.get(event.VictimName);
+    if (!victim) continue;
+
+    if (
+      victim.championName === trackingState.enemyJunglerName &&
+      snapshot.enemyPlayers.some((p) => p.summonerName === victim.summonerName)
+    ) {
+      if (!trackingState.deathGankAlerted) {
+        if (isJungler) {
+          triggers.push(`gank timing: caçador inimigo morreu, aproveita para atacar ${lane}`);
+        } else {
+          triggers.push(
+            `gank timing: caçador inimigo morreu, quando voltar provável ataque ${lane}`
+          );
+        }
+        trackingState.deathGankAlerted = true;
+        trackingState.lastKnownDeadTime = snapshot.gameTime;
+        deathAlertFired = true;
+      }
+    }
+  }
+
+  if (deathAlertFired) {
+    return triggers;
+  }
+
   // First clear alerts
   if (!trackingState.firstClearAlerted) {
     if (isJungler) {
@@ -177,6 +219,26 @@ export function collectJungleTimingTriggers(
       if (snapshot.gameTime >= firstGankTime) {
         triggers.push(`gank timing: caçador inimigo pode atacar ${lane} a qualquer momento`);
         trackingState.firstClearAlerted = true;
+      }
+    }
+  }
+
+  // Second rotation alerts
+  const secondGankTime = profile.fastestClearTime * 2 + BASE_RETURN_SECONDS;
+
+  if (trackingState.firstClearAlerted && !trackingState.secondClearAlerted) {
+    if (isJungler) {
+      const offensiveStart = profile.fastestClearTime + BASE_RETURN_SECONDS;
+      if (snapshot.gameTime >= offensiveStart && snapshot.gameTime < secondGankTime) {
+        triggers.push(
+          `gank timing: caçador inimigo na segunda rotação, aproveita para pressionar ${lane}`
+        );
+        trackingState.secondClearAlerted = true;
+      }
+    } else {
+      if (snapshot.gameTime >= secondGankTime) {
+        triggers.push(`gank timing: segunda rotação do caçador, cuidado ${lane}`);
+        trackingState.secondClearAlerted = true;
       }
     }
   }
