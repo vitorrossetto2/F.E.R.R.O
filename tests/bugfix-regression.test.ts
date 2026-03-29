@@ -122,7 +122,7 @@ describe("bug fix regressions", () => {
         ],
       });
       const result = await analyzeSnapshot(snapshot, state);
-      expect(result.triggers.some((t) => t.includes("Aatrox morreu, janela de"))).toBe(true);
+      expect(result.triggers.some((t) => t === "inimigo morreu: Aatrox")).toBe(true);
     });
 
     it("increments death counter on repeated player deaths", async () => {
@@ -427,14 +427,14 @@ describe("bug fix regressions", () => {
       ];
       const snapshot1 = makeSnapshot({ events });
       const result1 = await analyzeSnapshot(snapshot1, state);
-      expect(result1.triggers.some((t) => t.includes("Aatrox morreu"))).toBe(true);
+      expect(result1.triggers.some((t) => t === "inimigo morreu: Aatrox")).toBe(true);
 
       // Same EventID appears again (simulating overlap)
       state.lastSeenEventCount = 0; // Reset to force re-reading events
       const snapshot2 = makeSnapshot({ events });
       const result2 = await analyzeSnapshot(snapshot2, state);
       // Should NOT generate the trigger again
-      expect(result2.triggers.some((t) => t.includes("Aatrox morreu"))).toBe(false);
+      expect(result2.triggers.some((t) => t === "inimigo morreu: Aatrox")).toBe(false);
     });
 
     it("processes events without EventID normally", async () => {
@@ -447,7 +447,7 @@ describe("bug fix regressions", () => {
         ],
       });
       const result = await analyzeSnapshot(snapshot, state);
-      expect(result.triggers.some((t) => t.includes("Aatrox morreu"))).toBe(true);
+      expect(result.triggers.some((t) => t === "inimigo morreu: Aatrox")).toBe(true);
     });
   });
 

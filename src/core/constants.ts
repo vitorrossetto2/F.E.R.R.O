@@ -29,7 +29,10 @@ const SYSTEM_PROMPT_FIXED_RULES = [
   "- Sempre mencione pelo menos um campeão por nome na dica.",
   "- Sempre referencie um objetivo, lane ou situação específica do estado do jogo.",
   "- NUNCA dê conselhos genéricos como 'foque em farmar', 'evite confrontos', 'jogue seguro'. Esses são inúteis.",
-  "- Se receber posição do jogador, adapte a dica pra essa posição."
+  "- Se receber posição do jogador, adapte a dica pra essa posição.",
+  "- NUNCA invente posição dos campeões no mapa. Você NÃO sabe onde eles estão.",
+  "- A dica é SEMPRE para o jogador (primeiro campeão nos Aliados). Nunca dê instrução para companheiros.",
+  "- Se a situação é parecida com a anterior, mantenha a mesma direção. Não contradiga sem mudança clara."
 ];
 
 const MATCHUP_PROMPT_INTRO = [
@@ -126,6 +129,12 @@ const SERIO_PHRASES: PhraseSet = {
 
   torrePerdidaBot: [
     "Perdemos torre do bot. Fica atento ao dragão."
+  ],
+
+  inimigoMorreu: [
+    "{name} morreu, aproveita pra avançar.",
+    "{name} caiu, pressiona o mapa.",
+    "{name} morreu, usa o tempo pra ganhar espaço."
   ],
 
   morteJogador: [
@@ -358,6 +367,12 @@ const MEME_PHRASES: PhraseSet = {
     "Perdemos torre do bot. Fica esperto com o dragão, gênio."
   ],
 
+  inimigoMorreu: [
+    "{name} morreu. Hora de fazer compras no mapa.",
+    "{name} saiu de cena. Aproveita o espaço.",
+    "{name} caiu. Bora avançar antes que volte."
+  ],
+
   morteJogador: [
     "Cuidado com {name}. Não vira episódio repetido contra {name}.",
     "Respeita {name} e joga colado no time."
@@ -584,6 +599,12 @@ const PUTO_PHRASES: PhraseSet = {
 
   torrePerdidaBot: [
     "Perdemos torre do bot. Se liga no dragão e fecha a cara."
+  ],
+
+  inimigoMorreu: [
+    "{name} morreu. Vai pra cima agora, porra.",
+    "{name} caiu. Pressiona essa merda.",
+    "{name} morreu. Aproveita e avança logo."
   ],
 
   morteJogador: [
@@ -868,6 +889,7 @@ export const CATEGORY_COOLDOWNS: Record<string, number> = {
   powerspike: 60,
   torre: 30,
   torrePerdida: 30,
+  inimigoMorreu: 15,
   morteJogador: 90,
   morteStreak: 180,
   objetivo: 15,
@@ -922,6 +944,7 @@ export const CATEGORY_PRIORITIES: Record<string, number> = {
   inimigoItem: 1,
   inimigoBuild: 1,
   levelUp: 1,
+  inimigoMorreu: 1,
   morteJogador: 1,
   jungleGank: 1,
   junglePressao: 1,

@@ -55,7 +55,7 @@ function isSimpleTrigger(priority: string | null): boolean {
   if (priority.includes("em 30 segundos")) return true;
   if (priority.includes("em 10 segundos")) return true;
   if (priority.includes("nasceu agora")) return true;
-  if (priority.includes("morreu, janela de")) return true;
+  if (priority.startsWith("inimigo morreu:")) return true;
   if (priority.includes("você morreu")) return true;
   if (priority.includes("cuidado com")) return true;
   if (priority === "vitória" || priority === "derrota") return true;
@@ -93,6 +93,7 @@ export function detectCategory(priority: string | null): string {
   if (priority.includes("Perdemos torre") || priority.includes("perdemos torre") ||
       priority.includes("Torre aliada") || priority.includes("nossa torre")) return "torrePerdida";
   if (priority.includes("torre") || priority.includes("caiu torre")) return "torre";
+  if (priority.startsWith("inimigo morreu:")) return "inimigoMorreu";
   if (priority.includes("você morreu")) return "morteStreak";
   if (priority.includes("cuidado com")) return "morteJogador";
   if (priority === "ult disponível" || priority.startsWith("inimigo ult antes:") ||
@@ -105,8 +106,7 @@ export function detectCategory(priority: string | null): string {
   if (priority.startsWith("lane precisa de ajuda:")) return "junglePressao";
   if (priority === "vitória" || priority === "derrota") return "fimDeJogo";
   if (priority.includes("em 1 minuto") || priority.includes("em 30 segundos") ||
-      priority.includes("em 10 segundos") || priority.includes("nasceu agora") ||
-      priority.includes("morreu, janela de")) return "objetivo";
+      priority.includes("em 10 segundos") || priority.includes("nasceu agora")) return "objetivo";
   if (priority === "ace aliado" || priority === "ace inimigo" || priority.startsWith("ace inimigo:")) return "ace";
   if (priority.startsWith("multikill ")) return "multikill";
   if (priority.startsWith("roubaram ") || priority.startsWith("roubamos ")) return "objetivoRoubo";
@@ -183,6 +183,11 @@ function fallbackMessage(priority: string | null): string {
     const match = priority.match(/(\d+ (?:itens|item))/);
     const count = match ? match[1] : "itens";
     return pickModePhrase("powerspike").replace("{count}", count);
+  }
+
+  if (priority.startsWith("inimigo morreu:")) {
+    const name = priority.split(":")[1]?.trim();
+    if (name) return pickModePhrase("inimigoMorreu").replace(/\{name\}/g, name);
   }
 
   if (priority.includes("você morreu")) {
@@ -591,6 +596,7 @@ export async function getMatchupTip(snapshot: GameSnapshot): Promise<MatchupTip 
 
   let message = "";
   let llmMs = 0;
+  let llmTokens: unknown = null;
   const llmStart = performance.now();
   try {
     const isGlm = settings.zaiModel.includes("glm");
@@ -608,6 +614,7 @@ export async function getMatchupTip(snapshot: GameSnapshot): Promise<MatchupTip 
     const completion = await client.chat.completions.create(requestBody);
     llmMs = Math.round(performance.now() - llmStart);
     message = (completion.choices?.[0]?.message?.content ?? "").trim();
+    llmTokens = completion.usage ?? null;
   } catch (error) {
     const err = error as Error;
     llmMs = Math.round(performance.now() - llmStart);
@@ -618,5 +625,5 @@ export async function getMatchupTip(snapshot: GameSnapshot): Promise<MatchupTip 
     return null;
   }
 
-  return { message, llmMs };
+  return { message, llmMs, llmTokens };
 }

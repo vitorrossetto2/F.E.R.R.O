@@ -64,6 +64,7 @@ export class LoopState implements LoopStateShape {
       trigger.includes("nasceu agora")
     )
       return "objetivo";
+    if (trigger.startsWith("inimigo morreu:")) return "inimigoMorreu";
     if (trigger.includes("torre")) return "torre";
     if (trigger.includes("powerspike")) return "powerspike";
     if (trigger.startsWith("item fechado:")) return "itemFechado";

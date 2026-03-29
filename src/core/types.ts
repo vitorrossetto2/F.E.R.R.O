@@ -151,6 +151,7 @@ export interface CoachDecision {
 export interface MatchupTip {
   message: string;
   llmMs: number;
+  llmTokens: unknown;
 }
 
 export interface SpeakResult {

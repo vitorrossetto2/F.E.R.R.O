@@ -306,7 +306,7 @@ export class Engine extends EventEmitter {
           const tts = await c.speak(matchup.message);
           this.updateLastMessage(matchup.message, "llm", matchup.llmMs, tts.generateMs ?? 0);
           this.log({ type: "coach_speak", gameTime, message: matchup.message });
-          await lg.log("matchup_tip", { gameTime, message: matchup.message, llmMs: matchup.llmMs });
+          await lg.log("matchup_tip", { gameTime, message: matchup.message, llmMs: matchup.llmMs, llmTokens: matchup.llmTokens });
           st.lastCoachingAt = gameTime;
           console.log(`[Engine] Matchup tip: "${matchup.message}" (${matchup.llmMs}ms)`);
         } else {
@@ -369,6 +369,7 @@ export class Engine extends EventEmitter {
       shouldSpeak: decision.shouldSpeak, reason: decision.reason,
       fallbackUsed: decision.fallbackUsed, skippedLlm: decision.skippedLlm,
       llmMs: decision.llmMs, llmError: decision.llmError,
+      llmTokens: decision.llmTokens,
     });
     this.log({ type: "coach_decision", gameTime, priority: decision.priority ?? "", shouldSpeak: decision.shouldSpeak });
 
@@ -380,6 +381,7 @@ export class Engine extends EventEmitter {
           rawModelMessage: decision.rawModelMessage,
           llmMs: decision.llmMs,
           llmError: decision.llmError,
+          llmTokens: decision.llmTokens,
         });
       }
 

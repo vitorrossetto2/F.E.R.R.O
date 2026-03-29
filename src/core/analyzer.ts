@@ -41,7 +41,7 @@ function triggerUrgencyScore(trigger: string): number {
   if (trigger.includes("em 10 segundos")) return 1;
   if (trigger.includes("em 30 segundos")) return 2;
   if (trigger.includes("em 1 minuto")) return 3;
-  if (trigger.includes("morreu, janela de")) return 4;
+  if (trigger.startsWith("inimigo morreu:")) return 4;
   if (trigger.includes("powerspike")) return 5;
   if (trigger.includes("acelerou a build")) return 6;
   if (trigger.includes("torre")) return 7;
@@ -441,9 +441,9 @@ function collectEventTriggers(
       const victim = typeof event.VictimName === "string" ? playerLookup.get(event.VictimName) : undefined;
       if (victim && snapshot.enemyPlayers.some((player) => player.summonerName === victim.summonerName)) {
         const respawnSeconds = estimateRespawnSeconds(victim.level, snapshot.gameTime);
-        triggers.push(
-          `${victim.championName} morreu, janela de ${formatDuration(respawnSeconds)} antes dele voltar`
-        );
+        if (respawnSeconds >= 8) {
+          triggers.push(`inimigo morreu: ${victim.championName}`);
+        }
       }
 
       if (event?.VictimName === snapshot.activePlayerName) {
