@@ -20,7 +20,7 @@
 
 1. Clique no link abaixo para baixar o executável portátil (não precisa instalar):
 
-   **[F.E.R.R.O v1.0.1 — Windows (.exe)](https://github.com/fortechdigital/F.E.R.R.O/releases/download/v1.0.1/F.E.R.R.O.1.0.1.exe)**
+   **[F.E.R.R.O v1.0.2 — Windows (.exe)](https://github.com/fortechdigital/F.E.R.R.O/releases/download/v1.0.2/F.E.R.R.O.1.0.2.exe)**
 
 2. Execute o `.exe` e pronto — o app abre direto.
 
