@@ -16,7 +16,7 @@ const DEFAULT_CONFIG: FerroConfig = {
       },
       openai: {
         apiKey: "",
-        endpoint: "https://api.openai.com/v1/chat/completions",
+        endpoint: "https://api.openai.com/v1/responses",
         model: "gpt-4o-mini",
       },
       gemini: {

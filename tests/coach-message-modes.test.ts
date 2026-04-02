@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 let lastRequestBody: Record<string, unknown> | null = null;
+let lastTransport: "chat" | "responses" | null = null;
 
 vi.mock("dotenv/config", () => ({}));
 
@@ -9,6 +10,7 @@ vi.mock("openai", () => {
     chat = {
       completions: {
         create: vi.fn(async (requestBody: Record<string, unknown>) => {
+          lastTransport = "chat";
           lastRequestBody = requestBody;
           return {
             choices: [{ message: { content: "Joga no alcance. Bate quando a skill chave sair." } }],
@@ -16,6 +18,17 @@ vi.mock("openai", () => {
           };
         }),
       },
+    };
+
+    responses = {
+      create: vi.fn(async (requestBody: Record<string, unknown>) => {
+        lastTransport = "responses";
+        lastRequestBody = requestBody;
+        return {
+          output_text: "Joga no alcance. Bate quando a skill chave sair.",
+          usage: null,
+        };
+      }),
     };
   }
 
@@ -30,6 +43,7 @@ describe("coach message modes", () => {
     delete process.env.ZAI_ENDPOINT;
     delete process.env.ZAI_MODEL;
     delete process.env.COACH_MESSAGE_MODE;
+    lastTransport = null;
   });
 
   it("uses mode-specific heuristic fallback when LLM is disabled", async () => {
@@ -66,6 +80,7 @@ describe("coach message modes", () => {
     });
 
     const messages = (lastRequestBody?.messages ?? []) as Array<{ role: string; content: string }>;
+    expect(lastTransport).toBe("chat");
     expect(messages[0].role).toBe("system");
     expect(messages[0].content).toContain("Tom brincalhão");
   });

@@ -7,6 +7,7 @@ import { listPiperVoices, listElevenLabsVoices, listSystemVoices } from "../serv
 import { getLatestElevenLabsUsageSummary } from "../services/elevenlabs-usage-service";
 import { getStartupState } from "../services/startup-state";
 import { populateEnvFromConfig } from "../lib/settings-bridge";
+import { runLlmTextRequest } from "../../core/llm";
 import path from "path";
 
 const TAG = "[IPC]";
@@ -221,21 +222,17 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
         return { ok: false, error: "API key não configurada" };
       }
 
-      const OpenAI = (await import("openai")).default;
-      const baseURL = pConfig.endpoint.replace(/\/chat\/completions\/?$/, "");
-      log("llm:test calling", baseURL, "model:", pConfig.model);
-      const client = new OpenAI({ apiKey: pConfig.apiKey, baseURL });
-
       const start = Date.now();
-      const resp = await client.chat.completions.create({
+      const result = await runLlmTextRequest({
+        apiKey: pConfig.apiKey,
+        endpoint: pConfig.endpoint,
         model: pConfig.model,
         messages: [{ role: "user", content: "Responda apenas: OK" }],
-        max_tokens: 10,
+        maxOutputTokens: 10
       });
       const ms = Date.now() - start;
-      const message = resp.choices?.[0]?.message?.content ?? "";
-      log("llm:test success in", ms, "ms, response:", message);
-      return { ok: true, response: message, ms };
+      log("llm:test success in", ms, "ms, transport:", result.transport, "response:", result.text);
+      return { ok: true, response: result.text, ms };
     } catch (error) {
       console.error(TAG, "llm:test error:", (error as Error).message);
       return { ok: false, error: (error as Error).message };

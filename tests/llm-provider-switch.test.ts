@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 let storeData: Record<string, unknown> = {};
 const openAiCalls: Array<{ apiKey: string; baseURL: string }> = [];
+const llmRequests: Array<{ transport: "chat" | "responses"; body: Record<string, unknown> }> = [];
 
 vi.mock("dotenv/config", () => ({}));
 vi.mock("axios", () => ({
@@ -59,8 +60,25 @@ vi.mock("openai", () => {
       },
     };
 
+    responses = {
+      create: vi.fn(async (body: Record<string, unknown>) => {
+        llmRequests.push({ transport: "responses", body });
+        return {
+          output_text: "Troque cedo.",
+          usage: null,
+        };
+      }),
+    };
+
     constructor(opts: { apiKey: string; baseURL: string }) {
       openAiCalls.push(opts);
+      this.chat.completions.create = vi.fn(async (body: Record<string, unknown>) => {
+        llmRequests.push({ transport: "chat", body });
+        return {
+          choices: [{ message: { content: "Troque cedo." } }],
+          usage: null,
+        };
+      });
     }
   }
 
@@ -72,6 +90,7 @@ describe("LLM provider switching", () => {
     vi.resetModules();
     storeData = {};
     openAiCalls.length = 0;
+    llmRequests.length = 0;
     delete process.env.ZAI_API_KEY;
     delete process.env.ZAI_ENDPOINT;
     delete process.env.ZAI_MODEL;
@@ -110,7 +129,7 @@ describe("LLM provider switching", () => {
     await coachMod.getMatchupTip(snapshot);
 
     configMod.settings.zaiApiKey = "second-key";
-    configMod.settings.zaiEndpoint = "https://second.example/custom/chat/completions";
+    configMod.settings.zaiEndpoint = "https://second.example/custom/responses";
     configMod.settings.zaiModel = "glm-5-turbo";
     await coachMod.getMatchupTip(snapshot);
 
@@ -118,6 +137,33 @@ describe("LLM provider switching", () => {
       { apiKey: "first-key", baseURL: "https://first.example/v1" },
       { apiKey: "second-key", baseURL: "https://second.example/custom" },
     ]);
+    expect(llmRequests.map((r) => r.transport)).toEqual(["chat", "responses"]);
+  });
+
+  it("uses responses for the shipped OpenAI default endpoint", async () => {
+    process.env.ZAI_API_KEY = "openai-key";
+    process.env.ZAI_ENDPOINT = "https://api.openai.com/v1/responses";
+    process.env.ZAI_MODEL = "gpt-4o-mini";
+
+    const configMod = await import("../src/core/config.js");
+    const coachMod = await import("../src/core/coach.js");
+
+    configMod.settings.zaiApiKey = "openai-key";
+    configMod.settings.zaiEndpoint = "https://api.openai.com/v1/responses";
+    configMod.settings.zaiModel = "gpt-4o-mini";
+
+    const tip = await coachMod.getMatchupTip({
+      activePlayerChampion: "Ahri",
+      enemyPlayers: [{ championName: "Lux" }],
+    });
+
+    expect(tip?.message).toBe("Troque cedo.");
+    expect(openAiCalls.at(-1)).toEqual({
+      apiKey: "openai-key",
+      baseURL: "https://api.openai.com/v1",
+    });
+    expect(llmRequests.at(-1)?.transport).toBe("responses");
+    expect(((llmRequests.at(-1)?.body ?? {}) as Record<string, unknown>).input).toBeDefined();
   });
 
   it("skips matchup llm calls when the key is empty", async () => {

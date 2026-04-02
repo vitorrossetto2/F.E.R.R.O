@@ -1,6 +1,4 @@
-import OpenAI from "openai";
-
-import { getZaiBaseUrl, settings } from "./config";
+import { settings } from "./config";
 import {
   CATEGORY_COOLDOWNS,
   FEMALE_CHAMPIONS,
@@ -8,19 +6,11 @@ import {
   buildSystemPrompt,
   pickModePhrase
 } from "./constants";
+import { runLlmTextRequest } from "./llm";
 import type { CoachDecision, GameSnapshot, MatchupTip, SnapshotPlayer, StrategicContext } from "./types";
 
 function hasLlmConfig(): boolean {
   return Boolean(settings.zaiApiKey && settings.zaiEndpoint && settings.zaiModel);
-}
-
-function getClient(): OpenAI | null {
-  if (!hasLlmConfig()) return null;
-
-  return new OpenAI({
-    apiKey: settings.zaiApiKey,
-    baseURL: getZaiBaseUrl()
-  });
 }
 
 // ── helpers ──────────────────────────────────────────────────────
@@ -503,9 +493,7 @@ export async function decideCoaching(
     };
   }
 
-  const client = getClient();
-
-  if (!client) {
+  if (!hasLlmConfig()) {
     return {
       shouldSpeak: !!fallback,
       message: fallback,
@@ -530,21 +518,21 @@ export async function decideCoaching(
   const llmStart = performance.now();
   try {
     const isGlm = settings.zaiModel.includes("glm");
-    const requestBody: any = {
+    const result = await runLlmTextRequest({
+      apiKey: settings.zaiApiKey,
+      endpoint: settings.zaiEndpoint,
       model: settings.zaiModel,
       messages: [
         { role: "system", content: buildSystemPrompt() },
         { role: "user", content: prompt }
       ],
       temperature: 0.3,
-      max_tokens: 500,
-      ...(isGlm && { thinking: { type: "disabled" } })
-    };
-
-    const completion = await client.chat.completions.create(requestBody);
+      maxOutputTokens: 500,
+      ...(isGlm ? { chatRequest: { thinking: { type: "disabled" } } } : {})
+    });
     llmMs = Math.round(performance.now() - llmStart);
-    message = (completion.choices?.[0]?.message?.content ?? "").trim();
-    llmTokens = completion.usage ?? null;
+    message = result.text;
+    llmTokens = result.usage;
   } catch (error) {
     const err = error as Error;
     llmMs = Math.round(performance.now() - llmStart);
@@ -604,8 +592,7 @@ export async function decideCoaching(
 }
 
 export async function getMatchupTip(snapshot: GameSnapshot): Promise<MatchupTip | null> {
-  const client = getClient();
-  if (!client) {
+  if (!hasLlmConfig()) {
     return null;
   }
 
@@ -624,21 +611,21 @@ export async function getMatchupTip(snapshot: GameSnapshot): Promise<MatchupTip 
   const llmStart = performance.now();
   try {
     const isGlm = settings.zaiModel.includes("glm");
-    const requestBody: any = {
+    const result = await runLlmTextRequest({
+      apiKey: settings.zaiApiKey,
+      endpoint: settings.zaiEndpoint,
       model: settings.zaiModel,
       messages: [
         { role: "system", content: buildMatchupPrompt() },
         { role: "user", content: prompt }
       ],
       temperature: 0.4,
-      max_tokens: 500,
-      ...(isGlm && { thinking: { type: "disabled" } })
-    };
-
-    const completion = await client.chat.completions.create(requestBody);
+      maxOutputTokens: 500,
+      ...(isGlm ? { chatRequest: { thinking: { type: "disabled" } } } : {})
+    });
     llmMs = Math.round(performance.now() - llmStart);
-    message = (completion.choices?.[0]?.message?.content ?? "").trim();
-    llmTokens = completion.usage ?? null;
+    message = result.text;
+    llmTokens = result.usage;
   } catch (error) {
     const err = error as Error;
     llmMs = Math.round(performance.now() - llmStart);

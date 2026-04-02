@@ -1,6 +1,7 @@
 import "dotenv/config";
 
 import type { CoreSettings } from "./types";
+import { normalizeLlmBaseUrl } from "./llm";
 
 function getNumber(name: string, fallback: number): number {
   const value = process.env[name];
@@ -60,7 +61,7 @@ export const settings: CoreSettings = {
 };
 
 export function getZaiBaseUrl(): string {
-  return settings.zaiEndpoint.replace(/\/chat\/completions\/?$/, "");
+  return normalizeLlmBaseUrl(settings.zaiEndpoint);
 }
 
 export function assertConfig(): void {

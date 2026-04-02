@@ -9,7 +9,7 @@ const config: FerroConfig = {
     activeProvider: "zai",
     providers: {
       zai: { apiKey: "key", endpoint: "https://api.z.ai/api/coding/paas/v4/chat/completions", model: "glm-5-turbo" },
-      openai: { apiKey: "", endpoint: "https://api.openai.com/v1/chat/completions", model: "gpt-4o-mini" },
+      openai: { apiKey: "", endpoint: "https://api.openai.com/v1/responses", model: "gpt-4o-mini" },
       gemini: { apiKey: "", endpoint: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", model: "gemini-2.0-flash" },
     },
   },
