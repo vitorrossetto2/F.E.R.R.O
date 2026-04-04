@@ -9,9 +9,16 @@ interface DDragonItem {
   into?: string[];
 }
 
+interface DDragonChampion {
+  name: string;
+  tags?: string[];
+}
+
 type ItemCatalog = Map<string, DDragonItem>;
+type ChampionCatalog = Map<string, DDragonChampion>;
 
 let itemCatalogPromise: Promise<ItemCatalog> | undefined;
+let championCatalogPromise: Promise<ChampionCatalog> | undefined;
 
 const FALLBACK_ITEMS = {
   "1001": { name: "Boots", tags: ["Boots"], gold: { total: 300 }, into: ["3006","3047","3111","3117","3158","3009","3020"] },
@@ -48,6 +55,7 @@ const FALLBACK_ITEMS = {
   "3156": { name: "Maw of Malmortius", tags: ["Damage","SpellBlock"], gold: { total: 2800 }, into: [] },
   "3157": { name: "Zhonya's Hourglass", tags: ["SpellDamage","Armor"], gold: { total: 2600 }, into: [] },
   "3165": { name: "Morellonomicon", tags: ["SpellDamage","Health"], gold: { total: 2500 }, into: [] },
+  "3033": { name: "Mortal Reminder", tags: ["Damage","ArmorPenetration"], gold: { total: 3200 }, into: [] },
   "3181": { name: "Hullbreaker", tags: ["Damage","Health"], gold: { total: 2800 }, into: [] },
   "3190": { name: "Locket of the Iron Solari", tags: ["Health","Armor","SpellBlock"], gold: { total: 2500 }, into: [] },
   "3193": { name: "Gargoyle Stoneplate", tags: ["Armor","SpellBlock"], gold: { total: 3200 }, into: [] },
@@ -56,6 +64,62 @@ const FALLBACK_ITEMS = {
   "2031": { name: "Refillable Potion", tags: ["Consumable"], gold: { total: 150 }, into: [] },
   "2003": { name: "Health Potion", tags: ["Consumable"], gold: { total: 50 }, into: [] }
 };
+
+const FALLBACK_CHAMPIONS = {
+  Ahri: { name: "Ahri", tags: ["Mage", "Assassin"] },
+  Akali: { name: "Akali", tags: ["Assassin"] },
+  Aatrox: { name: "Aatrox", tags: ["Fighter", "Tank"] },
+  Annie: { name: "Annie", tags: ["Mage"] },
+  Ashe: { name: "Ashe", tags: ["Marksman", "Support"] },
+  Camille: { name: "Camille", tags: ["Fighter", "Assassin"] },
+  Caitlyn: { name: "Caitlyn", tags: ["Marksman"] },
+  Darius: { name: "Darius", tags: ["Fighter", "Tank"] },
+  Diana: { name: "Diana", tags: ["Fighter", "Mage"] },
+  Draven: { name: "Draven", tags: ["Marksman"] },
+  Ezreal: { name: "Ezreal", tags: ["Marksman", "Mage"] },
+  Fiora: { name: "Fiora", tags: ["Fighter", "Assassin"] },
+  Garen: { name: "Garen", tags: ["Fighter", "Tank"] },
+  Jax: { name: "Jax", tags: ["Fighter"] },
+  Jinx: { name: "Jinx", tags: ["Marksman"] },
+  KaiSa: { name: "Kai'Sa", tags: ["Marksman", "Assassin"] },
+  Katarina: { name: "Katarina", tags: ["Assassin", "Mage"] },
+  Kindred: { name: "Kindred", tags: ["Marksman", "Assassin"] },
+  LeeSin: { name: "Lee Sin", tags: ["Fighter", "Assassin"] },
+  Leona: { name: "Leona", tags: ["Tank", "Support"] },
+  Lux: { name: "Lux", tags: ["Mage", "Support"] },
+  Malphite: { name: "Malphite", tags: ["Tank"] },
+  Morgana: { name: "Morgana", tags: ["Mage", "Support"] },
+  Mordekaiser: { name: "Mordekaiser", tags: ["Fighter", "Tank"] },
+  Nautilus: { name: "Nautilus", tags: ["Tank", "Support"] },
+  Orianna: { name: "Orianna", tags: ["Mage"] },
+  Poppy: { name: "Poppy", tags: ["Tank", "Fighter"] },
+  Rakan: { name: "Rakan", tags: ["Support", "Tank"] },
+  RenataGlasc: { name: "Renata Glasc", tags: ["Support", "Mage"] },
+  Riven: { name: "Riven", tags: ["Fighter", "Assassin"] },
+  Samira: { name: "Samira", tags: ["Marksman", "Assassin"] },
+  Senna: { name: "Senna", tags: ["Marksman", "Support"] },
+  Seraphine: { name: "Seraphine", tags: ["Mage", "Support"] },
+  Shen: { name: "Shen", tags: ["Tank", "Support"] },
+  Shyvana: { name: "Shyvana", tags: ["Fighter", "Mage"] },
+  Sion: { name: "Sion", tags: ["Tank", "Fighter"] },
+  Soraka: { name: "Soraka", tags: ["Support", "Mage"] },
+  Syndra: { name: "Syndra", tags: ["Mage"] },
+  Thresh: { name: "Thresh", tags: ["Support", "Tank"] },
+  Tristana: { name: "Tristana", tags: ["Marksman", "Assassin"] },
+  Vayne: { name: "Vayne", tags: ["Marksman", "Assassin"] },
+  Viktor: { name: "Viktor", tags: ["Mage"] },
+  Vi: { name: "Vi", tags: ["Fighter", "Assassin"] },
+  Xayah: { name: "Xayah", tags: ["Marksman"] },
+  Yasuo: { name: "Yasuo", tags: ["Fighter", "Assassin"] },
+  Yone: { name: "Yone", tags: ["Fighter", "Assassin"] },
+  Zed: { name: "Zed", tags: ["Assassin"] },
+  Zeri: { name: "Zeri", tags: ["Marksman"] },
+  Zoe: { name: "Zoe", tags: ["Mage", "Assassin"] }
+} satisfies Record<string, DDragonChampion>;
+
+function normalizeChampionKey(name: string): string {
+  return name.trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+}
 
 async function fetchLatestVersion(): Promise<string | undefined> {
   const response = await axios.get(settings.ddragonVersionsUrl, { timeout: 5000 });
@@ -86,4 +150,47 @@ export async function getItemCatalog(): Promise<ItemCatalog> {
   }
 
   return itemCatalogPromise;
+}
+
+async function fetchChampionCatalog(): Promise<ChampionCatalog> {
+  const version = await fetchLatestVersion();
+  if (!version) {
+    return new Map<string, DDragonChampion>();
+  }
+
+  const response = await axios.get(
+    `${settings.ddragonCdnUrl}/${version}/data/pt_BR/champion.json`,
+    { timeout: 5000 }
+  );
+  const champions = (response.data?.data ?? {}) as Record<string, DDragonChampion>;
+  return new Map<string, DDragonChampion>(
+    Object.values(champions).flatMap((champion) => {
+      const keys = new Set<string>([
+        normalizeChampionKey(champion.name ?? ""),
+        normalizeChampionKey((champion as { id?: string }).id ?? "")
+      ]);
+      return [...keys]
+        .filter(Boolean)
+        .map((key) => [key, champion] as const);
+    })
+  );
+}
+
+export async function getChampionCatalog(): Promise<ChampionCatalog> {
+  if (!championCatalogPromise) {
+    championCatalogPromise = fetchChampionCatalog().catch((error) => {
+      console.error("[DDragon] Falha ao buscar catalogo de campeoes, usando fallback:", error.message);
+      return new Map<string, DDragonChampion>(
+        Object.entries(FALLBACK_CHAMPIONS).flatMap(([key, champion]) => {
+          const normalized = normalizeChampionKey(champion.name ?? key);
+          return [
+            [normalized, champion] as const,
+            [normalizeChampionKey(key), champion] as const
+          ];
+        })
+      );
+    });
+  }
+
+  return championCatalogPromise;
 }

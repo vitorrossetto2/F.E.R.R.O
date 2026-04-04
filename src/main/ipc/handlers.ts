@@ -227,8 +227,9 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
         apiKey: pConfig.apiKey,
         endpoint: pConfig.endpoint,
         model: pConfig.model,
+        label: `ipc:${provider}`,
         messages: [{ role: "user", content: "Responda apenas: OK" }],
-        maxOutputTokens: 10
+        maxOutputTokens: 16
       });
       const ms = Date.now() - start;
       log("llm:test success in", ms, "ms, transport:", result.transport, "response:", result.text);
@@ -258,7 +259,7 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
       configMod.settings.zaiModel = llm.model;
       configMod.settings.coachMessageMode = cfg.coach.messageMode;
 
-      const tip = await coachMod.getMatchupTip({
+      const tip = await coachMod.getMatchupTipWithFallback({
         gameTime: 50,
         activePlayerName: "Jogador",
         activePlayerChampion: "Jinx",

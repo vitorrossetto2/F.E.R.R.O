@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { recordLlmInteraction } from "./llm-db";
 
 export type LLMTransport = "chat" | "responses";
 
@@ -16,6 +17,7 @@ export interface LLMTextRequest {
   maxOutputTokens?: number;
   chatRequest?: Record<string, unknown>;
   responseRequest?: Record<string, unknown>;
+  label?: string;
 }
 
 export interface LLMTextResult {
@@ -107,15 +109,16 @@ export function extractLlmText(raw: unknown, transport: LLMTransport): string {
 }
 
 export async function runLlmTextRequest(request: LLMTextRequest): Promise<LLMTextResult> {
-  const transport = resolveLlmTransport(request.endpoint);
-  const client = createLlmClient(request.apiKey, request.endpoint) as any;
+  const startedAt = performance.now();
+  const endpoint = request.endpoint;
+  const transport = resolveLlmTransport(endpoint);
+  const client = createLlmClient(request.apiKey, endpoint) as any;
 
   const body =
     transport === "responses"
       ? {
           model: request.model,
           input: request.messages,
-          temperature: request.temperature,
           max_output_tokens: request.maxOutputTokens,
           ...(request.responseRequest ?? {})
         }
@@ -127,15 +130,64 @@ export async function runLlmTextRequest(request: LLMTextRequest): Promise<LLMTex
           ...(request.chatRequest ?? {})
         };
 
-  const raw =
-    transport === "responses"
-      ? await client.responses.create(body)
-      : await client.chat.completions.create(body);
+  try {
+    const raw =
+      transport === "responses"
+        ? await client.responses.create(body)
+        : await client.chat.completions.create(body);
+    const result = {
+      text: extractLlmText(raw, transport).trim(),
+      usage: (raw as { usage?: unknown }).usage ?? null,
+      transport,
+      raw
+    };
 
-  return {
-    text: extractLlmText(raw, transport).trim(),
-    usage: (raw as { usage?: unknown }).usage ?? null,
-    transport,
-    raw
-  };
+    await recordLlmInteraction({
+      label: request.label,
+      transport,
+      endpoint,
+      model: request.model,
+      request: {
+        endpoint,
+        model: request.model,
+        messages: request.messages,
+        temperature: request.temperature,
+        maxOutputTokens: request.maxOutputTokens,
+        chatRequest: request.chatRequest,
+        responseRequest: request.responseRequest,
+        body
+      },
+      response: raw,
+      responseText: result.text,
+      usage: result.usage,
+      error: null,
+      durationMs: performance.now() - startedAt
+    });
+
+    return result;
+  } catch (error) {
+    const err = error as Error;
+    await recordLlmInteraction({
+      label: request.label,
+      transport,
+      endpoint,
+      model: request.model,
+      request: {
+        endpoint,
+        model: request.model,
+        messages: request.messages,
+        temperature: request.temperature,
+        maxOutputTokens: request.maxOutputTokens,
+        chatRequest: request.chatRequest,
+        responseRequest: request.responseRequest,
+        body
+      },
+      response: null,
+      responseText: "",
+      usage: null,
+      error: err.message,
+      durationMs: performance.now() - startedAt
+    });
+    throw error;
+  }
 }
