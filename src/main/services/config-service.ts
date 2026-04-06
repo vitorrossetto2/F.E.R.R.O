@@ -4,6 +4,7 @@ import Store from "electron-store";
 import type { FerroConfig } from "../../shared/types";
 
 const FERROCONFIG_DIR = path.join(os.homedir(), ".ferroconfig");
+const OPENAI_RESPONSES_ENDPOINT = "https://api.openai.com/v1/responses";
 
 const DEFAULT_CONFIG: FerroConfig = {
   llm: {
@@ -91,11 +92,21 @@ const DEFAULT_CONFIG: FerroConfig = {
 
 let store: Store<FerroConfig>;
 
+function migrateLegacyOpenAiEndpoint(configStore: Store<FerroConfig>): void {
+  const current = configStore.get("llm.providers.openai.endpoint");
+  const normalized = typeof current === "string" ? current.trim() : "";
+
+  if (!normalized || normalized.includes("api.openai.com") && !normalized.endsWith("/responses")) {
+    configStore.set("llm.providers.openai.endpoint", OPENAI_RESPONSES_ENDPOINT);
+  }
+}
+
 export function initConfigStore(): Store<FerroConfig> {
   store = new Store<FerroConfig>({
     name: "config",
     defaults: DEFAULT_CONFIG,
   });
+  migrateLegacyOpenAiEndpoint(store);
   return store;
 }
 

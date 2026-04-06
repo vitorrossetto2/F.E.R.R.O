@@ -21,7 +21,11 @@ export interface LlmInteractionEntry {
 let database: DatabaseSync | null = null;
 let databasePathCache: string | null = null;
 
-export function getLlmDatabasePath(logsDir = settings.logsDir): string {
+function resolveLogsDir(): string {
+  return process.env.LOGS_DIR?.trim() || settings.logsDir;
+}
+
+export function getLlmDatabasePath(logsDir = resolveLogsDir()): string {
   return path.resolve(logsDir, "llm.sqlite");
 }
 
@@ -33,10 +37,18 @@ function safeJson(value: unknown): string {
   }
 }
 
-function openDatabase(): DatabaseSync {
-  const dbPath = getLlmDatabasePath();
+function openDatabase(dbPath = getLlmDatabasePath()): DatabaseSync {
   if (database && databasePathCache === dbPath) {
     return database;
+  }
+
+  if (database && databasePathCache !== dbPath) {
+    try {
+      database.close();
+    } catch {
+      // Ignore close errors when switching paths; the new database still needs to open.
+    }
+    database = null;
   }
 
   databasePathCache = dbPath;
@@ -69,8 +81,9 @@ function openDatabase(): DatabaseSync {
 
 export async function recordLlmInteraction(entry: LlmInteractionEntry): Promise<void> {
   try {
-    await mkdir(path.dirname(getLlmDatabasePath()), { recursive: true });
-    const db = openDatabase();
+    const dbPath = getLlmDatabasePath();
+    await mkdir(path.dirname(dbPath), { recursive: true });
+    const db = openDatabase(dbPath);
     const stmt = db.prepare(`
       INSERT INTO llm_interactions (
         created_at,
