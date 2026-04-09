@@ -1,7 +1,7 @@
 import { app, BrowserWindow, Menu, shell } from "electron";
 import { join } from "path";
 import { initConfigStore, getAll } from "./services/config-service";
-import { registerIpcHandlers } from "./ipc/handlers";
+import { registerIpcHandlers } from "./ipc/register-handlers";
 import { engine } from "./services/engine";
 import { checkPiper, getPiperDir, getVoicesDir } from "./services/piper-installer";
 import { getStartupState } from "./services/startup-state";
