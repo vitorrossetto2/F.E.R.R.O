@@ -5,8 +5,8 @@ import os from "os";
 import https from "https";
 import http from "http";
 import type { BrowserWindow } from "electron";
-import { IPC } from "../../shared/channels";
-import type { PiperVoiceOption, PiperStatus } from "../../shared/types";
+import type { PiperProgress, PiperVoiceOption, PiperStatus } from "../../shared/types";
+import { emitPiperProgress } from "../ipc/shared";
 
 const FERROCONFIG_DIR = path.join(os.homedir(), ".ferroconfig");
 const PIPER_DIR = path.join(FERROCONFIG_DIR, "piper");
@@ -99,9 +99,9 @@ export async function installPiper(
   const voice = PIPER_VOICES.find((v) => v.id === voiceId);
   if (!voice) return { ok: false, error: `Voz não encontrada: ${voiceId}` };
 
-  const send = (stage: string, percent: number, message: string) => {
+  const send = (stage: PiperProgress["stage"], percent: number, message: string) => {
     if (mainWindow && !mainWindow.isDestroyed()) {
-      mainWindow.webContents.send(IPC.PIPER_PROGRESS, { stage, percent, message });
+      emitPiperProgress(mainWindow, { stage, percent, message });
     }
   };
 

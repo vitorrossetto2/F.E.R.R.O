@@ -24,7 +24,7 @@ export const useLogsStore = create<LogsStore>((set, get) => ({
       set({ error: null });
     }
     try {
-      const logs = (await window.ferroAPI.getLogs(MAX_LOGS)) as LogEntry[];
+      const logs = await window.ferroAPI.getLogs(MAX_LOGS);
       set({ logs, loading: false, error: null, hydrated: true });
       return logs;
     } catch (error) {

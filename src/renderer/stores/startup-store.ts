@@ -20,7 +20,7 @@ export const useStartupStateStore = create<StartupStore>((set, get) => ({
       set({ error: null });
     }
     try {
-      const startupState = (await window.ferroAPI.getStartupState()) as StartupState;
+      const startupState = await window.ferroAPI.getStartupState();
       set({ startupState, loading: false, error: null, hydrated: true });
       return startupState;
     } catch (error) {

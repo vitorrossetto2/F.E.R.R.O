@@ -1,5 +1,6 @@
 import type { BrowserWindow } from "electron";
 import { IPC } from "../../shared/channels";
+import type { ConfigChangedPayload, EngineEvent, LogEntry, PiperProgress } from "../../shared/types";
 
 const TAG = "[IPC]";
 
@@ -30,8 +31,20 @@ export function normalizeTtsProvider(provider: string): "piper" | "elevenlabs" |
   return "say";
 }
 
-export function emitConfigChanged(mainWindow: BrowserWindow, configPath: string, value: unknown): void {
-  mainWindow.webContents.send(IPC.CONFIG_CHANGED, { path: configPath, value });
+export function emitConfigChanged(mainWindow: BrowserWindow, payload: ConfigChangedPayload): void {
+  mainWindow.webContents.send(IPC.CONFIG_CHANGED, payload);
+}
+
+export function emitEngineEvent(mainWindow: BrowserWindow, event: EngineEvent): void {
+  mainWindow.webContents.send(IPC.ENGINE_EVENT, event);
+}
+
+export function emitLogEntry(mainWindow: BrowserWindow, entry: LogEntry): void {
+  mainWindow.webContents.send(IPC.LOGS_ENTRY, entry);
+}
+
+export function emitPiperProgress(mainWindow: BrowserWindow, progress: PiperProgress): void {
+  mainWindow.webContents.send(IPC.PIPER_PROGRESS, progress);
 }
 
 export type IpcHandlerContext = {

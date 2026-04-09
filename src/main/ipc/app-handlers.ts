@@ -38,6 +38,6 @@ export function registerAppHandlers({ mainWindow }: IpcHandlerContext): void {
   ipcMain.handle(IPC.APP_COMPLETE_ONBOARDING, () => {
     log("app:completeOnboarding");
     configService.setPath("app.onboardingCompleted", true);
-    emitConfigChanged(mainWindow, "app.onboardingCompleted", true);
+    emitConfigChanged(mainWindow, { path: "app.onboardingCompleted", value: true });
   });
 }

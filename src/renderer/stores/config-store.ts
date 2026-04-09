@@ -22,7 +22,7 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
       set({ error: null });
     }
     try {
-      const config = (await window.ferroAPI.getConfig()) as FerroConfig;
+      const config = await window.ferroAPI.getConfig();
       set({ config, loading: false, error: null, hydrated: true });
       return config;
     } catch (error) {
@@ -34,7 +34,7 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
     set({ error: null });
     try {
       await window.ferroAPI.setConfig(path, value);
-      const config = (await window.ferroAPI.getConfig()) as FerroConfig;
+      const config = await window.ferroAPI.getConfig();
       set({ config, loading: false, error: null, hydrated: true });
       return config;
     } catch (error) {
@@ -46,7 +46,7 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
     set({ error: null });
     try {
       await window.ferroAPI.resetConfig();
-      const config = (await window.ferroAPI.getConfig()) as FerroConfig;
+      const config = await window.ferroAPI.getConfig();
       set({ config, loading: false, error: null, hydrated: true });
       return config;
     } catch (error) {

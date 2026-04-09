@@ -41,9 +41,8 @@ export default function PiperSetup({ onComplete }: Props) {
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    window.ferroAPI.getAvailablePiperVoices().then((v) => setVoices(v as PiperVoiceOption[]));
-    const unsub = window.ferroAPI.onPiperProgress((data) => {
-      const p = data as PiperProgress;
+    window.ferroAPI.getAvailablePiperVoices().then((v) => setVoices(v));
+    const unsub = window.ferroAPI.onPiperProgress((p) => {
       setProgress(p);
       if (p.stage === "error") {
         setError(p.message);
@@ -65,7 +64,7 @@ export default function PiperSetup({ onComplete }: Props) {
   const handleInstall = async () => {
     setInstalling(true);
     setError(null);
-    const result = (await window.ferroAPI.installPiper(selected)) as { ok: boolean; error?: string };
+    const result = await window.ferroAPI.installPiper(selected);
     if (result.ok) {
       await window.ferroAPI.completeOnboarding();
       setTimeout(onComplete, 800);

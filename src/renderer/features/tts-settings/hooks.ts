@@ -24,7 +24,7 @@ export function useTtsTest(activeProvider: TTSProviderType) {
       const result = await window.ferroAPI.testTTS(
         activeProvider,
         "OlÃ¡, sou FERRO EIAI, seu assistente de Ligue of Lehgends."
-      ) as { ok: boolean; error?: string };
+      );
       setTestResult({
         ok: result.ok,
         message: result.ok ? "Voz tocada!" : friendlyTtsError(activeProvider, result.error),
@@ -68,7 +68,7 @@ export function useElevenVoices({
     }
 
     try {
-      const nextVoices = await window.ferroAPI.listElevenLabsVoices(cacheKey) as VoiceOption[];
+      const nextVoices = await window.ferroAPI.listElevenLabsVoices(cacheKey);
       cacheElevenVoices(cacheKey, nextVoices);
       setVoices(nextVoices);
       if (nextVoices.length === 0) {
@@ -149,8 +149,8 @@ export function usePiperDownloads({
   const toggleDownloads = async () => {
     if (!showDownload) {
       const [voices, installed] = await Promise.all([
-        window.ferroAPI.getAvailablePiperVoices() as Promise<PiperVoiceOption[]>,
-        window.ferroAPI.listPiperVoices() as Promise<{ id: string; name: string }[]>,
+        window.ferroAPI.getAvailablePiperVoices(),
+        window.ferroAPI.listPiperVoices(),
       ]);
       setAvailableVoices(voices);
       setInstalledFiles(installed.map((voice) => voice.id));
@@ -163,11 +163,10 @@ export function usePiperDownloads({
     setDownloadingVoice(voiceId);
     setDownloadProgress(null);
     const unsub = window.ferroAPI.onPiperProgress((progress) => {
-      const next = progress as PiperProgress;
-      setDownloadProgress(next);
-      if (next.stage === "done" || next.stage === "error") {
+      setDownloadProgress(progress);
+      if (progress.stage === "done" || progress.stage === "error") {
         setDownloadingVoice(null);
-        if (next.stage === "done") {
+        if (progress.stage === "done") {
           setShowDownload(false);
           setVoiceKey((value) => value + 1);
         }
@@ -175,7 +174,7 @@ export function usePiperDownloads({
       }
     });
 
-    const result = await window.ferroAPI.installPiper(voiceId) as { ok: boolean };
+    const result = await window.ferroAPI.installPiper(voiceId);
     if (result.ok) {
       const nextStartupState = await refreshStartupState();
       if (nextStartupState?.engineAutoStartAllowed && !engineLoading && (engineStatus === "idle" || engineStatus === "error")) {

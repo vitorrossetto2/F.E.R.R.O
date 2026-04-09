@@ -1,4 +1,3 @@
-import type { LogEntry } from "../../shared/types";
 import { useConfigStore } from "./config-store";
 import { useElevenLabsUsageSummaryStore } from "./usage-store";
 import { useEngineStore } from "./engine-store";
@@ -32,8 +31,8 @@ export function bootstrapRendererState() {
       window.ferroAPI.onEngineEvent(() => {
         void useEngineStore.getState().refresh();
       }),
-      window.ferroAPI.onLogEntry((entry: unknown) => {
-        useLogsStore.getState().append(entry as LogEntry);
+      window.ferroAPI.onLogEntry((entry) => {
+        useLogsStore.getState().append(entry);
       }),
     ];
   }

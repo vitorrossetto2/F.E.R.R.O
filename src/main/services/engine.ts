@@ -1,6 +1,5 @@
 import { EventEmitter } from "events";
 import type { BrowserWindow } from "electron";
-import { IPC } from "../../shared/channels";
 import type { EngineState, EngineStatus, EngineEvent, LogEntry } from "../../shared/types";
 import { populateEnvFromConfig } from "../lib/settings-bridge";
 import * as configService from "./config-service";
@@ -17,6 +16,7 @@ import type {
   StrategicContext,
 } from "../../core/types";
 import { sortTriggersByUrgency } from "../../core/analyzer";
+import { emitEngineEvent, emitLogEntry } from "../ipc/shared";
 
 const OPENING_MATCHUP_TARGET_SECONDS = 50;
 const OPENING_MATCHUP_MAX_SECONDS = 120;
@@ -64,14 +64,14 @@ export class Engine extends EventEmitter {
   private send(event: EngineEvent) {
     this.emit("event", event);
     if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-      this.mainWindow.webContents.send(IPC.ENGINE_EVENT, event);
+      emitEngineEvent(this.mainWindow, event);
     }
   }
 
   private log(entry: Partial<LogEntry> & { type: string }) {
     const full = { ts: new Date().toISOString(), sessionId: "", ...entry };
     if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-      this.mainWindow.webContents.send(IPC.LOGS_ENTRY, full);
+      emitLogEntry(this.mainWindow, full);
     }
   }
 

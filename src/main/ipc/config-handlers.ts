@@ -13,13 +13,13 @@ export function registerConfigHandlers({ mainWindow }: IpcHandlerContext): void 
     log("config:set", configPath, typeof value === "string" && value.length > 20 ? value.slice(0, 20) + "..." : value);
     configService.setPath(configPath, value);
     engine.syncConfig();
-    emitConfigChanged(mainWindow, configPath, value);
+    emitConfigChanged(mainWindow, { path: configPath, value });
   });
 
   ipcMain.handle(IPC.CONFIG_RESET, () => {
     log("config:reset");
     configService.reset();
     engine.syncConfig();
-    emitConfigChanged(mainWindow, "config", null);
+    emitConfigChanged(mainWindow, { path: "config", value: null });
   });
 }

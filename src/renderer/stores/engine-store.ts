@@ -37,7 +37,7 @@ export const useEngineStore = create<EngineStore>((set, get) => ({
       set({ error: null });
     }
     try {
-      const engine = (await window.ferroAPI.getEngineStatus()) as EngineState;
+      const engine = await window.ferroAPI.getEngineStatus();
       set({ engine, loading: false, error: null, hydrated: true });
       return engine;
     } catch (error) {
@@ -49,7 +49,7 @@ export const useEngineStore = create<EngineStore>((set, get) => ({
     set({ loading: true, error: null });
     try {
       await window.ferroAPI.startEngine();
-      const engine = (await window.ferroAPI.getEngineStatus()) as EngineState;
+      const engine = await window.ferroAPI.getEngineStatus();
       set({ engine, loading: false, error: null, hydrated: true });
       return engine;
     } catch (error) {
@@ -61,7 +61,7 @@ export const useEngineStore = create<EngineStore>((set, get) => ({
     set({ loading: true, error: null });
     try {
       await window.ferroAPI.stopEngine();
-      const engine = (await window.ferroAPI.getEngineStatus()) as EngineState;
+      const engine = await window.ferroAPI.getEngineStatus();
       set({ engine, loading: false, error: null, hydrated: true });
       return engine;
     } catch (error) {

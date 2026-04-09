@@ -1,60 +1,79 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { IPC } from "../shared/channels";
+import type {
+  ConfigChangedPayload,
+  EngineEvent,
+  FerroAPI,
+  LlmCoachingTestResult,
+  LlmTestResult,
+  LogEntry,
+  PiperInstallResult,
+  PiperProgress,
+  PiperVoiceOption,
+  StartupState,
+  TtsTestResult,
+  VoiceOption,
+  ElevenLabsUsageSummary,
+  EngineState,
+  FerroConfig,
+} from "../shared/types";
 
-function sub(channel: string, cb: (...args: unknown[]) => void) {
-  const handler = (_e: Electron.IpcRendererEvent, ...args: unknown[]) => cb(...args);
+function invoke<T>(channel: string, ...args: unknown[]): Promise<T> {
+  return ipcRenderer.invoke(channel, ...args) as Promise<T>;
+}
+
+function sub<T>(channel: string, cb: (payload: T) => void) {
+  const handler = (_e: Electron.IpcRendererEvent, payload: T) => cb(payload);
   ipcRenderer.on(channel, handler);
   return () => {
     ipcRenderer.removeListener(channel, handler);
   };
 }
 
-const api = {
+const api: FerroAPI = {
   // Config
-  getConfig: () => ipcRenderer.invoke(IPC.CONFIG_GET),
-  setConfig: (path: string, value: unknown) => ipcRenderer.invoke(IPC.CONFIG_SET, path, value),
-  resetConfig: () => ipcRenderer.invoke(IPC.CONFIG_RESET),
-  onConfigChanged: (cb: (data: unknown) => void) => sub(IPC.CONFIG_CHANGED, cb),
+  getConfig: () => invoke<FerroConfig>(IPC.CONFIG_GET),
+  setConfig: (path: string, value: unknown) => invoke<void>(IPC.CONFIG_SET, path, value),
+  resetConfig: () => invoke<void>(IPC.CONFIG_RESET),
+  onConfigChanged: (cb: (data: ConfigChangedPayload) => void) => sub<ConfigChangedPayload>(IPC.CONFIG_CHANGED, cb),
 
   // Engine
-  startEngine: () => ipcRenderer.invoke(IPC.ENGINE_START),
-  stopEngine: () => ipcRenderer.invoke(IPC.ENGINE_STOP),
-  getEngineStatus: () => ipcRenderer.invoke(IPC.ENGINE_STATUS),
-  onEngineEvent: (cb: (data: unknown) => void) => sub(IPC.ENGINE_EVENT, cb),
+  startEngine: () => invoke<void>(IPC.ENGINE_START),
+  stopEngine: () => invoke<void>(IPC.ENGINE_STOP),
+  getEngineStatus: () => invoke<EngineState>(IPC.ENGINE_STATUS),
+  onEngineEvent: (cb: (data: EngineEvent) => void) => sub<EngineEvent>(IPC.ENGINE_EVENT, cb),
 
   // Logs
-  getLogs: (count: number) => ipcRenderer.invoke(IPC.LOGS_GET, count),
-  getElevenLabsUsageSummary: () => ipcRenderer.invoke(IPC.ELEVENLABS_USAGE_GET),
-  onLogEntry: (cb: (entry: unknown) => void) => sub(IPC.LOGS_ENTRY, cb),
-  clearLogs: () => ipcRenderer.invoke(IPC.LOGS_CLEAR),
+  getLogs: (count: number) => invoke<LogEntry[]>(IPC.LOGS_GET, count),
+  getElevenLabsUsageSummary: () => invoke<ElevenLabsUsageSummary | null>(IPC.ELEVENLABS_USAGE_GET),
+  onLogEntry: (cb: (entry: LogEntry) => void) => sub<LogEntry>(IPC.LOGS_ENTRY, cb),
+  clearLogs: () => invoke<void>(IPC.LOGS_CLEAR),
 
   // Match
-  listSessions: () => ipcRenderer.invoke(IPC.MATCH_LIST),
-  getSession: (sessionId: string) => ipcRenderer.invoke(IPC.MATCH_GET, sessionId),
-  getLastMatch: () => ipcRenderer.invoke(IPC.MATCH_LAST),
+  listSessions: () => invoke<unknown[]>(IPC.MATCH_LIST),
+  getSession: (sessionId: string) => invoke<unknown>(IPC.MATCH_GET, sessionId),
+  getLastMatch: () => invoke<unknown | null>(IPC.MATCH_LAST),
 
   // Voice listing
-  listPiperVoices: () => ipcRenderer.invoke(IPC.VOICES_LIST_PIPER),
-  listElevenLabsVoices: (apiKey: string) => ipcRenderer.invoke(IPC.VOICES_LIST_ELEVENLABS, apiKey),
-  listSystemVoices: () => ipcRenderer.invoke(IPC.VOICES_LIST_SYSTEM),
+  listPiperVoices: () => invoke<PiperVoiceOption[]>(IPC.VOICES_LIST_PIPER),
+  listElevenLabsVoices: (apiKey: string) => invoke<VoiceOption[]>(IPC.VOICES_LIST_ELEVENLABS, apiKey),
+  listSystemVoices: () => invoke<VoiceOption[]>(IPC.VOICES_LIST_SYSTEM),
 
   // TTS / LLM
-  testTTS: (provider: string, text: string) => ipcRenderer.invoke(IPC.TTS_TEST, provider, text),
-  testLLM: (provider: string) => ipcRenderer.invoke(IPC.LLM_TEST, provider),
-  testLLMCoaching: () => ipcRenderer.invoke(IPC.LLM_TEST_COACHING),
+  testTTS: (provider: string, text: string) => invoke<TtsTestResult>(IPC.TTS_TEST, provider, text),
+  testLLM: (provider: string) => invoke<LlmTestResult>(IPC.LLM_TEST, provider),
+  testLLMCoaching: () => invoke<LlmCoachingTestResult>(IPC.LLM_TEST_COACHING),
 
   // Piper
-  getAvailablePiperVoices: () => ipcRenderer.invoke(IPC.PIPER_AVAILABLE_VOICES),
-  installPiper: (voiceId: string) => ipcRenderer.invoke(IPC.PIPER_INSTALL, voiceId),
-  onPiperProgress: (cb: (data: unknown) => void) => sub(IPC.PIPER_PROGRESS, cb),
+  getAvailablePiperVoices: () => invoke<PiperVoiceOption[]>(IPC.PIPER_AVAILABLE_VOICES),
+  installPiper: (voiceId: string) => invoke<PiperInstallResult>(IPC.PIPER_INSTALL, voiceId),
+  onPiperProgress: (cb: (data: PiperProgress) => void) => sub<PiperProgress>(IPC.PIPER_PROGRESS, cb),
 
   // System
-  selectDirectory: () => ipcRenderer.invoke(IPC.DIALOG_SELECT_DIR),
-  getAppVersion: () => ipcRenderer.invoke(IPC.APP_VERSION),
-  getStartupState: () => ipcRenderer.invoke(IPC.APP_GET_STARTUP_STATE),
-  completeOnboarding: () => ipcRenderer.invoke(IPC.APP_COMPLETE_ONBOARDING),
+  selectDirectory: () => invoke<string | null>(IPC.DIALOG_SELECT_DIR),
+  getAppVersion: () => invoke<string>(IPC.APP_VERSION),
+  getStartupState: () => invoke<StartupState>(IPC.APP_GET_STARTUP_STATE),
+  completeOnboarding: () => invoke<void>(IPC.APP_COMPLETE_ONBOARDING),
 };
-
-export type FerroAPI = typeof api;
 
 contextBridge.exposeInMainWorld("ferroAPI", api);

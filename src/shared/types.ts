@@ -36,9 +36,87 @@ export type EngineEventType =
   | "llm_error"
   | "error";
 
-export interface EngineEvent {
-  type: EngineEventType;
-  [key: string]: unknown;
+export interface EngineStatusChangeEvent {
+  type: "status_change";
+  status: EngineStatus;
+}
+
+export interface EngineGameDetectedEvent {
+  type: "game_detected";
+  champion: string;
+  gameTime: number;
+}
+
+export interface EngineGameEndedEvent {
+  type: "game_ended";
+}
+
+export interface EngineCoachingEvent {
+  type: "coaching";
+  message: string;
+  source: "llm" | "heuristic" | "fallback";
+  llmMs: number;
+  ttsMs: number;
+}
+
+export interface EngineSilenceEvent {
+  type: "silence";
+  gameTime: number;
+  reason: string;
+}
+
+export interface EngineTtsStartEvent {
+  type: "tts_start";
+  message: string;
+}
+
+export interface EngineTtsDoneEvent {
+  type: "tts_done";
+  provider: string;
+  generateMs: number;
+}
+
+export interface EngineTtsErrorEvent {
+  type: "tts_error";
+  error: string;
+}
+
+export interface EngineLlmResponseEvent {
+  type: "llm_response";
+  gameTime: number;
+  llmMs: number;
+  fallbackUsed: boolean;
+  rawModelMessage: string | null | undefined;
+}
+
+export interface EngineLlmErrorEvent {
+  type: "llm_error";
+  gameTime: number;
+  error: string;
+  llmMs: number;
+}
+
+export interface EngineErrorEvent {
+  type: "error";
+  message: string;
+}
+
+export type EngineEvent =
+  | EngineStatusChangeEvent
+  | EngineGameDetectedEvent
+  | EngineGameEndedEvent
+  | EngineCoachingEvent
+  | EngineSilenceEvent
+  | EngineTtsStartEvent
+  | EngineTtsDoneEvent
+  | EngineTtsErrorEvent
+  | EngineLlmResponseEvent
+  | EngineLlmErrorEvent
+  | EngineErrorEvent;
+
+export interface ConfigChangedPayload {
+  path: string;
+  value: unknown;
 }
 
 // ── Config ─────────────────────────────────────────────
@@ -190,4 +268,58 @@ export interface PiperProgress {
   stage: "downloading_binary" | "extracting" | "downloading_voice" | "verifying" | "done" | "error";
   percent: number;
   message: string;
+}
+
+export type TtsTestResult =
+  | { ok: true; provider?: string; generateMs?: number }
+  | { ok: false; error: string };
+
+export type LlmTestResult =
+  | { ok: true; response: string; ms: number }
+  | { ok: false; error: string };
+
+export type LlmCoachingTestResult =
+  | { ok: true; message: string; llmMs: number }
+  | { ok: false; error: string };
+
+export type PiperInstallResult =
+  | { ok: true }
+  | { ok: false; error: string };
+
+export interface FerroAPI {
+  getConfig(): Promise<FerroConfig>;
+  setConfig(path: string, value: unknown): Promise<void>;
+  resetConfig(): Promise<void>;
+  onConfigChanged(cb: (payload: ConfigChangedPayload) => void): () => void;
+
+  startEngine(): Promise<void>;
+  stopEngine(): Promise<void>;
+  getEngineStatus(): Promise<EngineState>;
+  onEngineEvent(cb: (event: EngineEvent) => void): () => void;
+
+  getLogs(count: number): Promise<LogEntry[]>;
+  getElevenLabsUsageSummary(): Promise<ElevenLabsUsageSummary | null>;
+  onLogEntry(cb: (entry: LogEntry) => void): () => void;
+  clearLogs(): Promise<void>;
+
+  listSessions(): Promise<unknown[]>;
+  getSession(sessionId: string): Promise<unknown>;
+  getLastMatch(): Promise<unknown | null>;
+
+  listPiperVoices(): Promise<PiperVoiceOption[]>;
+  listElevenLabsVoices(apiKey: string): Promise<VoiceOption[]>;
+  listSystemVoices(): Promise<VoiceOption[]>;
+
+  testTTS(provider: string, text: string): Promise<TtsTestResult>;
+  testLLM(provider: string): Promise<LlmTestResult>;
+  testLLMCoaching(): Promise<LlmCoachingTestResult>;
+
+  getAvailablePiperVoices(): Promise<PiperVoiceOption[]>;
+  installPiper(voiceId: string): Promise<PiperInstallResult>;
+  onPiperProgress(cb: (progress: PiperProgress) => void): () => void;
+
+  selectDirectory(): Promise<string | null>;
+  getAppVersion(): Promise<string>;
+  getStartupState(): Promise<StartupState>;
+  completeOnboarding(): Promise<void>;
 }

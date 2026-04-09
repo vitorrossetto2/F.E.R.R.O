@@ -20,7 +20,7 @@ export const useElevenLabsUsageSummaryStore = create<UsageStore>((set, get) => (
       set({ error: null });
     }
     try {
-      const summary = (await window.ferroAPI.getElevenLabsUsageSummary()) as ElevenLabsUsageSummary | null;
+      const summary = await window.ferroAPI.getElevenLabsUsageSummary();
       set({ summary: summary ?? null, loading: false, error: null, hydrated: true });
       return summary ?? null;
     } catch (error) {

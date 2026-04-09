@@ -199,8 +199,8 @@ export function registerVoiceHandlers({ mainWindow }: IpcHandlerContext): void {
         const modelPath = path.join(voicesDir, `${voice.file}.onnx`);
         configService.setPath("tts.providers.piper.executablePath", exePath);
         configService.setPath("tts.providers.piper.modelPath", modelPath);
-        emitConfigChanged(mainWindow, "tts.providers.piper.executablePath", exePath);
-        emitConfigChanged(mainWindow, "tts.providers.piper.modelPath", modelPath);
+        emitConfigChanged(mainWindow, { path: "tts.providers.piper.executablePath", value: exePath });
+        emitConfigChanged(mainWindow, { path: "tts.providers.piper.modelPath", value: modelPath });
         log("piper:install success. exe:", exePath, "model:", modelPath);
       }
     } else {

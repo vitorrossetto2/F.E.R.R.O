@@ -166,7 +166,7 @@ export function MessagesContent({
                               setLlmError(result.error);
                             }
                           } catch (error) {
-                            setLlmError((error as Error).message);
+                            setLlmError(error instanceof Error ? error.message : "Erro ao gerar exemplo");
                           }
                           setLlmLoading(false);
                         }}

@@ -26,7 +26,7 @@ export default function LLMProviderPanel({ config, onUpdate }: Props) {
     setTesting(true);
     setTestResult(null);
     try {
-      const result = (await window.ferroAPI.testLLM(active)) as { ok: boolean; ms?: number; error?: string };
+      const result = await window.ferroAPI.testLLM(active);
       setTestResult({
         ok: result.ok,
         message: result.ok ? `Conectado (${result.ms}ms)` : result.error || "Erro",
