@@ -194,3 +194,5 @@ export async function getChampionCatalog(): Promise<ChampionCatalog> {
 
   return championCatalogPromise;
 }
+
+

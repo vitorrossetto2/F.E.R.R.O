@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type {
   ElevenLabsUsageSummary,
   FerroConfig,
   MessageCategoryConfig,
   MessageMode,
 } from "../../shared/types";
+import { useConfigStore, useElevenLabsUsageSummaryStore } from "../stores";
 
 type MessageCategoryId =
   | "objetivo"
@@ -717,21 +718,19 @@ function MessageGroupCard({
 }
 
 export default function Messages() {
-  const [config, setConfig] = useState<FerroConfig | null>(null);
-  const [elevenLabsUsageSummary, setElevenLabsUsageSummary] = useState<ElevenLabsUsageSummary | null>(null);
+  const config = useConfigStore((state) => state.config);
+  const loading = useConfigStore((state) => state.loading);
+  const updateConfig = useConfigStore((state) => state.update);
+  const elevenLabsUsageSummary = useElevenLabsUsageSummaryStore((state) => state.summary);
+  const usageLoading = useElevenLabsUsageSummaryStore((state) => state.loading);
 
-  useEffect(() => {
-    window.ferroAPI.getConfig().then((currentConfig) => setConfig(currentConfig as FerroConfig));
-    window.ferroAPI.getElevenLabsUsageSummary().then((summary) => {
-      setElevenLabsUsageSummary((summary as ElevenLabsUsageSummary | null) ?? null);
-    });
-    const unsub = window.ferroAPI.onConfigChanged(() => {
-      window.ferroAPI.getConfig().then((currentConfig) => setConfig(currentConfig as FerroConfig));
-    });
-    return unsub;
-  }, []);
-
-  if (!config) return null;
+  if ((loading && !config) || (usageLoading && !elevenLabsUsageSummary) || !config) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <p style={{ color: "var(--text-muted)" }}>Carregando...</p>
+      </div>
+    );
+  }
 
   const messages = getResolvedMessages(config.messages);
 
@@ -741,14 +740,7 @@ export default function Messages() {
       ...nextMessages,
     };
 
-    setConfig((prev) => {
-      if (!prev) return prev;
-      const clone = structuredClone(prev);
-      clone.messages = mergedMessages;
-      return clone;
-    });
-
-    await window.ferroAPI.setConfig("messages", mergedMessages);
+    await updateConfig("messages", mergedMessages);
   };
 
   const toggle = async (id: MessageCategoryId) => {
@@ -773,13 +765,7 @@ export default function Messages() {
   };
 
   const setMessageMode = async (mode: MessageMode) => {
-    setConfig((prev) => {
-      if (!prev) return prev;
-      const clone = structuredClone(prev);
-      clone.coach.messageMode = mode;
-      return clone;
-    });
-    await window.ferroAPI.setConfig("coach.messageMode", mode);
+    await updateConfig("coach.messageMode", mode);
   };
 
   const applyPreset = async (presetMessages: Record<MessageCategoryId, MessageCategoryConfig>) => {

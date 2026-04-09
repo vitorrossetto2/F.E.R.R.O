@@ -9,6 +9,14 @@ import say from "say";
 import { settings } from "./config";
 import type { SpeakResult } from "./types";
 
+export function normalizeTtsText(text: string): string {
+  return text
+    .normalize("NFC")
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 const PHONETIC_MAP: Array<[RegExp, string]> = [
   [/\bmid\b/gi, "mídi"],
   [/\bbuild\b/gi, "bíudi"],
@@ -50,11 +58,7 @@ const PHONETIC_MAP: Array<[RegExp, string]> = [
 ];
 
 export function toPhonetic(text: string): string {
-  let result = text;
-  for (const [pattern, replacement] of PHONETIC_MAP) {
-    result = result.replace(pattern, replacement);
-  }
-  return result;
+  return normalizeTtsText(text);
 }
 
 function runProcess(command: string, args: string[], inputText = ""): Promise<void> {
@@ -258,26 +262,26 @@ export async function speak(text: string): Promise<SpeakResult> {
     return { generateMs: 0, playMs: 0, provider: "disabled" };
   }
 
-  const phonetic = toPhonetic(text);
+  const normalizedText = normalizeTtsText(text);
   const provider = settings.ttsProvider.toLowerCase();
 
   if (provider === "piper") {
-    return await speakWithPiper(phonetic);
+    return await speakWithPiper(normalizedText);
   }
 
   if (provider === "say") {
-    return await speakWithSay(phonetic);
+    return await speakWithSay(normalizedText);
   }
 
   if (provider === "elevenlabs") {
-    return await speakWithElevenLabs(phonetic);
+    return await speakWithElevenLabs(normalizedText);
   }
 
   if (provider === "auto") {
     try {
-      return await speakWithPiper(phonetic);
+      return await speakWithPiper(normalizedText);
     } catch {
-      return await speakWithSay(phonetic);
+      return await speakWithSay(normalizedText);
     }
   }
 

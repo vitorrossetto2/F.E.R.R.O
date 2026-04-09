@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { StartupState } from "../shared/types";
+import { bootstrapRendererState, useEngineStore, useStartupStateStore } from "./stores";
 import AppShell from "./components/layout/AppShell";
 import Dashboard from "./pages/Dashboard";
 import MatchAnalysis from "./pages/MatchAnalysis";
@@ -11,20 +11,14 @@ export type TabId = "dashboard" | "match" | "messages" | "settings";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>("dashboard");
-  const [startupState, setStartupState] = useState<StartupState | null>(null);
-
-  const loadStartupState = async () => {
-    const next = (await window.ferroAPI.getStartupState()) as StartupState;
-    setStartupState(next);
-    return next;
-  };
+  const startupState = useStartupStateStore((state) => state.startupState);
+  const startupLoading = useStartupStateStore((state) => state.loading);
+  const engineStatus = useEngineStore((state) => state.engine.status);
+  const engineLoading = useEngineStore((state) => state.loading);
+  const startEngine = useEngineStore((state) => state.start);
 
   useEffect(() => {
-    void loadStartupState();
-    const unsub = window.ferroAPI.onConfigChanged(() => {
-      void loadStartupState();
-    });
-    return unsub;
+    return bootstrapRendererState();
   }, []);
 
   useEffect(() => {
@@ -32,14 +26,14 @@ export default function App() {
       return;
     }
 
-    void window.ferroAPI.getEngineStatus().then((engineState) => {
-      const status = (engineState as { status?: string }).status;
-      if (status === "idle" || status === "error") {
-        return window.ferroAPI.startEngine();
-      }
-      return undefined;
-    });
-  }, [startupState]);
+    if (engineLoading) {
+      return;
+    }
+
+    if (engineStatus === "idle" || engineStatus === "error") {
+      void startEngine();
+    }
+  }, [startupState, engineLoading, engineStatus, startEngine]);
 
   const piperNeedsRepair = Boolean(
     startupState &&
@@ -69,7 +63,7 @@ export default function App() {
   ) : null;
 
   // Loading state
-  if (startupState === null) {
+  if (startupLoading || startupState === null) {
     return (
       <div className="flex h-screen w-screen items-center justify-center" style={{ background: "var(--bg-void)" }}>
         <div className="glow-orb glow-orb-purple" style={{ width: 300, height: 300, top: "30%", left: "40%" }} />
@@ -82,7 +76,7 @@ export default function App() {
     return (
       <PiperSetup
         onComplete={() => {
-          void loadStartupState();
+          void useStartupStateStore.getState().refresh();
         }}
       />
     );

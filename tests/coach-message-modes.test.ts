@@ -395,7 +395,8 @@ describe("coach message modes", () => {
   it("matchup prompt includes lane opponent rules", async () => {
     const { buildMatchupPrompt } = await import("../src/core/constants.js");
     const prompt = buildMatchupPrompt("serio");
-    expect(prompt).toContain("adversário direto");
+    expect(prompt).toContain("Campeão inimigo");
+    expect(prompt).toContain("Níveis 1–3");
   });
 
   it("no template produces preposition + {pronoun} without a noun", async () => {

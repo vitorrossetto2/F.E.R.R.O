@@ -1,32 +1,8 @@
-import { useEffect, useState } from "react";
-import type { EngineState } from "../../shared/types";
+import { useEngineStore } from "../stores";
 import LogPanel from "../components/dashboard/LogPanel";
 
-const DEFAULT_STATE: EngineState = {
-  status: "idle",
-  gameDetected: false,
-  gameTime: 0,
-  activeChampion: "",
-  lastMessage: "",
-  lastMessageSource: "",
-  lastLLMMs: 0,
-  lastTTSMs: 0,
-  ttsStatus: "idle",
-  llmStatus: "idle",
-  piperStatus: "missing",
-  errorMessage: null,
-};
-
 export default function Dashboard() {
-  const [engine, setEngine] = useState<EngineState>(DEFAULT_STATE);
-
-  useEffect(() => {
-    window.ferroAPI.getEngineStatus().then((s) => setEngine(s as EngineState));
-    const unsub = window.ferroAPI.onEngineEvent(() => {
-      window.ferroAPI.getEngineStatus().then((s) => setEngine(s as EngineState));
-    });
-    return unsub;
-  }, []);
+  const engine = useEngineStore((state) => state.engine);
 
   const isActive = engine.status === "coaching" || engine.status === "waiting_for_game";
   const statusColor = isActive ? "var(--accent-green)" : engine.status === "error" ? "var(--accent-red)" : "var(--text-muted)";

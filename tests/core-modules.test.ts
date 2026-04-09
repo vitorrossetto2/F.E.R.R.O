@@ -130,6 +130,43 @@ describe("core/coach.js - getCategoryCooldown", () => {
   });
 });
 
+describe("core/voice.js - normalizeTtsText", () => {
+  let normalizeTtsText: (text: string) => string;
+  let toPhonetic: (text: string) => string;
+
+  beforeAll(async () => {
+    process.env.TTS_PROVIDER = "piper";
+    process.env.TTS_ENABLED = "true";
+    const mod = await import("../src/core/voice.js");
+    normalizeTtsText = mod.normalizeTtsText;
+    toPhonetic = mod.toPhonetic;
+  });
+
+  it("removes punctuation and special chars", () => {
+    expect(normalizeTtsText("Olá, mid! build? #1 :)")).toBe("Olá mid build 1");
+  });
+
+  it("preserves accents", () => {
+    expect(normalizeTtsText("dragão ação campeão")).toBe("dragão ação campeão");
+  });
+
+  it("collapses repeated spaces after cleanup", () => {
+    expect(normalizeTtsText("olá   mundo   #   teste")).toBe("olá mundo teste");
+  });
+
+  it("keeps only letters numbers and spaces", () => {
+    expect(normalizeTtsText("@@ você venceu!!! 100%")).toBe("você venceu 100");
+  });
+
+  it("toPhonetic is now an alias for text cleanup", () => {
+    expect(toPhonetic("sua build, mid!")).toBe("sua build mid");
+  });
+
+  it("does not transliterate terms", () => {
+    expect(normalizeTtsText("mid build jungle")).toBe("mid build jungle");
+  });
+});
+/*
 describe("core/voice.js - toPhonetic", () => {
   let toPhonetic: (text: string) => string;
 
@@ -169,6 +206,7 @@ describe("core/voice.js - toPhonetic", () => {
     expect(toPhonetic("Mid")).toContain("mídi");
   });
 });
+*/
 
 describe("category priorities and cooldown groups", () => {
   beforeEach(() => { vi.resetModules(); });

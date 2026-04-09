@@ -1,20 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import type { LogEntry } from "../../../shared/types";
+import { useLogsStore } from "../../stores";
 
 export default function LogPanel() {
   const [expanded, setExpanded] = useState(false);
-  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const logs = useLogsStore((state) => state.logs);
   const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const unsub = window.ferroAPI.onLogEntry((entry: unknown) => {
-      setLogs((prev) => {
-        const next = [...prev, entry as LogEntry];
-        return next.length > 300 ? next.slice(-300) : next;
-      });
-    });
-    return unsub;
-  }, []);
 
   useEffect(() => {
     if (expanded && bottomRef.current) {

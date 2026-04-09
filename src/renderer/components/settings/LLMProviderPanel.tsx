@@ -12,7 +12,7 @@ const PROVIDERS: { id: LLMProviderType; name: string; desc: string; badge: strin
 
 interface Props {
   config: FerroConfig;
-  onUpdate: (path: string, value: unknown) => Promise<void>;
+  onUpdate: (path: string, value: unknown) => Promise<unknown>;
 }
 
 export default function LLMProviderPanel({ config, onUpdate }: Props) {

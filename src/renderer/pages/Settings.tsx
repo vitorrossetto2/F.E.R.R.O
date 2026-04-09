@@ -1,41 +1,19 @@
-import { useEffect, useState } from "react";
-import type { FerroConfig } from "../../shared/types";
+import { useConfigStore } from "../stores";
 import LLMProviderPanel from "../components/settings/LLMProviderPanel";
 import TTSProviderPanel from "../components/settings/TTSProviderPanel";
 
 export default function Settings() {
-  const [config, setConfig] = useState<FerroConfig | null>(null);
+  const config = useConfigStore((state) => state.config);
+  const loading = useConfigStore((state) => state.loading);
+  const updateConfig = useConfigStore((state) => state.update);
 
-  useEffect(() => {
-    window.ferroAPI.getConfig().then((c) => setConfig(c as FerroConfig));
-    const unsub = window.ferroAPI.onConfigChanged(() => {
-      window.ferroAPI.getConfig().then((c) => setConfig(c as FerroConfig));
-    });
-    return unsub;
-  }, []);
-
-  if (!config) {
+  if (loading || !config) {
     return (
       <div className="flex h-64 items-center justify-center">
         <p style={{ color: "var(--text-muted)" }}>Carregando...</p>
       </div>
     );
   }
-
-  const updateConfig = async (path: string, value: unknown) => {
-    await window.ferroAPI.setConfig(path, value);
-    setConfig((prev) => {
-      if (!prev) return prev;
-      const clone = structuredClone(prev);
-      const keys = path.split(".");
-      let obj: Record<string, unknown> = clone as unknown as Record<string, unknown>;
-      for (let i = 0; i < keys.length - 1; i++) {
-        obj = obj[keys[i]] as Record<string, unknown>;
-      }
-      obj[keys[keys.length - 1]] = value;
-      return clone;
-    });
-  };
 
   return (
     <div className="space-y-10">

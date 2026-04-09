@@ -17,6 +17,8 @@
   "author": "Mickael - Fortech Digital",
   "license": "MIT",
   "dependencies": {
+    "@langchain/core": "^0.3.80",
+    "@langchain/openai": "^0.5.18",
     "adm-zip": "^0.5.16",
     "axios": "^1.13.6",
     "dotenv": "^17.3.1",

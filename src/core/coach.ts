@@ -7,8 +7,13 @@ import {
   pickModePhrase
 } from "./constants";
 import { getChampionCatalog, getItemCatalog } from "./ddragon";
-import { runLlmTextRequest } from "./llm";
+import { recordLlmInteraction } from "./llm-db";
+import { normalizeLlmBaseUrl, resolveLlmTransport, runLlmTextRequest } from "./llm";
+import { ItemCatalog, type ItemCatalogItem } from "./item-catalog";
 import type { CoachDecision, GameSnapshot, MatchupTip, SnapshotPlayer, StrategicContext } from "./types";
+import { AIMessage, HumanMessage, SystemMessage, ToolMessage } from "@langchain/core/messages";
+import { DynamicTool } from "@langchain/core/tools";
+import { ChatOpenAI } from "@langchain/openai";
 
 function hasLlmConfig(): boolean {
   return Boolean(settings.zaiApiKey && settings.zaiEndpoint && settings.zaiModel);
@@ -166,6 +171,31 @@ function extractItemName(item: unknown): string {
   const name = typeof record.displayName === "string" ? record.displayName : typeof record.name === "string" ? record.name : "";
   return name.trim();
 }
+
+const coachingItemCatalog = ItemCatalog.loadDefault();
+
+function compactItemForPrompt(item: ItemCatalogItem | null, fallbackName = ""): string {
+  if (!item) {
+    return fallbackName.trim();
+  }
+
+  const pieces = [item.name || fallbackName.trim()];
+  if (item.tags.length > 0) {
+    pieces.push(`[${item.tags.slice(0, 3).join(", ")}]`);
+  }
+
+  const gold = item.gold.total ?? item.gold.base ?? null;
+  if (typeof gold === "number" && gold > 0) {
+    pieces.push(`${gold}g`);
+  }
+
+  return pieces.filter(Boolean).join(" ");
+}
+
+function resolveCoachItemName(name: string): string {
+  return compactItemForPrompt(coachingItemCatalog.lookupItemByName(name).item, name);
+}
+
 function buildItemContextBlock(snapshot: GameSnapshot, strategicContext?: StrategicContext | null): string {
   const alliedPlayers = Array.isArray(snapshot.alliedPlayers) ? snapshot.alliedPlayers : [];
   const activePlayer = alliedPlayers.find((player) => player.summonerName === snapshot.activePlayerName);
@@ -195,8 +225,8 @@ function buildItemContextBlock(snapshot: GameSnapshot, strategicContext?: Strate
   const targetReason = threat ? "maior ameaca do time inimigo" : laneOpponent ? "adversario da sua lane" : "contexto geral";
 
   const lines = [
-    `Itens do jogador: ${ownedItemNames.size > 0 ? [...ownedItemNames].join(", ") : "nenhum item importante ainda"}.`,
-    `Itens visiveis do inimigo: ${enemyItemNames.size > 0 ? [...enemyItemNames].join(", ") : "nenhum item visivel ainda"}.`,
+    `Itens do jogador: ${ownedItemNames.size > 0 ? [...ownedItemNames].map(resolveCoachItemName).join(", ") : "nenhum item importante ainda"}.`,
+    `Itens visiveis do inimigo: ${enemyItemNames.size > 0 ? [...enemyItemNames].map(resolveCoachItemName).join(", ") : "nenhum item visivel ainda"}.`,
     `Alvo prioritario: ${targetName} (${targetReason}).`,
     "Nao recomende itens que o jogador ja possui.",
     "Sugira itens a partir do estado do jogo e da pressao do inimigo."
@@ -547,9 +577,15 @@ function chooseResponseItemId(
 
 async function buildItemizationAdvice(
   snapshot: GameSnapshot,
-  strategicContext?: StrategicContext | null
+  strategicContext?: StrategicContext | null,
+  catalogs?: {
+    championCatalog: Map<string, { name: string; tags?: string[] }>;
+    itemCatalog: Map<string, { name: string; tags?: string[] }>;
+  }
 ): Promise<ItemizationAdvice> {
-  const [championCatalog, itemCatalog] = await Promise.all([getChampionCatalog(), getItemCatalog()]);
+  const [championCatalog, itemCatalog] = catalogs
+    ? [catalogs.championCatalog, catalogs.itemCatalog]
+    : await Promise.all([getChampionCatalog(), getItemCatalog()]);
   const playerChampion = snapshot.activePlayerChampion || snapshot.activePlayerName || "seu campeao";
   const playerArchetype = classifyChampionArchetype(championCatalog, playerChampion, snapshot.activePlayerPosition);
   const enemyThreat = summarizeEnemyThreats(snapshot, championCatalog, itemCatalog, strategicContext);
@@ -663,6 +699,41 @@ function heuristicAlert(snapshot: GameSnapshot, triggers: string[]): string | nu
 export function detectCategory(priority: string | null): string {
   if (!priority) return "generico";
   const normalized = priority.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const directCategoryMap: Record<string, string> = {
+    mapa: "mapa",
+    ouroparado: "ouroParado",
+    inimigofed: "inimigoFed",
+    inimigobuild: "inimigoBuild",
+    powerspike: "powerspike",
+    torre: "torre",
+    torreperdida: "torrePerdida",
+    mortejogador: "morteJogador",
+    mortestreak: "morteStreak",
+    objetivo: "objetivo",
+    itemfechado: "itemFechado",
+    inimigoitem: "inimigoItem",
+    levelup: "levelUp",
+    inibidor: "inibidor",
+    fimdejogo: "fimDeJogo",
+    junglegank: "jungleGank",
+    junglepressao: "junglePressao",
+    jungletiming: "jungleTiming",
+    ace: "ace",
+    dragonsoul: "dragonSoul",
+    multikill: "multikill",
+    objetivoroubo: "objetivoRoubo",
+    inibidorrespawn: "inibidorRespawn",
+    csalerta: "csAlerta",
+    dragontipo: "dragonTipo",
+    dragontipoinimigo: "dragonTipoInimigo",
+    summonerspell: "summonerSpell",
+    wardalerta: "wardAlerta",
+    firstblood: "firstBlood",
+    laneouro: "laneOuro",
+    generico: "generico",
+  };
+
+  if (directCategoryMap[normalized]) return directCategoryMap[normalized];
 
   if (normalized === "lembrete de mapa") return "mapa";
   if (normalized === "ouro parado alto") return "ouroParado";
@@ -671,12 +742,11 @@ export function detectCategory(priority: string | null): string {
   if (normalized.includes("powerspike")) return "powerspike";
   if (normalized.startsWith("roubaram ") || normalized.startsWith("roubamos ")) return "objetivoRoubo";
   if (normalized.startsWith("alma do dragao aliada:") || normalized.startsWith("alma do dragao inimiga:")) return "dragonSoul";
-  if (normalized.startsWith("torre ")) return "torre";
+  if (normalized.startsWith("torre ") || normalized.includes("caiu torre") || normalized.includes("caiu a torre")) return "torre";
   if (normalized.startsWith("perdemos torre")) return "torrePerdida";
   if (normalized.startsWith("inimigo morreu:")) return "inimigoMorreu";
   if (normalized.includes("voce morreu") || normalized.startsWith("cuidado com ")) return "morteJogador";
   if (normalized.includes("vezes")) return "morteStreak";
-  if (normalized.includes("dragao") || normalized.includes("barao") || normalized.includes("arauto")) return "objetivo";
   if (normalized.startsWith("item fechado:")) return "itemFechado";
   if (normalized.startsWith("inimigo item:")) return "inimigoItem";
   if (normalized.startsWith("level up chave:") || normalized === "ult disponivel" || normalized.startsWith("inimigo ult antes:")) return "levelUp";
@@ -694,6 +764,7 @@ export function detectCategory(priority: string | null): string {
   if (normalized.startsWith("dragao tipo inimigo:")) return "dragonTipoInimigo";
   if (normalized === "first blood aliado" || normalized === "first blood inimigo") return "firstBlood";
   if (normalized.startsWith("lane ouro desvantagem:") || normalized.startsWith("lane ouro vantagem:")) return "laneOuro";
+  if (normalized.includes("dragao") || normalized.includes("barao") || normalized.includes("arauto")) return "objetivo";
 
   return "generico";
 }
@@ -713,9 +784,10 @@ function isSimpleTrigger(priority: string | null): boolean {
 
 function fallbackMessage(priority: string | null): string {
   if (!priority) return "";
+  const normalized = priority.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-  if (priority.includes("em 10 segundos")) {
-    const name = priority.replace(" em 10 segundos", "").trim();
+  if (normalized.includes("em 10 segundos")) {
+    const name = normalized.replace(" em 10 segundos", "").trim();
     const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
     const verb = name === "vastilarvas" ? "estao" : "esta";
     return `${capitalized} ${verb} para nascer.`;
@@ -925,8 +997,8 @@ function fallbackMessage(priority: string | null): string {
     return pickModePhrase("wardAlerta");
   }
 
-  if (priority.startsWith("dragao tipo aliado:") || priority.startsWith("dragao tipo inimigo:")) {
-    const isAlly = priority.startsWith("dragao tipo aliado:");
+  if (normalized.startsWith("dragao tipo aliado:") || normalized.startsWith("dragao tipo inimigo:")) {
+    const isAlly = normalized.startsWith("dragao tipo aliado:");
     const type = priority.split(":")[1]?.trim() ?? "";
     const typeNames: Record<string, string> = {
       Fire: "fogo", Earth: "terra", Water: "agua",
@@ -954,15 +1026,17 @@ function fallbackMessage(priority: string | null): string {
     return pickModePhrase(phraseKey).replace(/\{type\}/g, translated).replace(/\{hint\}/g, hint);
   }
 
-  if (priority.startsWith("lane ouro desvantagem:")) {
-    const parts = priority.slice("lane ouro desvantagem:".length).trim().split(":");
+  if (normalized.startsWith("lane ouro desvantagem:")) {
+    const idx = normalized.indexOf("lane ouro desvantagem:");
+    const parts = priority.slice(idx + "lane ouro desvantagem:".length).trim().split(":");
     const opponent = parts[0]?.trim() ?? "";
     const gold = parts[1]?.trim() ?? "";
     return pickModePhrase("laneVantagemOuro").replace(/\{opponent\}/g, opponent).replace(/\{gold\}/g, gold);
   }
 
-  if (priority.startsWith("lane ouro vantagem:")) {
-    const parts = priority.slice("lane ouro vantagem:".length).trim().split(":");
+  if (normalized.startsWith("lane ouro vantagem:")) {
+    const idx = normalized.indexOf("lane ouro vantagem:");
+    const parts = priority.slice(idx + "lane ouro vantagem:".length).trim().split(":");
     const opponent = parts[0]?.trim() ?? "";
     const gold = parts[1]?.trim() ?? "";
     return pickModePhrase("laneDesvantagemOuro").replace(/\{opponent\}/g, opponent).replace(/\{gold\}/g, gold);
@@ -1037,6 +1111,194 @@ function buildPromptWithItemization(
   return buildPrompt(snapshot, triggers, priority, strategicContext, itemContext);
 }
 
+function buildItemizationContextBlock(
+  advice: ItemizationAdvice,
+  itemCatalog: Map<string, { name: string }>
+): string {
+  const coreItem = getItemName(itemCatalog, advice.coreItemId);
+  const responseItem = getItemName(itemCatalog, advice.responseItemId);
+  const parts: string[] = [];
+
+  if (coreItem) {
+    parts.push(`base ${resolveCoachItemName(coreItem)}`);
+  }
+
+  if (responseItem) {
+    const enemyLabel = advice.enemySource === "threat" ? `a maior ameaca ${advice.enemyChampion}` : advice.enemyChampion;
+    parts.push(`resposta contra ${enemyLabel}: ${resolveCoachItemName(responseItem)}`);
+  }
+
+  if (advice.signals.length > 0) {
+    parts.push(`sinais ${advice.signals.join(", ")}`);
+  }
+
+  return parts.length > 0 ? `Sugestao heuristica: ${parts.join(" | ")}.` : "";
+}
+
+function extractMessageText(content: unknown): string {
+  if (typeof content === "string") return content;
+  if (!content || typeof content !== "object") return "";
+
+  if (Array.isArray(content)) {
+    return content
+      .map((part) => {
+        if (typeof part === "string") return part;
+        if (!part || typeof part !== "object") return "";
+        const record = part as { text?: unknown; content?: unknown };
+        if (typeof record.text === "string") return record.text;
+        if (typeof record.content === "string") return record.content;
+        return "";
+      })
+      .join("");
+  }
+
+  const record = content as { text?: unknown; content?: unknown };
+  if (typeof record.text === "string") return record.text;
+  if (typeof record.content === "string") return record.content;
+  return "";
+}
+
+function extractToolCalls(message: AIMessage): Array<{ id: string; name: string; args: unknown }> {
+  const anyMessage = message as AIMessage & { tool_calls?: Array<{ id: string; name: string; args: unknown }> };
+  if (Array.isArray(anyMessage.tool_calls)) {
+    return anyMessage.tool_calls;
+  }
+
+  const additionalToolCalls = (message as AIMessage & { additional_kwargs?: { tool_calls?: Array<{ id: string; name: string; args: unknown }> } }).additional_kwargs?.tool_calls;
+  return Array.isArray(additionalToolCalls) ? additionalToolCalls : [];
+}
+
+async function runCoachLangChainRequest(request: {
+  apiKey: string;
+  endpoint: string;
+  model: string;
+  systemPrompt: string;
+  userPrompt: string;
+  temperature: number;
+  maxOutputTokens: number;
+  label: string;
+}): Promise<{ text: string; usage: unknown; raw: unknown }> {
+  const startedAt = performance.now();
+  const searchItemTool = new DynamicTool({
+    name: "search_item_catalog",
+    description: "Busca itens no catalogo local por nome, apelido ou parte do nome e retorna detalhes compactos em JSON.",
+    func: async (input: string) => {
+      const query = input.trim();
+      if (!query) {
+        return JSON.stringify({ query, normalizedQuery: "", item: null, matches: [] }, null, 2);
+      }
+
+      const result = coachingItemCatalog.lookupItemByName(query);
+      const compact = (item: ItemCatalogItem | null) => {
+        if (!item) return null;
+        return {
+          id: item.id,
+          name: item.name,
+          tags: item.tags,
+          gold: item.gold,
+          description: item.description,
+          plaintext: item.plaintext,
+          from: item.from,
+          into: item.into
+        };
+      };
+
+      return JSON.stringify(
+        {
+          query: result.query,
+          normalizedQuery: result.normalizedQuery,
+          item: compact(result.item),
+          matches: result.matches.map(compact)
+        },
+        null,
+        2
+      );
+    }
+  });
+
+  const model = new ChatOpenAI({
+    apiKey: request.apiKey,
+    model: request.model,
+    temperature: request.temperature,
+    maxTokens: request.maxOutputTokens,
+    configuration: {
+      baseURL: normalizeLlmBaseUrl(request.endpoint)
+    }
+  } as any);
+
+  const runnable = model.bindTools([searchItemTool]) as any;
+  const messages = [
+    new SystemMessage([
+      request.systemPrompt,
+      "Ferramenta disponivel: search_item_catalog.",
+      "Use-a quando precisar confirmar nome de item, componentes, tags, custo, descricao ou para desambiguar um item recomendado."
+    ].join("\n")),
+    new HumanMessage(request.userPrompt)
+  ];
+
+  let finalMessage: AIMessage | null = null;
+  const toolTrace: Array<{ name: string; input: string; output: string }> = [];
+
+  for (let iteration = 0; iteration < 4; iteration += 1) {
+    const nextMessage = await runnable.invoke(messages);
+    finalMessage = nextMessage;
+    messages.push(nextMessage);
+
+    const toolCalls = extractToolCalls(nextMessage);
+    if (toolCalls.length === 0) {
+      break;
+    }
+
+    for (const toolCall of toolCalls) {
+      const toolInput =
+        typeof toolCall.args === "string"
+          ? toolCall.args
+          : JSON.stringify(toolCall.args ?? {});
+      const toolOutput = await searchItemTool.invoke(toolInput);
+      const outputText = typeof toolOutput === "string" ? toolOutput : JSON.stringify(toolOutput);
+      toolTrace.push({
+        name: toolCall.name,
+        input: toolInput,
+        output: outputText
+      });
+      messages.push(new ToolMessage({
+        content: outputText,
+        tool_call_id: toolCall.id
+      } as any));
+    }
+  }
+
+  const text = extractMessageText(finalMessage?.content).trim();
+  const usage = (finalMessage as { usage_metadata?: unknown } | null)?.usage_metadata ?? null;
+  const raw = {
+    finalMessage: finalMessage ? finalMessage.toJSON?.() ?? finalMessage : null,
+    toolTrace
+  };
+
+  await recordLlmInteraction({
+    label: request.label,
+    transport: "chat",
+    endpoint: request.endpoint,
+    model: request.model,
+    request: {
+      endpoint: request.endpoint,
+      model: request.model,
+      systemPrompt: request.systemPrompt,
+      userPrompt: request.userPrompt,
+      temperature: request.temperature,
+      maxOutputTokens: request.maxOutputTokens,
+      toolNames: ["search_item_catalog"]
+    },
+    response: raw,
+    responseText: text,
+    usage,
+    error: null,
+    durationMs: performance.now() - startedAt
+  });
+
+  return { text, usage, raw };
+}
+
 function buildMatchupFallbackText(snapshot: GameSnapshot): string {
   const myChamp = snapshot.activePlayerChampion || "seu campeao";
   const myPos = snapshot.activePlayerPosition ?? "UNKNOWN";
@@ -1060,7 +1322,6 @@ export async function decideCoaching(
   strategicContext: StrategicContext
 ): Promise<CoachDecision> {
   const priority = heuristicAlert(snapshot, triggers);
-  const itemContext = buildItemContextBlock(snapshot, strategicContext);
   const fallback = fallbackMessage(priority);
 
   if (isSimpleTrigger(priority)) {
@@ -1100,6 +1361,17 @@ export async function decideCoaching(
     };
   }
 
+  const [championCatalog, itemCatalog] = await Promise.all([getChampionCatalog(), getItemCatalog()]);
+  const itemizationAdvice = await buildItemizationAdvice(snapshot, strategicContext, {
+    championCatalog,
+    itemCatalog
+  });
+  const itemContext = [
+    buildItemContextBlock(snapshot, strategicContext),
+    buildItemizationContextBlock(itemizationAdvice, itemCatalog)
+  ]
+    .filter(Boolean)
+    .join("\n");
   const prompt = buildPromptWithItemization(snapshot, triggers, priority, strategicContext, itemContext);
 
   if (!hasLlmConfig()) {
@@ -1124,20 +1396,38 @@ export async function decideCoaching(
   let llmError = null;
   const llmStart = performance.now();
   try {
+    const isChatTransport = resolveLlmTransport(settings.zaiEndpoint) === "chat";
     const isGlm = settings.zaiModel.includes("glm");
-    const result = await runLlmTextRequest({
-      apiKey: settings.zaiApiKey,
-      endpoint: settings.zaiEndpoint,
-      model: settings.zaiModel,
-      label: "coach",
-      messages: [
-        { role: "system", content: buildSystemPrompt() },
-        { role: "user", content: prompt }
-      ],
-      temperature: 0.3,
-      maxOutputTokens: 500,
-      ...(isGlm ? { chatRequest: { thinking: { type: "disabled" } } } : {})
-    });
+    const systemPrompt = [
+      buildSystemPrompt(),
+      "Ferramenta disponivel: search_item_catalog.",
+      "Use-a quando precisar confirmar nome de item, componentes, tags, custo, descricao ou para desambiguar um item recomendado."
+    ].join("\n");
+
+    const result = isChatTransport && !isGlm
+      ? await runCoachLangChainRequest({
+          apiKey: settings.zaiApiKey,
+          endpoint: settings.zaiEndpoint,
+          model: settings.zaiModel,
+          label: "coach",
+          systemPrompt,
+          userPrompt: prompt,
+          temperature: 0.3,
+          maxOutputTokens: 500
+        })
+      : await runLlmTextRequest({
+          apiKey: settings.zaiApiKey,
+          endpoint: settings.zaiEndpoint,
+          model: settings.zaiModel,
+          label: "coach",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.3,
+          maxOutputTokens: 500,
+          ...(isGlm ? { chatRequest: { thinking: { type: "disabled" } } } : {})
+        });
     llmMs = Math.round(performance.now() - llmStart);
     message = result.text;
     llmTokens = result.usage;
@@ -1146,6 +1436,33 @@ export async function decideCoaching(
     llmMs = Math.round(performance.now() - llmStart);
     llmError = err.message;
     console.error(`[Coach] LLM erro (${llmMs}ms):`, err.message);
+
+    if (!message) {
+      try {
+        const isGlm = settings.zaiModel.includes("glm");
+        const fallbackResult = await runLlmTextRequest({
+          apiKey: settings.zaiApiKey,
+          endpoint: settings.zaiEndpoint,
+          model: settings.zaiModel,
+          label: "coach",
+          messages: [
+            { role: "system", content: buildSystemPrompt() },
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.3,
+          maxOutputTokens: 500,
+          ...(isGlm ? { chatRequest: { thinking: { type: "disabled" } } } : {})
+        });
+        message = fallbackResult.text;
+        llmTokens = fallbackResult.usage;
+        llmError = null;
+        llmMs = Math.round(performance.now() - llmStart);
+      } catch (fallbackError) {
+        const fallbackErr = fallbackError as Error;
+        llmError = fallbackErr.message;
+        console.error(`[Coach] LLM fallback erro (${llmMs}ms):`, fallbackErr.message);
+      }
+    }
   }
 
   if (message && isTruncated(message)) {
@@ -1232,8 +1549,8 @@ export async function getMatchupTip(snapshot: GameSnapshot): Promise<MatchupTip 
         { role: "system", content: buildMatchupPrompt() },
         { role: "user", content: prompt }
       ],
-      temperature: 0.4,
-      maxOutputTokens: 500,
+      temperature: 0,
+      maxOutputTokens: 2000,
       ...(isGlm ? { chatRequest: { thinking: { type: "disabled" } } } : {})
     });
     llmMs = Math.round(performance.now() - llmStart);

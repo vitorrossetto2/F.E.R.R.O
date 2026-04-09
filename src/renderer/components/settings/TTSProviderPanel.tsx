@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { FerroConfig, StartupState, TTSProviderType, PiperVoiceOption, PiperProgress, VoiceOption } from "../../../shared/types";
+import type { FerroConfig, TTSProviderType, PiperVoiceOption, PiperProgress, VoiceOption } from "../../../shared/types";
 import APIKeyInput from "./APIKeyInput";
 import VoiceSelector from "./VoiceSelector";
+import { useEngineStore, useStartupStateStore } from "../../stores";
 
 const PROVIDERS: { id: TTSProviderType; name: string; desc: string; badge: string }[] = [
   { id: "piper", name: "Piper", desc: "Local, rápido, PT-BR", badge: "Gratuito" },
@@ -13,7 +14,7 @@ const elevenVoicesCache = new Map<string, VoiceOption[]>();
 
 interface Props {
   config: FerroConfig;
-  onUpdate: (path: string, value: unknown) => Promise<void>;
+  onUpdate: (path: string, value: unknown) => Promise<unknown>;
 }
 
 export default function TTSProviderPanel({ config, onUpdate }: Props) {
@@ -28,8 +29,12 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
   const [elevenVoices, setElevenVoices] = useState<VoiceOption[]>([]);
   const [loadingElevenVoices, setLoadingElevenVoices] = useState(false);
   const [elevenVoicesMessage, setElevenVoicesMessage] = useState<string>("");
-  const [startupState, setStartupState] = useState<StartupState | null>(null);
   const attemptedAutoLoadKeys = useRef<Set<string>>(new Set());
+  const startupState = useStartupStateStore((state) => state.startupState);
+  const refreshStartupState = useStartupStateStore((state) => state.refresh);
+  const startEngine = useEngineStore((state) => state.start);
+  const engineStatus = useEngineStore((state) => state.engine.status);
+  const engineLoading = useEngineStore((state) => state.loading);
 
   const active = config.tts.activeProvider;
   const elevenApiKey = config.tts.providers.elevenlabs.apiKey.trim();
@@ -78,20 +83,6 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
       setTestResult({ ok: false, message: "Erro ao testar" });
     }
     setTesting(false);
-  };
-
-  const refreshStartupState = async () => {
-    const next = (await window.ferroAPI.getStartupState()) as StartupState;
-    setStartupState(next);
-    return next;
-  };
-
-  const maybeStartEngine = async (next: StartupState) => {
-    if (!next.engineAutoStartAllowed) return;
-    const engine = await window.ferroAPI.getEngineStatus() as { status?: string };
-    if (engine.status === "idle" || engine.status === "error") {
-      await window.ferroAPI.startEngine();
-    }
   };
 
   const loadElevenVoices = async (mode: "manual" | "auto") => {
@@ -156,14 +147,6 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
       void loadElevenVoices("auto");
     }
   }, [active, elevenCacheKey, selectedElevenVoiceId, elevenVoicesMessage]);
-
-  useEffect(() => {
-    void refreshStartupState();
-    const unsub = window.ferroAPI.onConfigChanged(() => {
-      void refreshStartupState();
-    });
-    return unsub;
-  }, []);
 
   return (
     <section className="space-y-4">
@@ -306,7 +289,9 @@ export default function TTSProviderPanel({ config, onUpdate }: Props) {
                             const result = await window.ferroAPI.installPiper(v.id) as { ok: boolean };
                             if (result.ok) {
                               const next = await refreshStartupState();
-                              await maybeStartEngine(next);
+                              if (next?.engineAutoStartAllowed && !engineLoading && (engineStatus === "idle" || engineStatus === "error")) {
+                                await startEngine();
+                              }
                             }
                           }}
                         >

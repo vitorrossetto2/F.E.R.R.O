@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { EngineState } from "../../shared/types";
+import { useEngineStore } from "../stores";
 
 type TeamCode = "ORDER" | "CHAOS";
 
@@ -652,15 +653,7 @@ export function normalizeMatchData(payload: unknown): MatchData | null {
 }
 
 export default function MatchAnalysis() {
-  const [engineStatus, setEngineStatus] = useState<EngineState["status"]>("idle");
-
-  useEffect(() => {
-    window.ferroAPI.getEngineStatus().then((s) => setEngineStatus((s as EngineState).status));
-    const unsub = window.ferroAPI.onEngineEvent(() => {
-      window.ferroAPI.getEngineStatus().then((s) => setEngineStatus((s as EngineState).status));
-    });
-    return unsub;
-  }, []);
+  const engineStatus = useEngineStore((state) => state.engine.status);
 
   const [data, setData] = useState<MatchData | null | undefined>(undefined);
 
