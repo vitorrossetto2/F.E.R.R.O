@@ -18,8 +18,6 @@ export const IPC = {
   LOGS_CLEAR: "logs:clear",
 
   // Match Analysis
-  MATCH_LIST: "match:list",
-  MATCH_GET: "match:get",
   MATCH_LAST: "match:last",
 
   // Voice listing

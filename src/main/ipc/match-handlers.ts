@@ -7,9 +7,6 @@ import { log } from "./shared";
 const TAG = "[IPC]";
 
 export function registerMatchHandlers(): void {
-  ipcMain.handle(IPC.MATCH_LIST, () => []);
-  ipcMain.handle(IPC.MATCH_GET, () => null);
-
   ipcMain.handle(IPC.MATCH_LAST, async () => {
     try {
       const config = configService.getAll();

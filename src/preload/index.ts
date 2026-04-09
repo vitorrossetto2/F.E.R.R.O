@@ -50,8 +50,6 @@ const api: FerroAPI = {
   clearLogs: () => invoke<void>(IPC.LOGS_CLEAR),
 
   // Match
-  listSessions: () => invoke<unknown[]>(IPC.MATCH_LIST),
-  getSession: (sessionId: string) => invoke<unknown>(IPC.MATCH_GET, sessionId),
   getLastMatch: () => invoke<unknown | null>(IPC.MATCH_LAST),
 
   // Voice listing

@@ -38,7 +38,12 @@ Neste repositorio, as tres partes existem e estao ativas:
 Arquivos principais:
 
 - `src/main/index.ts`
-- `src/main/ipc/handlers.ts`
+- `src/main/ipc/register-handlers.ts`
+- `src/main/ipc/app-handlers.ts`
+- `src/main/ipc/config-handlers.ts`
+- `src/main/ipc/engine-handlers.ts`
+- `src/main/ipc/match-handlers.ts`
+- `src/main/ipc/voice-handlers.ts`
 - `src/main/services/*`
 
 Responsabilidades:
@@ -198,7 +203,7 @@ tests/        testes de unidade e integracao leve
 - A configuracao persistente mora em `electron-store`, inicializada por `src/main/services/config-service.ts`.
 - O renderer nao acessa Node diretamente; use `window.ferroAPI`.
 - Novas chamadas entre UI e backend devem passar por:
-  `src/shared/channels.ts` -> `src/preload/index.ts` -> `src/main/ipc/handlers.ts`
+  `src/shared/channels.ts` -> `src/preload/index.ts` -> `src/main/ipc/register-handlers.ts` -> `src/main/ipc/*-handlers.ts`
 - O projeto tem foco em Windows e integra onboarding do Piper.
 - O renderer agora usa stores centralizadas em `src/renderer/stores/` para evitar `useEffect` duplicado em varias telas.
 - `src/renderer/stores/bootstrap.ts` faz a hidratacao inicial e registra os listeners IPC uma unica vez.

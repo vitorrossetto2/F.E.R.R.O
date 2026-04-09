@@ -3,12 +3,12 @@ import { IPC } from "../../shared/channels";
 import * as configService from "../services/config-service";
 import { getLatestElevenLabsUsageSummary } from "../services/elevenlabs-usage-service";
 import { getStartupState } from "../services/startup-state";
-import { emitConfigChanged, log, type IpcHandlerContext } from "./shared";
+import { clearLogEntries, emitConfigChanged, getRecentLogEntries, log, type IpcHandlerContext } from "./shared";
 
 const TAG = "[IPC]";
 
 export function registerAppHandlers({ mainWindow }: IpcHandlerContext): void {
-  ipcMain.handle(IPC.LOGS_GET, () => []);
+  ipcMain.handle(IPC.LOGS_GET, (_event, count: number) => getRecentLogEntries(count));
 
   ipcMain.handle(IPC.ELEVENLABS_USAGE_GET, async () => {
     try {
@@ -20,7 +20,9 @@ export function registerAppHandlers({ mainWindow }: IpcHandlerContext): void {
     }
   });
 
-  ipcMain.handle(IPC.LOGS_CLEAR, () => {});
+  ipcMain.handle(IPC.LOGS_CLEAR, () => {
+    clearLogEntries();
+  });
 
   ipcMain.handle(IPC.DIALOG_SELECT_DIR, async () => {
     const result = await dialog.showOpenDialog(mainWindow, { properties: ["openDirectory"] });

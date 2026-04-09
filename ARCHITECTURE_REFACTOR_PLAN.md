@@ -202,7 +202,7 @@ Quebrar o arquivo unico de handlers em modulos menores e coesos.
 
 ### Problemas que esta fase ataca
 
-- `src/main/ipc/handlers.ts` esta centralizado demais
+- `src/main/ipc/register-handlers.ts` coordenava tudo antes da modularizacao
 - mistura de varios dominios
 - piora a manutencao e a localizacao de responsabilidades
 
@@ -305,7 +305,8 @@ Eliminar a dependencia de configuracao global mutavel no `core` e no `main`.
 Hoje existem pontos onde a configuracao e aplicada mutando estado global de runtime:
 
 - `src/main/services/engine.ts`
-- `src/main/ipc/handlers.ts`
+- `src/main/ipc/config-handlers.ts`
+- `src/main/ipc/voice-handlers.ts`
 
 ### Direcao desejada
 
@@ -428,10 +429,10 @@ Medio.
 
 ### Fase 6
 
-- [ ] Remover stubs antigos
-- [ ] Limpar codigo de transicao
-- [ ] Atualizar `AGENTS.md` e docs relacionadas
-- [ ] Revisar testes
+- [x] Remover stubs antigos
+- [x] Limpar codigo de transicao
+- [x] Atualizar `AGENTS.md` e docs relacionadas
+- [x] Revisar testes
 
 ---
 

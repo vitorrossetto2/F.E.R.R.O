@@ -3,6 +3,8 @@ import { IPC } from "../../shared/channels";
 import type { ConfigChangedPayload, EngineEvent, LogEntry, PiperProgress } from "../../shared/types";
 
 const TAG = "[IPC]";
+const MAX_LOG_BUFFER = 300;
+const logBuffer: LogEntry[] = [];
 
 export function log(...args: unknown[]) {
   console.log(TAG, ...args);
@@ -40,11 +42,27 @@ export function emitEngineEvent(mainWindow: BrowserWindow, event: EngineEvent): 
 }
 
 export function emitLogEntry(mainWindow: BrowserWindow, entry: LogEntry): void {
+  logBuffer.push(entry);
+  if (logBuffer.length > MAX_LOG_BUFFER) {
+    logBuffer.splice(0, logBuffer.length - MAX_LOG_BUFFER);
+  }
   mainWindow.webContents.send(IPC.LOGS_ENTRY, entry);
 }
 
 export function emitPiperProgress(mainWindow: BrowserWindow, progress: PiperProgress): void {
   mainWindow.webContents.send(IPC.PIPER_PROGRESS, progress);
+}
+
+export function getRecentLogEntries(count: number): LogEntry[] {
+  if (!Number.isFinite(count) || count <= 0) {
+    return [];
+  }
+
+  return logBuffer.slice(-Math.floor(count));
+}
+
+export function clearLogEntries(): void {
+  logBuffer.length = 0;
 }
 
 export type IpcHandlerContext = {

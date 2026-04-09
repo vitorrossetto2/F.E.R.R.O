@@ -302,8 +302,6 @@ export interface FerroAPI {
   onLogEntry(cb: (entry: LogEntry) => void): () => void;
   clearLogs(): Promise<void>;
 
-  listSessions(): Promise<unknown[]>;
-  getSession(sessionId: string): Promise<unknown>;
   getLastMatch(): Promise<unknown | null>;
 
   listPiperVoices(): Promise<PiperVoiceOption[]>;
