@@ -8,6 +8,7 @@ import { getLatestElevenLabsUsageSummary } from "../services/elevenlabs-usage-se
 import { getStartupState } from "../services/startup-state";
 import { populateEnvFromConfig } from "../lib/settings-bridge";
 import { runLlmTextRequest } from "../../core/llm";
+import { mapFerroConfigToCoreSettings } from "../../core/runtime";
 import path from "path";
 
 const TAG = "[IPC]";
@@ -176,18 +177,10 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
         }
       }
 
-      const configMod = await import("../../core/config");
       const currentConfig = configService.getAll();
-
-      // Mutate cached settings to reflect current config
-      configMod.settings.ttsProvider = ttsProvider;
-      configMod.settings.ttsEnabled = true;
-      configMod.settings.piperExecutable = currentConfig.tts.providers.piper.executablePath;
-      configMod.settings.piperModelPath = currentConfig.tts.providers.piper.modelPath;
-      configMod.settings.piperSpeaker = currentConfig.tts.providers.piper.speaker;
-      configMod.settings.elevenlabsApiKey = currentConfig.tts.providers.elevenlabs.apiKey;
-      configMod.settings.elevenlabsVoiceId = currentConfig.tts.providers.elevenlabs.voiceId;
-      configMod.settings.ttsVoice = currentConfig.tts.providers.system.voice;
+      const runtime = mapFerroConfigToCoreSettings(currentConfig);
+      runtime.ttsProvider = ttsProvider;
+      runtime.ttsEnabled = true;
 
       log(
         "tts:test using",
@@ -201,7 +194,7 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
       );
 
       const voiceMod = await import("../../core/voice");
-      const result = await voiceMod.speak(text);
+      const result = await voiceMod.speak(text, runtime);
       log("tts:test success, provider:", result?.provider, "generateMs:", result?.generateMs);
       return { ok: true, provider: result?.provider, generateMs: result?.generateMs };
     } catch (error) {
@@ -248,16 +241,8 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
         return { ok: false, error: "LLM não configurada" };
       }
 
-      const [coachMod, configMod] = await Promise.all([
-        import("../../core/coach"),
-        import("../../core/config"),
-      ]);
-
-      const llm = cfg.llm.providers[cfg.llm.activeProvider];
-      configMod.settings.zaiApiKey = llm.apiKey;
-      configMod.settings.zaiEndpoint = llm.endpoint;
-      configMod.settings.zaiModel = llm.model;
-      configMod.settings.coachMessageMode = cfg.coach.messageMode;
+      const coachMod = await import("../../core/coach");
+      const runtime = mapFerroConfigToCoreSettings(cfg);
 
       const tip = await coachMod.getMatchupTipWithFallback({
         gameTime: 50,
@@ -279,7 +264,7 @@ export function registerIpcHandlers(mainWindow: BrowserWindow): void {
           { summonerName: "E5", championName: "Lee Sin", level: 4, kills: 1, deaths: 0, assists: 1, creepScore: 25, currentGold: 1300, items: [], position: "JUNGLE", wardScore: 0 },
         ],
         events: []
-      });
+      }, runtime);
 
       if (!tip) {
         return { ok: false, error: "LLM retornou resposta vazia" };

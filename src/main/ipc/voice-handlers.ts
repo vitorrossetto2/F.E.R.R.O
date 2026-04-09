@@ -2,6 +2,7 @@ import { ipcMain } from "electron";
 import path from "path";
 import { IPC } from "../../shared/channels";
 import { runLlmTextRequest } from "../../core/llm";
+import { mapFerroConfigToCoreSettings } from "../../core/runtime";
 import * as configService from "../services/config-service";
 import { populateEnvFromConfig } from "../lib/settings-bridge";
 import { getPiperDir, getVoicesDir, installPiper, PIPER_VOICES } from "../services/piper-installer";
@@ -51,6 +52,7 @@ export function registerVoiceHandlers({ mainWindow }: IpcHandlerContext): void {
     try {
       populateEnvFromConfig();
       const config = configService.getAll();
+      const runtime = mapFerroConfigToCoreSettings(config);
       const configProvider =
         config.tts.activeProvider === "piper"
           ? "piper"
@@ -73,17 +75,15 @@ export function registerVoiceHandlers({ mainWindow }: IpcHandlerContext): void {
         }
       }
 
-      const configMod = await import("../../core/config");
       const currentConfig = configService.getAll();
-
-      configMod.settings.ttsProvider = ttsProvider;
-      configMod.settings.ttsEnabled = true;
-      configMod.settings.piperExecutable = currentConfig.tts.providers.piper.executablePath;
-      configMod.settings.piperModelPath = currentConfig.tts.providers.piper.modelPath;
-      configMod.settings.piperSpeaker = currentConfig.tts.providers.piper.speaker;
-      configMod.settings.elevenlabsApiKey = currentConfig.tts.providers.elevenlabs.apiKey;
-      configMod.settings.elevenlabsVoiceId = currentConfig.tts.providers.elevenlabs.voiceId;
-      configMod.settings.ttsVoice = currentConfig.tts.providers.system.voice;
+      runtime.ttsProvider = ttsProvider;
+      runtime.ttsEnabled = true;
+      runtime.piperExecutable = currentConfig.tts.providers.piper.executablePath;
+      runtime.piperModelPath = currentConfig.tts.providers.piper.modelPath;
+      runtime.piperSpeaker = currentConfig.tts.providers.piper.speaker;
+      runtime.elevenlabsApiKey = currentConfig.tts.providers.elevenlabs.apiKey;
+      runtime.elevenlabsVoiceId = currentConfig.tts.providers.elevenlabs.voiceId;
+      runtime.ttsVoice = currentConfig.tts.providers.system.voice;
 
       log(
         "tts:test using",
@@ -97,7 +97,7 @@ export function registerVoiceHandlers({ mainWindow }: IpcHandlerContext): void {
       );
 
       const voiceMod = await import("../../core/voice");
-      const result = await voiceMod.speak(text);
+      const result = await voiceMod.speak(text, runtime);
       log("tts:test success, provider:", result?.provider, "generateMs:", result?.generateMs);
       return { ok: true, provider: result?.provider, generateMs: result?.generateMs };
     } catch (error) {
@@ -142,16 +142,10 @@ export function registerVoiceHandlers({ mainWindow }: IpcHandlerContext): void {
         return { ok: false, error: "LLM nÃ£o configurada" };
       }
 
-      const [coachMod, configMod] = await Promise.all([
+      const [coachMod] = await Promise.all([
         import("../../core/coach"),
-        import("../../core/config"),
       ]);
-
-      const llm = cfg.llm.providers[cfg.llm.activeProvider];
-      configMod.settings.zaiApiKey = llm.apiKey;
-      configMod.settings.zaiEndpoint = llm.endpoint;
-      configMod.settings.zaiModel = llm.model;
-      configMod.settings.coachMessageMode = cfg.coach.messageMode;
+      const runtime = mapFerroConfigToCoreSettings(cfg);
 
       const tip = await coachMod.getMatchupTipWithFallback({
         gameTime: 50,
@@ -173,7 +167,7 @@ export function registerVoiceHandlers({ mainWindow }: IpcHandlerContext): void {
           { summonerName: "E5", championName: "Lee Sin", level: 4, kills: 1, deaths: 0, assists: 1, creepScore: 25, currentGold: 1300, items: [], position: "JUNGLE", wardScore: 0 },
         ],
         events: [],
-      });
+      }, runtime);
 
       if (!tip) {
         return { ok: false, error: "LLM retornou resposta vazia" };

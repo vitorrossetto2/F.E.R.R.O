@@ -10,13 +10,13 @@ import { getChampionCatalog, getItemCatalog } from "./ddragon";
 import { recordLlmInteraction } from "./llm-db";
 import { normalizeLlmBaseUrl, resolveLlmTransport, runLlmTextRequest } from "./llm";
 import { ItemCatalog, type ItemCatalogItem } from "./item-catalog";
-import type { CoachDecision, GameSnapshot, MatchupTip, SnapshotPlayer, StrategicContext } from "./types";
+import type { CoachDecision, CoreSettings, GameSnapshot, MatchupTip, SnapshotPlayer, StrategicContext } from "./types";
 import { AIMessage, HumanMessage, SystemMessage, ToolMessage } from "@langchain/core/messages";
 import { DynamicTool } from "@langchain/core/tools";
 import { ChatOpenAI } from "@langchain/openai";
 
-function hasLlmConfig(): boolean {
-  return Boolean(settings.zaiApiKey && settings.zaiEndpoint && settings.zaiModel);
+function hasLlmConfig(runtime: CoreSettings = settings): boolean {
+  return Boolean(runtime.zaiApiKey && runtime.zaiEndpoint && runtime.zaiModel);
 }
 
 type ChampionArchetype = "marksman" | "mage" | "assassin" | "fighter" | "tank" | "support" | "unknown";
@@ -678,10 +678,10 @@ function isTruncated(text: string): boolean {
   return t.length < 5 || DANGLING_ENDINGS.test(t);
 }
 
-function heuristicAlert(snapshot: GameSnapshot, triggers: string[]): string | null {
+function heuristicAlert(snapshot: GameSnapshot, triggers: string[], runtime: CoreSettings = settings): string | null {
   if (triggers.length > 0) return triggers[0];
 
-  if (snapshot.activePlayerGold >= settings.stalledGoldThreshold) {
+  if (snapshot.activePlayerGold >= runtime.stalledGoldThreshold) {
     return "ouro parado alto";
   }
 
@@ -1319,9 +1319,11 @@ function buildMatchupFallbackText(snapshot: GameSnapshot): string {
 export async function decideCoaching(
   snapshot: GameSnapshot,
   triggers: string[],
-  strategicContext: StrategicContext
+  strategicContext: StrategicContext,
+  runtime: CoreSettings = settings
 ): Promise<CoachDecision> {
-  const priority = heuristicAlert(snapshot, triggers);
+  const cfg = runtime;
+  const priority = heuristicAlert(snapshot, triggers, cfg);
   const fallback = fallbackMessage(priority);
 
   if (isSimpleTrigger(priority)) {
@@ -1374,7 +1376,7 @@ export async function decideCoaching(
     .join("\n");
   const prompt = buildPromptWithItemization(snapshot, triggers, priority, strategicContext, itemContext);
 
-  if (!hasLlmConfig()) {
+  if (!hasLlmConfig(cfg)) {
     return {
       shouldSpeak: !!fallback,
       message: fallback,
@@ -1396,19 +1398,19 @@ export async function decideCoaching(
   let llmError = null;
   const llmStart = performance.now();
   try {
-    const isChatTransport = resolveLlmTransport(settings.zaiEndpoint) === "chat";
-    const isGlm = settings.zaiModel.includes("glm");
+    const isChatTransport = resolveLlmTransport(cfg.zaiEndpoint) === "chat";
+    const isGlm = cfg.zaiModel.includes("glm");
     const systemPrompt = [
-      buildSystemPrompt(),
+      buildSystemPrompt(cfg.coachMessageMode),
       "Ferramenta disponivel: search_item_catalog.",
       "Use-a quando precisar confirmar nome de item, componentes, tags, custo, descricao ou para desambiguar um item recomendado."
     ].join("\n");
 
     const result = isChatTransport && !isGlm
       ? await runCoachLangChainRequest({
-          apiKey: settings.zaiApiKey,
-          endpoint: settings.zaiEndpoint,
-          model: settings.zaiModel,
+          apiKey: cfg.zaiApiKey,
+          endpoint: cfg.zaiEndpoint,
+          model: cfg.zaiModel,
           label: "coach",
           systemPrompt,
           userPrompt: prompt,
@@ -1416,9 +1418,9 @@ export async function decideCoaching(
           maxOutputTokens: 500
         })
       : await runLlmTextRequest({
-          apiKey: settings.zaiApiKey,
-          endpoint: settings.zaiEndpoint,
-          model: settings.zaiModel,
+          apiKey: cfg.zaiApiKey,
+          endpoint: cfg.zaiEndpoint,
+          model: cfg.zaiModel,
           label: "coach",
           messages: [
             { role: "system", content: systemPrompt },
@@ -1439,14 +1441,14 @@ export async function decideCoaching(
 
     if (!message) {
       try {
-        const isGlm = settings.zaiModel.includes("glm");
+        const isGlm = cfg.zaiModel.includes("glm");
         const fallbackResult = await runLlmTextRequest({
-          apiKey: settings.zaiApiKey,
-          endpoint: settings.zaiEndpoint,
-          model: settings.zaiModel,
+          apiKey: cfg.zaiApiKey,
+          endpoint: cfg.zaiEndpoint,
+          model: cfg.zaiModel,
           label: "coach",
           messages: [
-            { role: "system", content: buildSystemPrompt() },
+            { role: "system", content: buildSystemPrompt(cfg.coachMessageMode) },
             { role: "user", content: prompt }
           ],
           temperature: 0.3,
@@ -1516,8 +1518,9 @@ export async function decideCoaching(
   };
 }
 
-export async function getMatchupTip(snapshot: GameSnapshot): Promise<MatchupTip | null> {
-  if (!hasLlmConfig()) {
+export async function getMatchupTip(snapshot: GameSnapshot, runtime: CoreSettings = settings): Promise<MatchupTip | null> {
+  const cfg = runtime;
+  if (!hasLlmConfig(cfg)) {
     return null;
   }
 
@@ -1539,14 +1542,14 @@ export async function getMatchupTip(snapshot: GameSnapshot): Promise<MatchupTip 
   let llmTokens: unknown = null;
   const llmStart = performance.now();
   try {
-    const isGlm = settings.zaiModel.includes("glm");
+    const isGlm = cfg.zaiModel.includes("glm");
     const result = await runLlmTextRequest({
-      apiKey: settings.zaiApiKey,
-      endpoint: settings.zaiEndpoint,
-      model: settings.zaiModel,
+      apiKey: cfg.zaiApiKey,
+      endpoint: cfg.zaiEndpoint,
+      model: cfg.zaiModel,
       label: "matchup",
       messages: [
-        { role: "system", content: buildMatchupPrompt() },
+        { role: "system", content: buildMatchupPrompt(cfg.coachMessageMode) },
         { role: "user", content: prompt }
       ],
       temperature: 0,
@@ -1569,7 +1572,8 @@ export async function getMatchupTip(snapshot: GameSnapshot): Promise<MatchupTip 
   return { message, llmMs, llmTokens };
 }
 
-export async function getMatchupTipWithFallback(snapshot: GameSnapshot): Promise<MatchupTip> {
+export async function getMatchupTipWithFallback(snapshot: GameSnapshot, runtime: CoreSettings = settings): Promise<MatchupTip> {
+  const cfg = runtime;
   const myChamp = snapshot.activePlayerChampion || "seu campeao";
   const myPos = snapshot.activePlayerPosition ?? "UNKNOWN";
   const laneOpponent = snapshot.enemyPlayers.find((p) => p.position === myPos);
@@ -1583,7 +1587,7 @@ export async function getMatchupTipWithFallback(snapshot: GameSnapshot): Promise
     itemContext
   ].filter(Boolean).join("\n");
 
-  if (!hasLlmConfig()) {
+  if (!hasLlmConfig(cfg)) {
     return {
       message: buildMatchupFallbackText(snapshot),
       llmMs: 0,
@@ -1596,14 +1600,14 @@ export async function getMatchupTipWithFallback(snapshot: GameSnapshot): Promise
   let llmTokens: unknown = null;
   const llmStart = performance.now();
   try {
-    const isGlm = settings.zaiModel.includes("glm");
+    const isGlm = cfg.zaiModel.includes("glm");
     const result = await runLlmTextRequest({
-      apiKey: settings.zaiApiKey,
-      endpoint: settings.zaiEndpoint,
-      model: settings.zaiModel,
+      apiKey: cfg.zaiApiKey,
+      endpoint: cfg.zaiEndpoint,
+      model: cfg.zaiModel,
       label: "matchup",
       messages: [
-        { role: "system", content: buildMatchupPrompt() },
+        { role: "system", content: buildMatchupPrompt(cfg.coachMessageMode) },
         { role: "user", content: prompt }
       ],
       temperature: 0.4,

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { mapFerroConfigToCoreSettings } from "../src/core/runtime.js";
 
 let storeData: Record<string, unknown> = {};
 const openAiCalls: Array<{ apiKey: string; baseURL: string }> = [];
@@ -116,22 +117,33 @@ describe("LLM provider switching", () => {
     process.env.ZAI_ENDPOINT = "https://first.example/v1/chat/completions";
     process.env.ZAI_MODEL = "glm-5";
 
-    const configMod = await import("../src/core/config.js");
     const coachMod = await import("../src/core/coach.js");
     const snapshot = {
       activePlayerChampion: "Ahri",
       enemyPlayers: [{ championName: "Lux" }],
     };
 
-    configMod.settings.zaiApiKey = "first-key";
-    configMod.settings.zaiEndpoint = "https://first.example/v1/chat/completions";
-    configMod.settings.zaiModel = "glm-5";
-    await coachMod.getMatchupTip(snapshot);
+    const firstRuntime = mapFerroConfigToCoreSettings({
+      llm: {
+        activeProvider: "zai",
+        providers: {
+          zai: { apiKey: "first-key", endpoint: "https://first.example/v1/chat/completions", model: "glm-5" },
+        },
+      },
+      coach: { messageMode: "serio" },
+    });
+    await coachMod.getMatchupTip(snapshot, firstRuntime);
 
-    configMod.settings.zaiApiKey = "second-key";
-    configMod.settings.zaiEndpoint = "https://second.example/custom/responses";
-    configMod.settings.zaiModel = "glm-5-turbo";
-    await coachMod.getMatchupTip(snapshot);
+    const secondRuntime = mapFerroConfigToCoreSettings({
+      llm: {
+        activeProvider: "zai",
+        providers: {
+          zai: { apiKey: "second-key", endpoint: "https://second.example/custom/responses", model: "glm-5-turbo" },
+        },
+      },
+      coach: { messageMode: "serio" },
+    });
+    await coachMod.getMatchupTip(snapshot, secondRuntime);
 
     expect(openAiCalls).toEqual([
       { apiKey: "first-key", baseURL: "https://first.example/v1" },
@@ -145,17 +157,21 @@ describe("LLM provider switching", () => {
     process.env.ZAI_ENDPOINT = "https://api.openai.com/v1/responses";
     process.env.ZAI_MODEL = "gpt-4o-mini";
 
-    const configMod = await import("../src/core/config.js");
     const coachMod = await import("../src/core/coach.js");
-
-    configMod.settings.zaiApiKey = "openai-key";
-    configMod.settings.zaiEndpoint = "https://api.openai.com/v1/responses";
-    configMod.settings.zaiModel = "gpt-4o-mini";
+    const runtime = mapFerroConfigToCoreSettings({
+      llm: {
+        activeProvider: "openai",
+        providers: {
+          openai: { apiKey: "openai-key", endpoint: "https://api.openai.com/v1/responses", model: "gpt-4o-mini" },
+        },
+      },
+      coach: { messageMode: "serio" },
+    });
 
     const tip = await coachMod.getMatchupTip({
       activePlayerChampion: "Ahri",
       enemyPlayers: [{ championName: "Lux" }],
-    });
+    }, runtime);
 
     expect(tip?.message).toBe("Troque cedo.");
     expect(openAiCalls.at(-1)).toEqual({
@@ -171,17 +187,21 @@ describe("LLM provider switching", () => {
     process.env.ZAI_ENDPOINT = "https://api.z.ai/api/coding/paas/v4/chat/completions";
     process.env.ZAI_MODEL = "glm-5";
 
-    const configMod = await import("../src/core/config.js");
     const coachMod = await import("../src/core/coach.js");
-
-    configMod.settings.zaiApiKey = "";
-    configMod.settings.zaiEndpoint = "https://api.z.ai/api/coding/paas/v4/chat/completions";
-    configMod.settings.zaiModel = "glm-5";
+    const runtime = mapFerroConfigToCoreSettings({
+      llm: {
+        activeProvider: "zai",
+        providers: {
+          zai: { apiKey: "", endpoint: "https://api.z.ai/api/coding/paas/v4/chat/completions", model: "glm-5" },
+        },
+      },
+      coach: { messageMode: "serio" },
+    });
 
     const result = await coachMod.getMatchupTip({
       activePlayerChampion: "Ahri",
       enemyPlayers: [{ championName: "Lux" }],
-    });
+    }, runtime);
 
     expect(result).toBeNull();
     expect(openAiCalls).toHaveLength(0);
@@ -197,7 +217,7 @@ describe("LLM provider switching", () => {
     configService.setPath("coach.messageMode", "puto");
     engine.syncConfig();
 
-    const configMod = await import("../src/core/config.js");
-    expect(configMod.settings.coachMessageMode).toBe("puto");
+    const runtime = engine.getRuntimeSettings();
+    expect(runtime.coachMessageMode).toBe("puto");
   });
 });

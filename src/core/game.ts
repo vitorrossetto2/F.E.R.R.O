@@ -3,13 +3,7 @@ import https from "node:https";
 import axios, { type AxiosError } from "axios";
 
 import { settings } from "./config";
-import type { CompactItem, GameSnapshot, LoggerPayload, SnapshotPlayer } from "./types";
-
-const liveClient = axios.create({
-  baseURL: settings.liveClientBaseUrl,
-  timeout: 2000,
-  httpsAgent: new https.Agent({ rejectUnauthorized: false })
-});
+import type { CompactItem, GameSnapshot, LoggerPayload, SnapshotPlayer, CoreSettings } from "./types";
 
 function stripRiotTag(name: string): string {
   const idx = name.indexOf("#");
@@ -40,10 +34,20 @@ function compactPlayer(player: any): SnapshotPlayer {
   };
 }
 
+function createLiveClient(runtime: CoreSettings) {
+  return axios.create({
+    baseURL: runtime.liveClientBaseUrl,
+    timeout: 2000,
+    httpsAgent: new https.Agent({ rejectUnauthorized: false })
+  });
+}
+
 export async function getSnapshot(
-  logGame?: (type: string, payload?: LoggerPayload) => Promise<void>
+  logGame?: (type: string, payload?: LoggerPayload) => Promise<void>,
+  runtime: CoreSettings = settings
 ): Promise<GameSnapshot | null> {
   try {
+    const liveClient = createLiveClient(runtime);
     const response = await liveClient.get("/liveclientdata/allgamedata");
     const allGameData = (response.data ?? {}) as Record<string, any>;
 

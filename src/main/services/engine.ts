@@ -4,6 +4,7 @@ import type { EngineState, EngineStatus, EngineEvent, LogEntry } from "../../sha
 import { populateEnvFromConfig } from "../lib/settings-bridge";
 import * as configService from "./config-service";
 import { CATEGORY_PRIORITIES, COOLDOWN_GROUPS } from "../../core/constants";
+import { mapFerroConfigToCoreSettings } from "../../core/runtime";
 import type {
   AnalyzeSnapshotResult,
   CoachDecision,
@@ -23,16 +24,15 @@ const OPENING_MATCHUP_MAX_SECONDS = 120;
 
 type LoadedCore = {
   analyzeSnapshot: (snapshot: GameSnapshot, state: LoopStateShape) => Promise<AnalyzeSnapshotResult>;
-  decideCoaching: (snapshot: GameSnapshot, triggers: string[], ctx: StrategicContext) => Promise<CoachDecision>;
+  decideCoaching: (snapshot: GameSnapshot, triggers: string[], ctx: StrategicContext, runtime?: CoreSettings) => Promise<CoachDecision>;
   detectCategory: (priority: string | null) => string;
   getCategoryCooldown: (category: string) => number;
-  getMatchupTip: (snapshot: GameSnapshot) => Promise<MatchupTip | null>;
-  getSnapshot: (logGame?: CoreLogger["logGame"]) => Promise<GameSnapshot | null>;
-  speak: (text: string) => Promise<SpeakResult>;
-  createLogger: (mode?: string) => Promise<CoreLogger>;
+  getMatchupTip: (snapshot: GameSnapshot, runtime?: CoreSettings) => Promise<MatchupTip | null>;
+  getSnapshot: (logGame?: CoreLogger["logGame"], runtime?: CoreSettings) => Promise<GameSnapshot | null>;
+  speak: (text: string, runtime?: CoreSettings) => Promise<SpeakResult>;
+  createLogger: (mode?: string, runtime?: CoreSettings) => Promise<CoreLogger>;
   pickModePhrase: (key: string, mode?: string) => string;
   LoopState: new () => LoopStateShape;
-  settings: CoreSettings;
 };
 
 let core: LoadedCore | null = null;
@@ -43,6 +43,7 @@ export class Engine extends EventEmitter {
   private mainWindow: BrowserWindow | null = null;
   private state: LoopStateShape | null = null;
   private logger: CoreLogger | null = null;
+  private runtimeSettings: CoreSettings = mapFerroConfigToCoreSettings(configService.getAll());
 
   public engineState: EngineState = {
     status: "idle",
@@ -82,8 +83,8 @@ export class Engine extends EventEmitter {
 
   private applyConfigToRuntime() {
     const cfg = configService.getAll();
+    this.runtimeSettings = mapFerroConfigToCoreSettings(cfg);
     const llmEnabled = cfg.llm.activeProvider !== "none";
-    const llm = cfg.llm.activeProvider === "none" ? null : cfg.llm.providers[cfg.llm.activeProvider];
 
     populateEnvFromConfig();
 
@@ -93,49 +94,10 @@ export class Engine extends EventEmitter {
         : "idle"
       : "disabled";
     this.engineState.piperStatus = cfg.tts.providers.piper.modelPath ? "installed" : "missing";
+  }
 
-    if (!core) return;
-
-    const s = core.settings;
-    Object.assign(s, {
-      zaiApiKey: llm?.apiKey ?? "",
-      zaiEndpoint: llm?.endpoint ?? "",
-      zaiModel: llm?.model ?? "",
-      liveClientBaseUrl: "https://127.0.0.1:2999",
-      pollIntervalSeconds: cfg.game.pollIntervalSeconds,
-      coachingIntervalSeconds: cfg.game.coachingIntervalSeconds,
-      mapReminderIntervalSeconds: cfg.game.mapReminderIntervalSeconds,
-      stalledGoldThreshold: cfg.game.stalledGoldThreshold,
-      dragonFirstSpawnSeconds: cfg.objectives.dragonFirstSpawn,
-      dragonRespawnSeconds: cfg.objectives.dragonRespawn,
-      grubsFirstSpawnSeconds: cfg.objectives.grubsFirstSpawn,
-      grubsDespawnSeconds: cfg.objectives.grubsDespawn,
-      heraldFirstSpawnSeconds: cfg.objectives.heraldFirstSpawn,
-      heraldDespawnSeconds: cfg.objectives.heraldDespawn,
-      baronFirstSpawnSeconds: cfg.objectives.baronFirstSpawn,
-      baronRespawnSeconds: cfg.objectives.baronRespawn,
-      objectiveOneMinuteCallSeconds: cfg.objectives.oneMinuteCall,
-      objectiveThirtySecondsCallSeconds: cfg.objectives.thirtySecondsCall,
-      objectiveTenSecondsCallSeconds: cfg.objectives.tenSecondsCall,
-      ttsEnabled: true,
-      ttsProvider:
-        cfg.tts.activeProvider === "piper"
-          ? "piper"
-          : cfg.tts.activeProvider === "elevenlabs"
-            ? "elevenlabs"
-            : "say",
-      ttsVolume: cfg.tts.volume,
-      ttsVoice: cfg.tts.providers.system.voice,
-      piperExecutable: cfg.tts.providers.piper.executablePath,
-      piperModelPath: cfg.tts.providers.piper.modelPath,
-      piperSpeaker: cfg.tts.providers.piper.speaker,
-      elevenlabsApiKey: cfg.tts.providers.elevenlabs.apiKey,
-      elevenlabsVoiceId: cfg.tts.providers.elevenlabs.voiceId,
-      coachMessageMode: cfg.coach.messageMode,
-      logsDir: cfg.logging.logsDir,
-      logSnapshots: cfg.logging.logSnapshots,
-      logLlmPayloads: cfg.logging.logLlmPayloads,
-    });
+  public getRuntimeSettings(): CoreSettings {
+    return this.runtimeSettings;
   }
 
   public syncConfig() {
@@ -155,7 +117,7 @@ export class Engine extends EventEmitter {
     if (core) return;
     this.applyConfigToRuntime();
 
-    const [analyzerMod, coachMod, gameMod, voiceMod, loggerMod, stateMod, configMod, constantsMod] =
+    const [analyzerMod, coachMod, gameMod, voiceMod, loggerMod, stateMod, constantsMod] =
       await Promise.all([
         import("../../core/analyzer"),
         import("../../core/coach"),
@@ -163,11 +125,17 @@ export class Engine extends EventEmitter {
         import("../../core/voice"),
         import("../../core/logger"),
         import("../../core/state"),
-        import("../../core/config"),
         import("../../core/constants"),
       ]);
 
-    console.log("[Engine] Core loaded. logsDir:", configMod.settings.logsDir, "piperExe:", configMod.settings.piperExecutable, "model:", configMod.settings.piperModelPath);
+    console.log(
+      "[Engine] Core loaded. logsDir:",
+      this.runtimeSettings.logsDir,
+      "piperExe:",
+      this.runtimeSettings.piperExecutable,
+      "model:",
+      this.runtimeSettings.piperModelPath
+    );
 
     core = {
       analyzeSnapshot: analyzerMod.analyzeSnapshot,
@@ -180,7 +148,6 @@ export class Engine extends EventEmitter {
       createLogger: loggerMod.createLogger,
       pickModePhrase: constantsMod.pickModePhrase,
       LoopState: stateMod.LoopState,
-      settings: configMod.settings,
     };
 
     this.applyConfigToRuntime();
@@ -197,16 +164,16 @@ export class Engine extends EventEmitter {
       if (!c) throw new Error("Core failed to load");
 
       this.state = new c.LoopState();
-      this.logger = await c.createLogger();
+      this.logger = await c.createLogger("game", this.runtimeSettings);
 
-      this.engineState.piperStatus = c.settings.piperModelPath ? "installed" : "missing";
+      this.engineState.piperStatus = this.runtimeSettings.piperModelPath ? "installed" : "missing";
       this.setStatus("waiting_for_game");
 
       await this.logger.log("coach_ready", { message: "Coach iniciado via Electron" });
       this.log({ type: "coach_ready", message: "Coach iniciado" });
-      console.log("[Engine] Started. Polling every", c.settings.pollIntervalSeconds, "s");
+      console.log("[Engine] Started. Polling every", this.runtimeSettings.pollIntervalSeconds, "s");
 
-      const pollMs = c.settings.pollIntervalSeconds * 1000;
+      const pollMs = this.runtimeSettings.pollIntervalSeconds * 1000;
       this.intervalId = setInterval(() => this.safeTick(), pollMs);
     } catch (err) {
       console.error("[Engine] Start failed:", (err as Error).message, (err as Error).stack);
@@ -234,7 +201,7 @@ export class Engine extends EventEmitter {
   private async tick() {
     const { core: c, state: st, logger: lg } = this.requireRuntime();
 
-    const snapshot = await c.getSnapshot((type, payload) => lg.logGame(type, payload));
+    const snapshot = await c.getSnapshot((type, payload) => lg.logGame(type, payload), this.runtimeSettings);
 
     // No game running
     if (!snapshot) {
@@ -289,8 +256,8 @@ export class Engine extends EventEmitter {
     if (!st.openingGreetingDone && gameTime < OPENING_MATCHUP_MAX_SECONDS) {
       st.openingGreetingDone = true;
       try {
-        const greeting = c.pickModePhrase("inicioPartida");
-        const tts = await c.speak(greeting);
+        const greeting = c.pickModePhrase("inicioPartida", this.runtimeSettings.coachMessageMode);
+        const tts = await c.speak(greeting, this.runtimeSettings);
         this.updateLastMessage(greeting, "heuristic", 0, tts.generateMs ?? 0);
         this.log({ type: "coach_speak", gameTime, message: greeting });
       } catch (err) {
@@ -301,9 +268,9 @@ export class Engine extends EventEmitter {
     if (!st.matchupDone && llmEnabled && gameTime >= OPENING_MATCHUP_TARGET_SECONDS && gameTime < OPENING_MATCHUP_MAX_SECONDS) {
       st.matchupDone = true;
       try {
-        const matchup = await c.getMatchupTip(snapshot);
+        const matchup = await c.getMatchupTip(snapshot, this.runtimeSettings);
         if (matchup) {
-          const tts = await c.speak(matchup.message);
+          const tts = await c.speak(matchup.message, this.runtimeSettings);
           this.updateLastMessage(matchup.message, "llm", matchup.llmMs, tts.generateMs ?? 0);
           this.log({ type: "coach_speak", gameTime, message: matchup.message });
           await lg.log("matchup_tip", { gameTime, message: matchup.message, llmMs: matchup.llmMs, llmTokens: matchup.llmTokens });
@@ -322,10 +289,10 @@ export class Engine extends EventEmitter {
     const { triggers: newTriggers, strategicContext } = await c.analyzeSnapshot(snapshot, st);
     const pending = st.drainPendingTriggers();
     const triggers = sortTriggersByUrgency([...new Set([...pending, ...newTriggers])]);
-    const dueForCoaching = gameTime - (st.lastCoachingAt || 0) >= c.settings.coachingIntervalSeconds;
+    const dueForCoaching = gameTime - (st.lastCoachingAt || 0) >= this.runtimeSettings.coachingIntervalSeconds;
 
     // Log snapshot to system log
-    if (c.settings.logSnapshots) {
+    if (this.runtimeSettings.logSnapshots) {
       await lg.log("snapshot", {
         gameTime,
         champion: snapshot.activePlayerChampion,
@@ -347,11 +314,7 @@ export class Engine extends EventEmitter {
       if (llmEnabled) {
         this.engineState.llmStatus = "calling";
       }
-      // When LLM is disabled, clear the API key so coach.js skips LLM and uses fallback only
-      if (!llmEnabled) {
-        c.settings.zaiApiKey = "";
-      }
-      decision = await c.decideCoaching(snapshot, triggers, strategicContext);
+      decision = await c.decideCoaching(snapshot, triggers, strategicContext, this.runtimeSettings);
       this.engineState.llmStatus = llmEnabled ? "idle" : "disabled";
     } catch (err) {
       this.engineState.llmStatus = llmEnabled ? "error" : "disabled";
@@ -374,7 +337,7 @@ export class Engine extends EventEmitter {
     this.log({ type: "coach_decision", gameTime, priority: decision.priority ?? "", shouldSpeak: decision.shouldSpeak });
 
     if (!decision.skippedLlm) {
-      if (c.settings.logLlmPayloads) {
+      if (this.runtimeSettings.logLlmPayloads) {
         await lg.log("llm_payload", {
           gameTime,
           prompt: decision.prompt,
@@ -450,7 +413,7 @@ export class Engine extends EventEmitter {
       this.send({ type: "tts_start", message: decision.message });
       this.engineState.ttsStatus = "speaking";
       try {
-        const tts = await c.speak(decision.message);
+        const tts = await c.speak(decision.message, this.runtimeSettings);
         const source = decision.skippedLlm ? "heuristic" : decision.fallbackUsed ? "fallback" : "llm";
         this.updateLastMessage(decision.message, source, decision.llmMs ?? 0, tts.generateMs ?? 0);
         this.engineState.ttsStatus = "idle";

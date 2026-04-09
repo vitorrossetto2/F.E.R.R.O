@@ -2,7 +2,7 @@ import { mkdir, appendFile } from "node:fs/promises";
 import path from "node:path";
 
 import { settings } from "./config";
-import type { CoreLogger, LoggerPayload, LoggerSessionInfo } from "./types";
+import type { CoreLogger, LoggerPayload, LoggerSessionInfo, CoreSettings } from "./types";
 
 function timestampForFile(): string {
   return new Date().toISOString().replace(/[:.]/g, "-");
@@ -21,10 +21,10 @@ function makeAppender(filePath: string, sessionId: string) {
   };
 }
 
-export async function createLogger(mode = "game"): Promise<CoreLogger> {
+export async function createLogger(mode = "game", runtime: CoreSettings = settings): Promise<CoreLogger> {
   const baseDir = mode === "test" ? "test" : "";
-  const systemDir = path.resolve(settings.logsDir, baseDir, "system");
-  const gameDir = path.resolve(settings.logsDir, baseDir, "game");
+  const systemDir = path.resolve(runtime.logsDir, baseDir, "system");
+  const gameDir = path.resolve(runtime.logsDir, baseDir, "game");
   await mkdir(systemDir, { recursive: true });
   await mkdir(gameDir, { recursive: true });
 
@@ -38,8 +38,8 @@ export async function createLogger(mode = "game"): Promise<CoreLogger> {
   await log("app_start", {
     pid: process.pid,
     cwd: process.cwd(),
-    model: settings.zaiModel,
-    ttsProvider: settings.ttsProvider,
+    model: runtime.zaiModel,
+    ttsProvider: runtime.ttsProvider,
     mode
   });
 

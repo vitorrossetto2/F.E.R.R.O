@@ -7,7 +7,7 @@ import https from "node:https";
 import say from "say";
 
 import { settings } from "./config";
-import type { SpeakResult } from "./types";
+import type { CoreSettings, SpeakResult } from "./types";
 
 export function normalizeTtsText(text: string): string {
   return text
@@ -112,30 +112,30 @@ function playWavFileAsync(filePath: string): void {
   }));
 }
 
-async function speakWithPiper(text: string): Promise<SpeakResult> {
-  if (!settings.piperModelPath) {
+async function speakWithPiper(text: string, runtime: CoreSettings = settings): Promise<SpeakResult> {
+  if (!runtime.piperModelPath) {
     throw new Error("PIPER_MODEL_PATH nao configurado.");
   }
 
   const tempFile = path.join(tmpdir(), `lol-coach-${Date.now()}.wav`);
   const args = [
     "--model",
-    settings.piperModelPath,
+    runtime.piperModelPath,
     "--output_file",
     tempFile
   ];
 
-  if (settings.piperSpeaker >= 0) {
-    args.push("--speaker", String(settings.piperSpeaker));
+  if (runtime.piperSpeaker >= 0) {
+    args.push("--speaker", String(runtime.piperSpeaker));
   }
 
   const generateStart = performance.now();
-  await runProcess(settings.piperExecutable, args, text);
+  await runProcess(runtime.piperExecutable, args, text);
   const generateMs = Math.round(performance.now() - generateStart);
 
-  if (settings.ttsVolume < 0.99) {
+  if (runtime.ttsVolume < 0.99) {
     const wavData = await readFile(tempFile);
-    const scaled = scaleWavVolume(wavData, settings.ttsVolume);
+    const scaled = scaleWavVolume(wavData, runtime.ttsVolume);
     await writeFile(tempFile, scaled);
   }
 
@@ -144,8 +144,8 @@ async function speakWithPiper(text: string): Promise<SpeakResult> {
   return { generateMs, playMs: 0, provider: "piper" };
 }
 
-function speakWithSay(text: string): SpeakResult {
-  say.speak(text, settings.ttsVoice, 1.0, (error: string | null) => {
+function speakWithSay(text: string, runtime: CoreSettings = settings): SpeakResult {
+  say.speak(text, runtime.ttsVoice, 1.0, (error: string | null) => {
     if (error) {
       console.error("[TTS say] erro:", error);
     }
@@ -175,13 +175,13 @@ function pcmToWavBuffer(pcmBuffer: Buffer, sampleRate = 16000, channels = 1, bit
   return Buffer.concat([header, pcmBuffer]);
 }
 
-function elevenLabsSynthesizePcm(text: string): Promise<Buffer> {
+function elevenLabsSynthesizePcm(text: string, runtime: CoreSettings = settings): Promise<Buffer> {
   return new Promise<Buffer>((resolve, reject) => {
-    if (!settings.elevenlabsApiKey) {
+    if (!runtime.elevenlabsApiKey) {
       reject(new Error("ELEVENLABS_API_KEY nao configurada."));
       return;
     }
-    if (!settings.elevenlabsVoiceId) {
+    if (!runtime.elevenlabsVoiceId) {
       reject(new Error("ELEVENLABS_VOICE_ID nao configurada."));
       return;
     }
@@ -191,7 +191,7 @@ function elevenLabsSynthesizePcm(text: string): Promise<Buffer> {
       model_id: "eleven_multilingual_v2",
     });
 
-    const requestUrl = new URL(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(settings.elevenlabsVoiceId)}`);
+    const requestUrl = new URL(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(runtime.elevenlabsVoiceId)}`);
     requestUrl.searchParams.set("output_format", "pcm_16000");
 
     const req = https.request(
@@ -199,7 +199,7 @@ function elevenLabsSynthesizePcm(text: string): Promise<Buffer> {
       {
         method: "POST",
         headers: {
-          "xi-api-key": settings.elevenlabsApiKey,
+          "xi-api-key": runtime.elevenlabsApiKey,
           Accept: "application/octet-stream",
           "Content-Type": "application/json",
           "Content-Length": Buffer.byteLength(body),
@@ -230,13 +230,13 @@ function elevenLabsSynthesizePcm(text: string): Promise<Buffer> {
   });
 }
 
-async function speakWithElevenLabs(text: string): Promise<SpeakResult> {
+async function speakWithElevenLabs(text: string, runtime: CoreSettings = settings): Promise<SpeakResult> {
   const generateStart = performance.now();
-  const pcm = await elevenLabsSynthesizePcm(text);
+  const pcm = await elevenLabsSynthesizePcm(text, runtime);
   const wavBuffer = pcmToWavBuffer(pcm, 16000);
   const tempFile = path.join(tmpdir(), `ferro-elevenlabs-${Date.now()}.wav`);
 
-  const finalWav = settings.ttsVolume < 0.99 ? scaleWavVolume(wavBuffer, settings.ttsVolume) : wavBuffer;
+  const finalWav = runtime.ttsVolume < 0.99 ? scaleWavVolume(wavBuffer, runtime.ttsVolume) : wavBuffer;
   await writeFile(tempFile, finalWav);
   const generateMs = Math.round(performance.now() - generateStart);
 
@@ -256,34 +256,34 @@ export function scaleWavVolume(wavBuffer: Buffer, volume: number): Buffer {
   return result;
 }
 
-export async function speak(text: string): Promise<SpeakResult> {
-  if (!settings.ttsEnabled) {
+export async function speak(text: string, runtime: CoreSettings = settings): Promise<SpeakResult> {
+  if (!runtime.ttsEnabled) {
     console.log(`[TTS disabled] ${text}`);
     return { generateMs: 0, playMs: 0, provider: "disabled" };
   }
 
   const normalizedText = normalizeTtsText(text);
-  const provider = settings.ttsProvider.toLowerCase();
+  const provider = runtime.ttsProvider.toLowerCase();
 
   if (provider === "piper") {
-    return await speakWithPiper(normalizedText);
+    return await speakWithPiper(normalizedText, runtime);
   }
 
   if (provider === "say") {
-    return await speakWithSay(normalizedText);
+    return await speakWithSay(normalizedText, runtime);
   }
 
   if (provider === "elevenlabs") {
-    return await speakWithElevenLabs(normalizedText);
+    return await speakWithElevenLabs(normalizedText, runtime);
   }
 
   if (provider === "auto") {
     try {
-      return await speakWithPiper(normalizedText);
+      return await speakWithPiper(normalizedText, runtime);
     } catch {
-      return await speakWithSay(normalizedText);
+      return await speakWithSay(normalizedText, runtime);
     }
   }
 
-  throw new Error(`TTS_PROVIDER invalido: ${settings.ttsProvider}`);
+  throw new Error(`TTS_PROVIDER invalido: ${runtime.ttsProvider}`);
 }
